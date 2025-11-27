@@ -102,7 +102,7 @@ def main():
     
     df = df[final_cols]
     
-   df = df.fillna("-")
+    df = df.fillna("-")
 
     output_file = out_path / "staphscan_results.tsv"
     df.to_csv(output_file, sep='\t', index=False)
