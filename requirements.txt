@@ -1,0 +1,5 @@
+python>=3.10
+biopython>=1.78
+pandas
+blast
+mash>=2.0
