@@ -1,113 +1,122 @@
 import argparse
 import sys
-import os
 import pandas as pd
 from pathlib import Path
 import importlib
 
-if sys.version_info < (3, 8):
-    sys.exit("StaphScan requires Python 3.8+")
+if sys.version_info < (3, 8): sys.exit("StaphScan requires Python 3.8+")
 
 def get_available_modules():
     modules_dir = Path(__file__).parent / "modules"
-    module_names = []
-    if not modules_dir.exists():
-        sys.exit("Critical Error: 'modules' directory not found.")
-    for item in modules_dir.iterdir():
-        if item.is_dir() and not item.name.startswith('_'):
-            expected_file = item / f"{item.name}.py"
-            if expected_file.exists():
-                module_names.append(item.name)
-    return sorted(module_names)
+    return sorted([d.name for d in modules_dir.iterdir() if d.is_dir() and (d/f"{d.name}.py").exists()])
 
 def load_module(module_name):
     try:
-        import_path = f"modules.{module_name}.{module_name}"
-        mod = importlib.import_module(import_path)
+        mod = importlib.import_module(f"modules.{module_name}.{module_name}")
         return mod.Module() 
     except Exception as e:
         sys.exit(f"Failed to import module '{module_name}': {e}")
 
-def parse_arguments(available_modules):
-    parser = argparse.ArgumentParser(
-        description="StaphScan: Staphylococcus aureus Genomic Typer",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    io_group = parser.add_argument_group("Input/Output")
-    io_group.add_argument("-i", "--input", nargs="+", required=True, help="Input FASTA files")
-    io_group.add_argument("-o", "--outdir", required=True, help="Output directory")
-    mod_group = parser.add_argument_group("Modules")
-    mod_group.add_argument("-m", "--modules", 
-                           help=f"Modules to run (default: all)",
-                           default="all")
-    return parser.parse_args()
-
 def main():
-    available_modules = get_available_modules()
-    args = parse_arguments(available_modules)
+    parser = argparse.ArgumentParser(description="StaphScan: S. aureus Genomic Typer")
+    parser.add_argument("-i", "--input", nargs="+", required=True, help="Input FASTA files")
+    parser.add_argument("-o", "--outdir", required=True, help="Output directory")
+    parser.add_argument("--polish", action="store_true", help="Generate simplified report")
+    args = parser.parse_args()
 
-    if args.modules == "all":
-        modules_to_run = available_modules
-    else:
-        requested = args.modules.split(',')
-        modules_to_run = [m for m in requested if m in available_modules]
-
+    modules = get_available_modules()
     print(f"--- StaphScan initialized ---")
-    print(f"Modules: {', '.join(modules_to_run)}")
+    print(f"Loaded Modules: {', '.join(modules)}")
 
-    loaded_modules = {}
-    for m in modules_to_run:
-        loaded_modules[m] = load_module(m)
-        if not loaded_modules[m].check_db():
-            sys.exit(f"Error: Database missing for module '{m}'.")
-
-    out_path = Path(args.outdir)
-    out_path.mkdir(parents=True, exist_ok=True)
-
-    all_results = []
+    loaded_mods = {m: load_module(m) for m in modules}
     
+    for m, mod in loaded_mods.items():
+        if not mod.check_db():
+            sys.exit(f"Error: Database check failed for module '{m}'.")
+
+    Path(args.outdir).mkdir(parents=True, exist_ok=True)
+    all_results = []
+
     for fasta_file in args.input:
-        fasta_path = Path(fasta_file)
-        if not fasta_path.exists(): continue
-
-        print(f"Processing: {fasta_path.stem}...")
-        record = {'Sample': fasta_path.stem}
-
-        for mod_name, module in loaded_modules.items():
+        fpath = Path(fasta_file)
+        if not fpath.exists(): continue
+        
+        print(f"Processing: {fpath.stem}...")
+        record = {'Sample': fpath.stem}
+        
+        for name, mod in loaded_mods.items():
             try:
-                mod_result = module.run(fasta_path)
-                record.update(mod_result)
+                record.update(mod.run(fpath))
             except Exception as e:
-                record[f"{mod_name}_error"] = "Fail"
-
+                record[f"{name}_error"] = "Fail"
+        
         all_results.append(record)
 
-    if not all_results:
-        sys.exit("No results generated.")
+    if not all_results: sys.exit("No results.")
+    df = pd.DataFrame(all_results).fillna("-")
 
-    df = pd.DataFrame(all_results)
-    
-    col_order = [
+    polished_cols = [
         "Sample",
-        "sccmec_type", "agr_type", "agr_match_confidence",
-        "res_phenotype", "res_genes", "res_mutations", "res_spurious",
-        "vir_pvl", "vir_tsst", "vir_et", "vir_spurious", 
-        "sccmec_genes"
+        "Species",
+        "Total_size",
+        "QC",
+        "ST",
+        "res_score",
+        "sccmec_type",
+        "agr_type",
+        "Mec_RES",
+        "Beta_lactamases",
+        "Fluoroquinolones",
+        "Other_RES",
+        "spurious_resistance_hits",
+        "vir_pvl",
+        "vir_tsst",
+        "vir_spurious" 
     ]
-    
-    final_cols = [c for c in col_order if c in df.columns]
-    
-    remaining = [c for c in df.columns if c not in final_cols]
-    final_cols.extend(remaining)
-    
-    df = df[final_cols]
-    
-    df = df.fillna("-")
 
-    output_file = out_path / "staphscan_results.tsv"
-    df.to_csv(output_file, sep='\t', index=False)
-    
-    print(f"Done. Results: {output_file}")
+    detailed_cols = [
+        "Sample",
+        "Species", 
+        "Mash_distance",
+        "ST",
+        "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL",
+        "sccmec_type", 
+        "agr_type", 
+        "res_phenotype", 
+        "res_genes",
+        "res_score",
+        "Drug_class",
+        "Resistance_mechanism",
+        "Total_size",
+        "QC",
+        "contig_count",
+        "N50",
+        "largest_contig",
+        "ambiguous_bases",
+        "Reference_accession",
+        "Sequence_identity",
+        "Coverage",
+        "res_mutations",
+        "vir_pvl", "vir_tsst", "vir_et", "vir_spurious",
+        "sccmec_genes",
+        "truncated_resistance_hits", 
+        "spurious_resistance_hits"
+    ]
+
+    if args.polish:
+        final_cols = [c for c in polished_cols if c in df.columns]
+        out_file = Path(args.outdir) / "staphscan_polished.tsv"
+        df[final_cols].to_csv(out_file, sep='\t', index=False)
+        print(f"Done: {out_file}")
+
+    else:
+        final_cols = [c for c in detailed_cols if c in df.columns]
+        remaining = [c for c in df.columns if c not in final_cols and c not in polished_cols]
+        final_cols.extend(remaining)
+        
+        out_file = Path(args.outdir) / "staphscan_detailed.tsv"
+        df[final_cols].to_csv(out_file, sep='\t', index=False)
+        print(f"Done: {out_file}")
 
 if __name__ == "__main__":
     main()
