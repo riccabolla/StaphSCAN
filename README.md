@@ -47,6 +47,6 @@ python main.py -i /path/to/genomes/*.fasta -o results_directory
                         Output directory
   -m MODULES, --modules MODULES
                         Comma-separated list of modules to run (default: "all")
-                        Options: assembly, mlst, sccmec, virulence, resistance, agr
+                        Options: assembly, mlst, spa, sccmec, agr, virulence, resistance
   --polish              Generate a simplified, clinical-style summary report (recommended)
 ```
