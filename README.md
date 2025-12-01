@@ -4,6 +4,7 @@ StaphScan is a tool that allow rapid and standardized genotyping of Staphylococc
 It integrates the following steps:
 * Species identification
 * MLST typing
+* *spa* typing
 * SCCmec typing
 * Detection of virulence genes (i.e PVL; Exofoliatin; tsst)
 * Detection of antimicrobial resistance genes (mecA/C; blaZ; parC mutations)
