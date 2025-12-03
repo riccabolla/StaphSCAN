@@ -6,6 +6,7 @@ It integrates the following steps:
 * MLST typing
 * *spa* typing
 * SCCmec typing
+* Capsular typing
 * Detection of virulence genes (i.e PVL; Exofoliatin; tsst)
 * Detection of antimicrobial resistance genes (mecA/C; blaZ; parC mutations)
 * Quality control of genome assemblies
@@ -47,6 +48,6 @@ python main.py -i /path/to/genomes/*.fasta -o results_directory
                         Output directory
   -m MODULES, --modules MODULES
                         Comma-separated list of modules to run (default: "all")
-                        Options: assembly, mlst, spa, sccmec, agr, virulence, resistance
+                        Options: assembly, mlst, spa, capsule, sccmec, agr, virulence, resistance
   --polish              Generate a simplified, clinical-style summary report (recommended)
 ```
