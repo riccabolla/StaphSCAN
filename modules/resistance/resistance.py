@@ -10,20 +10,12 @@ class Module:
         self.module_dir = Path(__file__).parent
         self.db_fasta = self.module_dir / "data" / "targets.fasta"
         self.blast_db = self.module_dir / "data" / "res_db"
+        
         self.aro_csv = self.module_dir / "data" / "aro_index.csv"
+        self.aro_tsv = self.module_dir / "data" / "aro_categories_index.tsv"
         
         self.card_data = {}
-        if self.aro_csv.exists():
-            try:
-                df_meta = pd.read_csv(self.aro_csv)
-                for _, row in df_meta.iterrows():
-                    acc = str(row['ARO Accession']).replace('ARO:', '')
-                    self.card_data[acc] = {
-                        "drug_class": row.get('Drug Class', '-'),
-                        "mechanism": row.get('Resistance Mechanism', '-')
-                    }
-            except Exception as e:
-                print(f"Warning: Could not load ARO index: {e}")
+        self.load_card_data()
 
         self.mutation_targets = ["gyrA", "parC", "grlA", "gyrB", "rpoB"]
         
@@ -34,6 +26,28 @@ class Module:
             "rpoB": {481: ('H', ['N', 'Y']), 527: ('I', ['M'])}
         }
 
+    def load_card_data(self):
+        file_to_read = None
+        sep = ','
+        if self.aro_tsv.exists():
+            file_to_read = self.aro_tsv
+            sep = '\t'
+        elif self.aro_csv.exists():
+            file_to_read = self.aro_csv
+            sep = ','
+            
+        if file_to_read:
+            try:
+                df_meta = pd.read_csv(file_to_read, sep=sep)
+                for _, row in df_meta.iterrows():
+                    acc = str(row.get('ARO Accession', '')).replace('ARO:', '')
+                    self.card_data[acc] = {
+                        "drug_class": row.get('Drug Class', '-'),
+                        "mechanism": row.get('Resistance Mechanism', '-')
+                    }
+            except Exception as e:
+                print(f"Warning: Could not load ARO index: {e}")
+
     def check_db(self):
         if not self.db_fasta.exists(): return False
         if not (self.module_dir / "data" / "res_db.nhr").exists():
@@ -42,10 +56,14 @@ class Module:
         return True
 
     def translate_dna(self, dna_seq, sstart, strand):
+        """
+        Translates DNA handling Strand and Frame.
+        Returns: Protein_String, Boolean_Has_Internal_Stop
+        """
         seq_obj = Seq(dna_seq)
+
         if strand == "minus":
             seq_obj = seq_obj.reverse_complement()
-        
         frame = (sstart - 1) % 3
         trim_amt = (3 - frame) % 3
         if trim_amt == 3: trim_amt = 0
@@ -56,6 +74,7 @@ class Module:
         if not clean_seq: return "", True
 
         prot_seq = str(Seq(clean_seq).translate())
+
         if "*" in prot_seq[:-1]:
             return prot_seq, True 
         return prot_seq.strip("*"), False
@@ -74,7 +93,7 @@ class Module:
 
         cmd = [
             "blastn", "-query", str(assembly_path), "-db", str(self.blast_db),
-            "-outfmt", "6 sseqid pident length slen bitscore qseq sstart qstart qend sstrand",
+            "-outfmt", "6 sseqid pident length slen bitscore qseq sstart qstart qend sstrand sseq",
             "-max_target_seqs", "200"
         ]
         
@@ -83,7 +102,8 @@ class Module:
             if not res.stdout: return defaults
 
             df = pd.read_csv(io.StringIO(res.stdout), sep="\t", 
-                             names=["sseqid", "pident", "length", "slen", "bitscore", "qseq", "sstart", "qstart", "qend", "sstrand"])
+                             names=["sseqid", "pident", "length", "slen", "bitscore", 
+                                    "qseq", "sstart", "qstart", "qend", "sstrand", "sseq"])
             
             df = df[df['pident'] >= 40.0]
             if df.empty: return defaults
@@ -110,16 +130,16 @@ class Module:
                 clean_name = "_".join(parts[:-1]) if len(parts) > 2 else gene_full
 
                 if fam in self.mutation_targets:
-                    prot_seq, has_stop = self.translate_dna(row['qseq'], int(row['sstart']), strand)
-                    if not prot_seq: continue
+                    prot_q, _ = self.translate_dna(row['qseq'], int(row['sstart']), strand)
+                    if not prot_q: continue
                     aa_start_gap = (int(row['sstart']) - 1) // 3
                     
                     fam_muts = []
                     if fam in self.known_mutations:
                         for pos, (ref, res_list) in self.known_mutations[fam].items():
                             local_idx = pos - aa_start_gap - 1
-                            if 0 <= local_idx < len(prot_seq):
-                                obs_aa = prot_seq[local_idx]
+                            if 0 <= local_idx < len(prot_q):
+                                obs_aa = prot_q[local_idx]
                                 if obs_aa != ref and obs_aa in res_list:
                                     mut_str = f"{ref}{pos}{obs_aa}"
                                     fam_muts.append(mut_str)
@@ -133,14 +153,20 @@ class Module:
                         mutations_found.append(f"{fam} [{','.join(fam_muts)}]")
                     continue
 
-                prot_seq, has_internal_stop = self.translate_dna(row['qseq'], int(row['sstart']), strand)
+                prot_q, has_internal_stop = self.translate_dna(row['qseq'], int(row['sstart']), strand)
+                prot_ref, _ = self.translate_dna(row['sseq'], int(row['sstart']), "plus")
 
                 is_spurious = (pid < 90.0)
                 is_truncated = (cov < 90.0)
                 is_pseudogene = has_internal_stop
                 
                 display_str = f"{clean_name}"
-                if pid < 100.0: display_str += "*" 
+
+                if pid < 100.0:
+                    if prot_q == prot_ref:
+                        display_str += "^" 
+                    else:
+                        display_str += "*" 
                 
                 info_tag = f"(Id:{int(pid)}% Cov:{int(cov)}%)"
 
@@ -149,7 +175,7 @@ class Module:
                     display_str += "(fs)"
 
                 if is_spurious:
-                    spur_list.append(f"{display_str} {info_tag}")
+                    spur_list.append(f"{display_str} {info_tag} [Low Identity]")
                     continue 
                 
                 if is_pseudogene:
@@ -161,18 +187,19 @@ class Module:
                     continue 
 
                 strong_genes.append(display_str)
+                polished_str = display_str.replace("^", "")
 
                 if fam in ["mecA", "mecC"]:
-                    cat_mec.append(display_str)
+                    cat_mec.append(polished_str)
                     phenotypes.append("MRSA")
                 elif fam == "blaZ":
-                    cat_bla.append(display_str)
+                    cat_bla.append(polished_str)
                     phenotypes.append("Penicillin-R")
                 elif fam == "vanA":
-                    cat_other.append(display_str)
+                    cat_other.append(polished_str)
                     phenotypes.append("VRSA")
                 else:
-                    cat_other.append(display_str)
+                    cat_other.append(polished_str)
                     if d_class and d_class != "-": phenotypes.append(d_class)
 
             res_score = 0
@@ -188,7 +215,6 @@ class Module:
             final_out["res_genes"] = "; ".join(strong_genes) if strong_genes else "-"
             final_out["res_mutations"] = "; ".join(mutations_found) if mutations_found else "-"
             final_out["truncated_resistance_hits"] = "; ".join(trunc_list) if trunc_list else "-"
-            
             final_out["spurious_resistance_hits"] = "; ".join(spur_list) if spur_list else "-"
             
             final_out["Mec_RES"] = "; ".join(cat_mec) if cat_mec else "-"
