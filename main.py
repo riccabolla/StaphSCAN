@@ -80,11 +80,11 @@ def main():
 
     df = pd.DataFrame(all_results).fillna("-")
 
-    polished_cols = ["Sample", "Species", "Total_size", "QC", "ST", "spa_type", "cap_type", "res_score",
+    polished_cols = ["Sample", "Species", "Total_size", "QC", "ST", "spa_type", "cap_type", "cap_completeness", "res_score",
                      "sccmec_type", "agr_type", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Other_RES",
                      "spurious_resistance_hits", "vir_pvl", "vir_tsst"]
 
-    detailed_cols = ["Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats", "cap_type", 
+    detailed_cols = ["Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats", "cap_type", "cap_completeness",
                      "cap_genes", "sccmec_type", "agr_type", "res_phenotype", "res_genes", "res_score", 
                      "Drug_class", "Resistance_mechanism", "Total_size", "QC", "contig_count", "N50", 
                      "largest_contig", "Reference_accession", "Sequence_identity", "Coverage", "res_mutations", 
