@@ -1,29 +1,39 @@
 # StaphScan
-StaphScan is a tool that allow rapid and standardized genotyping of Staphylococcus aureus
+StaphScan is a clinical-oriented tool that allow rapid and standardized genotyping of *Staphylococcus aureus*.
 
 It integrates the following steps:
 * Species identification
+* Assembly Qcheck
 * MLST typing
 * *spa* typing
 * SCCmec typing
 * Capsular typing
-* Detection of virulence genes (i.e PVL; Exofoliatin; tsst)
-* Detection of antimicrobial resistance genes (mecA/C; blaZ; parC mutations)
-* Quality control of genome assemblies
+* Detection of virulence genes (i.e. PVL)
+* Detection of antimicrobial resistance genes (i.e. mecA)
+* Detection of clinically-relevant mutations (i.e. involved in AMR development)
+
+## Recommendation
+⚠️ StaphSCAN is currently in its beta stage. ⚠️ <br>
+
+During this phase, you may encounter bugs, have access to a limited set of features, and experience frequent updates and changes.. <br>
+
+Despite this, we strongly encourage you to use it, helping to accelerate its improvement and its transition to a stable release. <br>
+
+A more structured and comprehensive documentation page will be also deployed soon
 
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
-For this reason, it only requires:
+It requires:
 * python (v3.10 or greater)
 * mash
 * blast
 
-The following python packages are also required:
+And the following packages:
 * pandas
 * biopython
 
-## Installation
-Currently, it can only be installed cloning this repo via:
+## Usage
+
 ```bash
 git clone https://github.com/riccabolla/StaphSCAN.git
 
@@ -31,8 +41,6 @@ cd StaphSCAN/
 
 python main.py -h
 ```
-## Usage
-
 ### Basic usage
 
 ```bash
