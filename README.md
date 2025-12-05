@@ -1,5 +1,5 @@
 # StaphScan
-StaphScan is a clinical-oriented tool that allow rapid and standardized genotyping of *Staphylococcus aureus*.
+StaphScan is a clinical-oriented tool for the genomic surveillance of *Staphylococcus aureus*.
 
 It integrates the following steps:
 * Species identification
