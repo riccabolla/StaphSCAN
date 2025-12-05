@@ -52,7 +52,11 @@ class Module:
     def __init__(self):
         self.name = "resistance"
         self.module_dir = Path(__file__).resolve().parent
-        self.db_fasta = self.module_dir / "data" / "targets.fasta"
+        self.db_files = {
+            "bla": self.module_dir / "data" / "bla_res.fasta",
+            "flq": self.module_dir / "data" / "flq_res.fasta",
+        }
+        
         self.aro_csv = self.module_dir / "data" / "aro_index.csv"
         self.aro_tsv = self.module_dir / "data" / "aro_categories_index.tsv"
 
@@ -64,21 +68,16 @@ class Module:
             "gyrA": {84: ('S', ['L']), 88: ('S', ['P'])},
             "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
             "grlA": {80: ('S', ['F', 'Y'])},
-            "rpoB": {481: ('H', ['N', 'Y']), 527: ('I', ['M'])}
+            "rpoB": {481: ('H', ['N', 'Y']), 527: ('I', ['M'])},
+            "gyrB": {451: ('T', ['S'])},
         }
 
         self.mutation_phenotypes = {
             "gyrA": "Fluoroquinolones-R",
+            "gyrB": "Fluoroquinolones-R",
             "parC": "Fluoroquinolones-R",
             "grlA": "Fluoroquinolones-R",
             "rpoB": "Rifampicin-R",
-        }
-
-        self.category_map = {
-            "mecA": ("Mec_RES", "MRSA"),
-            "mecC": ("Mec_RES", "MRSA"),
-            "blaZ": ("Beta_lactamases", "Penicillin-R"),
-            "vanA": ("Other_RES", "VRSA"),
         }
 
         self.aligner_dna = Align.PairwiseAligner()
@@ -128,23 +127,29 @@ class Module:
             return
 
     def load_ref_seqs(self) -> None:
-        if not self.db_fasta.exists():
-            return
+        for fpath in self.db_files.values():
+            if not fpath.exists():
+                continue
 
-        try:
-            for record in SeqIO.parse(self.db_fasta, 'fasta'):
-                prot_raw = str(record.seq.translate(table=11))
-                start_idx = prot_raw.find('M')
-                if start_idx != -1:
-                    self.ref_prot_dict[record.id] = prot_raw[start_idx:].strip('*')
-                else:
-                    self.ref_prot_dict[record.id] = prot_raw.strip('*')
-        except Exception:
-            return
+            try:
+                for record in SeqIO.parse(fpath, 'fasta'):
+                    prot_raw = str(record.seq.translate(table=11))
+                    start_idx = prot_raw.find('M')
+                    if start_idx != -1:
+                        self.ref_prot_dict[record.id] = prot_raw[start_idx:].strip('*')
+                    else:
+                        self.ref_prot_dict[record.id] = prot_raw.strip('*')
+            except Exception:
+                continue
 
     def check_db(self) -> bool:
-        if not self.db_fasta.exists():
-            print(f"Error: Database fasta not found at {self.db_fasta}")
+        missing = []
+        for name, fpath in self.db_files.items():
+            if not fpath.exists():
+                missing.append(f"{name} ({fpath.name})")
+        
+        if missing:
+            print(f"Error: Missing resistance database files: {', '.join(missing)}")
             return False
         return True
 
@@ -260,8 +265,19 @@ class Module:
             except subprocess.CalledProcessError:
                 return pd.DataFrame()
 
+            combined_query = Path(temp_dir) / 'combined_targets.fasta'
+            with open(combined_query, 'w') as outfile:
+                for fpath in self.db_files.values():
+                    if fpath.exists():
+                        with open(fpath, 'r') as infile:
+                            outfile.write(infile.read())
+                            outfile.write('\n')
+
+            if not combined_query.stat().st_size:
+                return pd.DataFrame()
+
             cmd_blast = [
-                'blastn', '-query', str(self.db_fasta), '-db', str(temp_db),
+                'blastn', '-query', str(combined_query), '-db', str(temp_db),
                 '-outfmt', '6 qseqid sseqid pident length slen qlen sstart send bitscore',
                 '-max_target_seqs', '1000'
             ]
@@ -285,6 +301,7 @@ class Module:
         df = df.sort_values('bitscore', ascending=False)
         return df
 
+    # ---------------------- Output building ----------------------
     def make_default_output(self) -> Dict[str, str]:
         headers = [
             "Input_sequence_ID", "Input_gene_start", "Input_gene_stop", "Input_gene_length",
@@ -363,7 +380,6 @@ class Module:
 
         best_hits = df.drop_duplicates(subset=['family'])
 
-        # containers
         strong_genes: List[str] = []
         mutations_found: List[str] = []
         trunc_list: List[str] = []
@@ -394,7 +410,6 @@ class Module:
             prot_found_raw = self.get_best_frame_translation(dna_found, prot_ref)
             prot_found = self.trim_to_reference_alignment(prot_found_raw, prot_ref)
 
-            # Mutation targets handling
             if fam in self.mutation_targets and prot_ref:
                 fam_muts = self.check_mutations(fam, prot_found, prot_ref)
                 if fam_muts:
@@ -403,7 +418,7 @@ class Module:
                     pheno = self.mutation_phenotypes.get(fam)
                     if pheno:
                         phenotypes.append(pheno)
-                        if fam in ["gyrA", "parC", "grlA"]:
+                        if fam in ["gyrA", "parC", "grlA", "gyrB"]:
                             cat_fq.append(f"{fam} [{mut_str}]")
                         else:
                             cat_other.append(f"{fam} [{mut_str}]")
@@ -423,7 +438,6 @@ class Module:
             is_truncated = (hit.coverage < 90.0)
             is_pseudogene = ('*' in prot_found)
 
-            # pseudogenes for selected families
             if is_pseudogene and fam in ["mecA", "mecC", "blaZ"] and hit.coverage > 90.0:
                 is_pseudogene = False
                 display_str += "(fs)"
@@ -441,7 +455,6 @@ class Module:
             strong_genes.append(display_str)
             polished_str = display_str.replace('*', '')
 
-            # category assignment
             if fam in ("mecA", "mecC"):
                 cat_mec.append(fam)
                 phenotypes.append('MRSA')
