@@ -4,6 +4,8 @@ import pandas as pd
 from pathlib import Path
 import importlib
 
+__version__ = "0.1.0"
+
 if sys.version_info < (3, 8): 
     sys.exit("StaphScan requires Python 3.8+")
 
@@ -31,12 +33,26 @@ def parse_arguments(available_modules):
     parser.add_argument("-m", "--modules", default="all",
                         help=f"Comma-separated list of modules to run. Available: {', '.join(available_modules)}")
     parser.add_argument("--polish", action="store_true", help="Generate polished report")
+    parser.add_argument("--list-modules", action="store_true",
+                        help="List all available modules and exit")
+    parser.add_argument("--version", action="version",
+                        version=f"StaphScan {__version__}",
+                        help="Show program version and exit")
 
     return parser.parse_args()
 
 def main():
     available = get_available_modules()
     args = parse_arguments(available)
+    if args.list_modules:
+        print("Available modules:")
+        for m in available:
+            print(f" - {m}")
+        sys.exit(0)
+    if not args.input:
+        sys.exit("Error: -i / --input is required unless using --list-modules")
+    if not args.outdir:
+        sys.exit("Error: -o / --outdir is required unless using --list-modules")
 
     modules_to_run = available if args.modules.lower() == "all" else [m.strip() for m in args.modules.split(',')]
     invalid = [m for m in modules_to_run if m not in available]
