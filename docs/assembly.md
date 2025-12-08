@@ -29,6 +29,7 @@ To report the species, the following criteria are used:
 ## Contigs stats
 
 For assembly quality the following parameters are considered:
+
 * Total assembly size (compared to expected size for *Staphylococcus aureus* of 2.6 - 3.1 Mbp)
 * N50 (>=10 kbp)
 * Presence of ambiguous bases (Ns)
