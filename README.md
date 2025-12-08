@@ -19,8 +19,6 @@ During this phase, you may encounter bugs, have access to a limited set of featu
 
 Despite this, we strongly encourage you to use it, helping to accelerate its improvement and its transition to a stable release. <br>
 
-A more structured and comprehensive documentation page will be also deployed soon
-
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
 It requires:
@@ -31,6 +29,10 @@ It requires:
 And the following packages:
 * pandas
 * biopython
+
+## Documentation
+
+A documentation is available [here](https://staphscan.readthedocs.io/)
 
 ## Usage
 
