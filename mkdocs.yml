@@ -11,8 +11,9 @@ nav:
     - Resistance: resistance.md 
     - Virulence: virulence.md   
 theme:
-  name: readthedocs
+  name: material
 
 markdown_extensions:
   - admonition
+
   - codehilite
