@@ -2,7 +2,8 @@
 # StaphSCAN
 
 StaphSCAN is a bioinformatics tool for comprehensive analysis of *Staphylococcus aureus* genomes.
-It integrates the following steps: <br>
+It integrates the following steps:
+
 * Species identification
 * Qcheck of genome assembly
 * MLST typing
@@ -22,4 +23,5 @@ Report any issues or suggestions on the [GitHub repository](https://github.com/r
 Acknowledgements
 ----------------
 StaphSCAN is inspired by [Kleborate](https://github.com/klebgenomics/Kleborate/tree/main). 
+
 
