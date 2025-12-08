@@ -1,5 +1,7 @@
 site_name: StaphSCAN
 site_url: https://staphscan.readthedocs.io/
+site_description: "A modular toolkit for Staphylococcus aureus genomic analysis"
+site_author: "Riccardo Bollini"
 nav:
   - Home: index.md
   - Installation: installation.md
@@ -17,4 +19,5 @@ markdown_extensions:
   - admonition
 
   - codehilite
+
 
