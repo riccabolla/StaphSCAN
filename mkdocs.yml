@@ -14,10 +14,12 @@ nav:
     - Virulence: virulence.md   
 theme:
   name: readthedocs
+  custom_dir: overrides
 
 markdown_extensions:
   - admonition
 
   - codehilite
+
 
 
