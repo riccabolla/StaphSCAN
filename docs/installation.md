@@ -8,6 +8,7 @@ StaphSCAN requires the following software to be installed and available in your 
 * [Blast](https://blast.ncbi.nlm.nih.gov/) v2.17.0
 
 And the following libraries:
+
 * [Biopython](https://biopython.org/) v1.75 or later
 * [Pandas]()
 
@@ -27,4 +28,5 @@ conda create -n staphscan -c bioconda python=3.10 mash blast biopython -y
 conda activate staphscan
 pip install staphscan
 ```
+
 
