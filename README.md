@@ -35,7 +35,7 @@ And the following packages:
 ## Usage
 
 ```bash
-conda create -n staphscan -c bioconda python=3.10 mash blast biopython -y
+conda create -n staphscan -c bioconda python=3.10 mash blast biopython pandas -y
 
 conda activate staphscan
 
