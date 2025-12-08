@@ -14,7 +14,7 @@ A copy of the MLST alleles and ST definitions is stored in the **/data** directo
 
 ### Parameters
 
-Hits are filtered by min. identity (default: 90.0) and min. coverage (default: 90.0). 
+Hits are filtered by min. identity (``default: 90.0``) and min. coverage (``default: 90.0``). 
 
 ### Output
 
@@ -25,4 +25,5 @@ In the simple report, only the ST is reported.
 StaphSCAN reports also imperfect matches, following this criteria:
 
 * Imperfect hits (identity or coverage < 100%) are indicated with a  ``*``
-* Imprecise Sequence Types are annotated by reporting the closest matching ST, followed by the number of differing loci (n-locus variants, up to 2): ST1-1LV (closest match is ST1, with 1 different allele).
+* Imprecise Sequence Types are annotated by reporting the closest matching ST, followed by the number of differing loci (n-locus variants, up to 2): ``ST1-1LV`` (closest match is ST1, with 1 different allele).
+
