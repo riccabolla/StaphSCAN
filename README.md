@@ -35,6 +35,10 @@ And the following packages:
 ## Usage
 
 ```bash
+conda create -n staphscan -c bioconda python=3.10 mash blast biopython -y
+
+conda activate staphscan
+
 git clone https://github.com/riccabolla/StaphSCAN.git
 
 cd StaphSCAN/
