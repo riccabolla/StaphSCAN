@@ -58,6 +58,9 @@ FASTA file(s) for assemblies
 Directory for storing output files (default: staphscan_results)
 <br>
 
+`--polish` <br>
+Create a simple final report based on the modules run
+
 **Modules**
 
 `--list_modules` <br>
@@ -73,3 +76,4 @@ Comma-delimited list of staphscan modules to use (default: all)
 
 
 `-v, --version`: Show program's version number and exit
+
