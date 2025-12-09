@@ -9,6 +9,7 @@ It integrates the following steps:
 * SCCmec typing
 * Capsular typing
 * Detection of virulence genes (i.e. PVL)
+* Detection of biofilm-related genes
 * Detection of antimicrobial resistance genes (i.e. mecA)
 * Detection of clinically-relevant mutations (i.e. involved in AMR development)
 
@@ -62,8 +63,7 @@ python main.py -i /path/to/genomes/*.fasta -o results_directory
                         Output directory
   -m MODULES, --modules MODULES
                         Comma-separated list of modules to run (default: "all")
-                        Options: assembly, mlst, spa, capsule, sccmec, agr, virulence, resistance
   --list-modules        Generate the list of available modules                        
-  --polish              Generate a simplified, clinical-style summary report (recommended)
+  --complete              Generate a detailed report (default: off)
   --version             Print current version and exit
 ```
