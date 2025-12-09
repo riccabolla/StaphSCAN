@@ -8,7 +8,7 @@ Can be either draft or completed assemblies (completed is better because it redu
 ## Basic usage
 
 ```python
-staphscan -i *.fasta -o staphscan_output --polish
+staphscan -i *.fasta -o staphscan_output --complete
 ```
 `-i *.fasta` : Specifies the input files (assemblies) to be analyzed (.fasta). 
 
@@ -25,11 +25,11 @@ Module can be run separately, by using the `-m` parameter:
 ```python
 # select one module
 
-staphscan -i *.fasta -o staphscan_output --polish -m mlst
+staphscan -i *.fasta -o staphscan_output -m mlst
 
 # select more modules
 
-staphscan -i *.fasta -o staphscan_output --polish -m mlst,spa
+staphscan -i *.fasta -o staphscan_output -m mlst,spa
 ```
 To see all modules:
 ```python
