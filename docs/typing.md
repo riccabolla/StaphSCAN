@@ -6,7 +6,7 @@ For clarity, all these methods and their respective parameters are presented tog
 
 ## MLST
 
-``-m assembly`` 
+``-m mlst`` 
 
 All genomes identified as *Staphylococcus aureus* are subject to MLST using the seven-locus typing scheme described [here](https://pubmlst.org/organisms/staphylococcus-aureus) 
 
