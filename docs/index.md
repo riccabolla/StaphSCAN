@@ -11,7 +11,7 @@ It integrates the following steps:
 * spa typing
 * Capsular polysaccharide typing
 * SCCmec typing
-* Detection of virulence genes
+* Detection of virulence genes (including biofilm)
 * Detection of antimicrobial resistance genes (inclduing relevant mutations)
 
 For more information, see the [Modules](modules.md) section.

@@ -13,5 +13,6 @@ Here a list of the available modules and their functions:
 * **agr**: Accessory gene regulator (agr) typing of *Staphylococcus aureus*
 * **resistance**: Detection of antimicrobial resistance genes (including clinically relevant mutations)
 * **virulence**: Detection of virulence genes (including clinically relevant mutations)
+* **biofilm**: Detection of biofilm associated genes
 
 For more information on each module, see the respective sections in this documentation.

@@ -16,7 +16,7 @@ staphscan -i *.fasta -o staphscan_output --polish
 `-o` : Specifies the directory where the output files will be saved. 
 
 
-`--polish` : Specifies the output format (i.e. simplified output)
+`--complete` : Specifies the output format (i.e. detailed output)
 
 ## Modules selection
 
@@ -58,8 +58,8 @@ FASTA file(s) for assemblies
 Directory for storing output files (default: staphscan_results)
 <br>
 
-`--polish` <br>
-Create a simple final report based on the modules run
+`--complete` <br>
+Create a complete final report based on the modules run
 
 **Modules**
 
