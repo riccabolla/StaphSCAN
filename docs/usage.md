@@ -3,14 +3,14 @@
 ## Input files
 
 Genome assemblies in FASTA format. 
-Can be either draft or completed assemblies (completed is better because it reduces the risk of fragmented genes/loci). [cite: 17]
+Can be either draft or completed assemblies (completed is better because it reduces the risk of fragmented genes/loci).
 
 ## Basic usage
 
 ```python
 staphscan -i *.fasta -o staphscan_output --polish
 ```
-`-i *.fasta` : Specifies the input files (assemblies) to be analyzed (.fasta or .fasta.gz). 
+`-i *.fasta` : Specifies the input files (assemblies) to be analyzed (.fasta). 
 
 
 `-o` : Specifies the directory where the output files will be saved. 
@@ -70,5 +70,6 @@ Comma-delimited list of staphscan modules to use (default: all)
 **Help**
 
 `-h, --help`: Show a help message and exit <br>
+
 
 `-v, --version`: Show program's version number and exit
