@@ -21,7 +21,7 @@ Despite this, we strongly encourage you to use it, helping to accelerate its imp
 
 ## Documentation
 
-A documentation is available [here](https://staphscan.readthedocs.io/)
+A draft documentation is available [here](https://staphscan.readthedocs.io/)
 
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
