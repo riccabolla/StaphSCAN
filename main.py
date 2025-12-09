@@ -1,43 +1,20 @@
-"""
-MIT License
-
-Copyright (c) 2025 riccabolla
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
 import argparse
 import sys
 import pandas as pd
 from pathlib import Path
 import importlib
 
-__version__ = "0.1.0"
-
-if sys.version_info < (3, 8): 
+if sys.version_info < (3, 8):
     sys.exit("StaphScan requires Python 3.8+")
 
 def get_available_modules():
     modules_dir = Path(__file__).parent / "modules"
     if not modules_dir.exists():
         sys.exit(f"Error: 'modules' directory not found at {modules_dir}")
-    return sorted([d.name for d in modules_dir.iterdir() if d.is_dir() and (d / f"{d.name}.py").exists()])
+    return sorted([
+        d.name for d in modules_dir.iterdir()
+        if d.is_dir() and (d / f"{d.name}.py").exists()
+    ])
 
 def load_module(module_name):
     try:
@@ -52,45 +29,57 @@ def parse_arguments(available_modules):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
-    parser.add_argument("-i", "--input", nargs="+", required=True, help="Input FASTA files")
-    parser.add_argument("-o", "--outdir", required=True, help="Output directory")
-    parser.add_argument("-m", "--modules", default="all",
-                        help=f"Comma-separated list of modules to run. Available: {', '.join(available_modules)}")
-    parser.add_argument("--polish", action="store_true", help="Generate polished report")
-    parser.add_argument("--list-modules", action="store_true",
-                        help="List all available modules and exit")
-    parser.add_argument("--version", action="version",
-                        version=f"StaphScan {__version__}",
-                        help="Show program version and exit")
+    parser.add_argument("--list-modules", action="store_true")
 
-    return parser.parse_args()
+    io_group = parser.add_argument_group("Input/Output")
+    io_group.add_argument("-i", "--input", nargs="+")
+    io_group.add_argument("-o", "--outdir")
+
+    mod_group = parser.add_argument_group("Modules")
+    mod_group.add_argument("-m", "--modules",
+                           help=f"Comma-separated list of modules to run. Available: {', '.join(available_modules)}",
+                           default="all")
+
+    rep_group = parser.add_argument_group("Reporting")
+    rep_group.add_argument("--complete", action="store_true")
+
+    args = parser.parse_args()
+
+    if not args.list_modules:
+        if not args.input or not args.outdir:
+            parser.error("The following arguments are required: -i/--input, -o/--outdir")
+
+    return args
 
 def main():
     available = get_available_modules()
     args = parse_arguments(available)
-    if args.list_modules:
-        print("Available modules:")
-        for m in available:
-            print(f" - {m}")
-        sys.exit(0)
-    if not args.input:
-        sys.exit("Error: -i / --input is required unless using --list-modules")
-    if not args.outdir:
-        sys.exit("Error: -o / --outdir is required unless using --list-modules")
 
-    modules_to_run = available if args.modules.lower() == "all" else [m.strip() for m in args.modules.split(',')]
-    invalid = [m for m in modules_to_run if m not in available]
-    if invalid:
-        sys.exit(f"Error: Unknown module(s): {', '.join(invalid)}\nAvailable: {', '.join(available)}")
+    if args.list_modules:
+        print("Available StaphScan Modules:")
+        for m in available:
+            print(f"  - {m}")
+        sys.exit(0)
+
+    if args.modules.lower() == "all":
+        modules_to_run = available
+    else:
+        requested = [m.strip() for m in args.modules.split(',')]
+        invalid = [m for m in requested if m not in available]
+        if invalid:
+            sys.exit(f"Error: Unknown module(s): {', '.join(invalid)}\nAvailable: {', '.join(available)}")
+        modules_to_run = requested
 
     print(f"--- StaphScan Initialized ---")
     print(f"Modules: {', '.join(modules_to_run)}")
     print(f"Inputs : {len(args.input)} file(s)")
 
-    loaded_modules = {m: load_module(m) for m in modules_to_run}
-    for name, mod in loaded_modules.items():
-        if not mod.check_db():
-            sys.exit(f"Error: Database check failed for module '{name}'.")
+    loaded_modules = {}
+    for m in modules_to_run:
+        mod_instance = load_module(m)
+        if not mod_instance.check_db():
+            sys.exit(f"Error: Database check failed for module '{m}'.")
+        loaded_modules[m] = mod_instance
 
     out_path = Path(args.outdir)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -120,28 +109,41 @@ def main():
 
     df = pd.DataFrame(all_results).fillna("-")
 
-    polished_cols = ["Sample", "Species", "Total_size", "QC", "ST", "spa_type", "cap_type", "cap_completeness", "res_score",
-                     "sccmec_type", "agr_type", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Other_RES",
-                     "spurious_resistance_hits", "vir_pvl", "vir_tsst"]
+    summary_cols = [
+        "Sample", "Species", "Total_size", "QC", "ST", "spa_type",
+        "cap_type", "cap_completeness", "sccmec_type", "agr_type",
+        "res_score", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Other_RES",
+        "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations",
+        "vir_pvl", "vir_tsst"
+    ]
 
-    detailed_cols = ["Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats", "cap_type", "cap_completeness",
-                     "cap_genes", "sccmec_type", "agr_type", "res_phenotype", "res_genes", "res_score", 
-                     "Drug_class", "Resistance_mechanism", "Total_size", "QC", "contig_count", "N50", 
-                     "largest_contig", "Reference_accession", "Sequence_identity", "Coverage", "res_mutations", 
-                     "Mec_AA_Found", "Mec_AA_Ref", "vir_pvl", "vir_tsst", "sccmec_genes", "truncated_resistance_hits"]
+    detailed_priority = [
+        "Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats",
+        "cap_type", "cap_genes", "sccmec_type", "sccmec_genes",
+        "agr_type",
+        "res_phenotype", "res_genes", "res_score", "res_mutations",
+        "Mec_AA_Found", "Mec_AA_Ref", "truncated_resistance_hits", "spurious_resistance_hits",
+        "biofilm_score", "biofilm_genes", "biofilm_truncated_hits",
+        "clfAB", "clf_genes", "clfA", "clfB",
+        "fnbAB", "fnb_genes","fnbA", "fnbB",
+        "icaADBC", "ica_genes", "icaA", "icaB", "icaC", "icaD",
+        "icaR_mutations",
+        "vir_pvl", "vir_tsst", "vir_genes", "vir_spurious"
+    ]
 
-    if args.polish:
-        final_cols = [c for c in polished_cols if c in df.columns]
-        out_file = out_path / "staphscan_polished.tsv"
-        print(f"Saving polished report to {out_file}")
+    if args.complete:
+        final_detailed_cols = [c for c in detailed_priority if c in df.columns]
+        remaining = [c for c in df.columns if c not in final_detailed_cols and c not in summary_cols]
+        final_detailed_cols.extend(remaining)
+        detailed_file = out_path / "staphscan_detailed.tsv"
+        df[final_detailed_cols].to_csv(detailed_file, sep='\t', index=False)
+        print(f"\n Complete report saved: {detailed_file}")
     else:
-        final_cols = [c for c in detailed_cols if c in df.columns]
-        remaining = [c for c in df.columns if c not in final_cols and c not in polished_cols]
-        final_cols.extend(remaining)
-        out_file = out_path / "staphscan_detailed.tsv"
-        print(f"Saving detailed report to {out_file}")
+        final_summary_cols = [c for c in summary_cols if c in df.columns]
+        summary_file = out_path / "staphscan_summary.tsv"
+        df[final_summary_cols].to_csv(summary_file, sep='\t', index=False)
+        print(f"\n Summary report saved: {summary_file}")
 
-    df[final_cols].to_csv(out_file, sep='\t', index=False)
     print("Analysis complete.")
 
 if __name__ == "__main__":
