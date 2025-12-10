@@ -110,24 +110,23 @@ def main():
     df = pd.DataFrame(all_results).fillna("-")
 
     summary_cols = [
-        "Sample", "Species", "Total_size", "QC", "ST", "spa_type",
-        "cap_type", "cap_completeness", "sccmec_type", "agr_type",
-        "res_score", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Other_RES",
-        "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations",
-        "vir_pvl", "vir_tsst"
+        "Sample", "Species", "Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL""spa_type", #assembly module
+        "cap_type", "cap_completeness", #capsule module
+        "sccmec_type", #sccmec module
+        "agr_type", #agr module
+        "res_score", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Vancomycin", "Other_RES", #resistance module 
+        "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
+        "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", #biofilm module
+        "vir_pvl", "vir_tsst" #virulence module
     ]
 
     detailed_priority = [
         "Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats",
         "cap_type", "cap_genes", "sccmec_type", "sccmec_genes",
-        "agr_type",
-        "res_phenotype", "res_genes", "res_score", "res_mutations",
-        "Mec_AA_Found", "Mec_AA_Ref", "truncated_resistance_hits", "spurious_resistance_hits",
-        "biofilm_score", "biofilm_genes", "biofilm_truncated_hits",
-        "clfAB", "clf_genes", "clfA", "clfB",
-        "fnbAB", "fnb_genes","fnbA", "fnbB",
-        "icaADBC", "ica_genes", "icaA", "icaB", "icaC", "icaD",
-        "icaR_mutations",
+        "agr_type", "Mec_RES", "Mec_AA_Found", "Mec_AA_Ref", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Other_RES",
+        "truncated_resistance_hits", "spurious_resistance_hits",
+        "biofilm_score", "biofilm_genes", "biofilm_truncated_hits", "clfAB", "clf_genes", "clfA", "clfB",
+        "fnbAB", "fnb_genes","fnbA", "fnbB", "icaADBC", "ica_genes", "icaA", "icaB", "icaC", "icaD", "icaR_mutations",
         "vir_pvl", "vir_tsst", "vir_genes", "vir_spurious"
     ]
 
