@@ -48,12 +48,11 @@ class Module:
 
         self.ref_prot_dict: Dict[str, str] = {}
 
-        self.mutation_targets = ["gyrA", "parC", "grlA", "gyrB", "rpoB"]
+        self.mutation_targets = ["gyrA", "parC", "gyrB", "rpoB"]
         self.known_mutations = {
             "gyrA": {84: ('S', ['L']), 88: ('S', ['P'])},
             "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
-            "grlA": {80: ('S', ['F', 'Y'])},
-            "rpoB": {481: ('H', ['N', 'Y']), 527: ('I', ['M'])},
+            "rpoB": {481: ('H', ['Y'])}, # look at comibinatorial mutations (ex. L466S+H481N) https://doi.org/10.1016/j.jgar.2021.12.005
             "gyrB": {451: ('T', ['S'])},
         }
 
@@ -61,7 +60,6 @@ class Module:
             "gyrA": "Fluoroquinolones-R",
             "gyrB": "Fluoroquinolones-R",
             "parC": "Fluoroquinolones-R",
-            "grlA": "Fluoroquinolones-R",
             "rpoB": "Rifampicin-R",
         }
 
@@ -245,7 +243,7 @@ class Module:
                 if mm:
                     mut_str = f"{hit.family} [{','.join(mm)}]"
                     muts.append(mut_str)
-                    if hit.family in ["gyrA", "parC", "grlA", "gyrB"]:
+                    if hit.family in ["gyrA", "parC", "gyrB"]:
                         cat_fq.append(mut_str)
                     else:
                         cat_other.append(mut_str)
