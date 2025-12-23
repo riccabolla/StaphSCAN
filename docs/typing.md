@@ -43,6 +43,8 @@ For more information visit [here](https://spa.ridom.de/index.shtml).
 
 A local copy of [Ridom database](https://spa.ridom.de/spatypes.shtml) is distributed with this module and stored the modules's ``/data`` directory.
 
+### How it works
+
 Genome assemblies are screened for the presence of the *spa* gene X-region by simulating PCR amplification with multiple published primer sets. Each primer set is tested against all contigs, and both forward and reverse-complement orientations are evaluated. 
 
 When multiple primer sets yield a valid amplicon, the first detected product is used for downstream analysis. Assemblies in which no valid amplicon is detected are reported as spa-negative.
@@ -69,7 +71,7 @@ The agr module identifies the Staphylococcus aureus accessory gene regulator (ag
 
 A curated FASTA file containing representative agr group target sequences is bundled with the module and stored in the ``/data`` directory.
 
-### Typing Strategy
+### How it works
 
 Agr typing is performed using nucleotide BLAST against a local database of agr target sequences.
 
