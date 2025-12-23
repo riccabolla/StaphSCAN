@@ -50,7 +50,7 @@ Output files are tab-delimited (.tsv) files. Columns included in each output fil
 
 **Input/Output**
 
-`-i ASSEMBLIES [ASSEMBLIES ...], --input ASSEMBLIES [ASSEMBLIES ...]` <br>
+`-i ASSEMBLIES [ASSEMBLIES ...], --input ASSEMBLIES [ASSEMBLIES ...]`<br>
 FASTA file(s) for assemblies
 <br>
 
@@ -67,13 +67,16 @@ Create a complete final report based on the modules run
 Print a list of all available modules and then quit (default: False)
 
 `-m MODULES, --modules MODULES`: <br>
-
 Comma-delimited list of staphscan modules to use (default: all)
+
+Module-specific parameters are available in the [Modules](modules.md) section.
 
 **Help**
 
-`-h, --help`: Show a help message and exit <br>
+`-h, --help` <br>
+Show a help message and exit <br>
 
 
-`-v, --version`: Show program's version number and exit
+`-v, --version` <br>
+Show program's version number and exit
 
