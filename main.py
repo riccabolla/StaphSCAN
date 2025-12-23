@@ -16,10 +16,21 @@ def get_available_modules():
         if d.is_dir() and (d / f"{d.name}.py").exists()
     ])
 
-def load_module(module_name):
+def load_module(module_name, args):
     try:
-        mod = importlib.import_module(f"modules.{module_name}.{module_name}")
-        return mod.Module()
+        mod_pkg = importlib.import_module(f"modules.{module_name}.{module_name}")
+        
+        if module_name == "mlst":
+            return mod_pkg.Module(min_id=args.min_id_mlst, min_cov=args.min_cov_mlst)
+        elif module_name == "virulence":
+            return mod_pkg.Module(min_id=args.min_id_vir, min_cov=args.min_cov_vir)
+        elif module_name == "resistance":
+            return mod_pkg.Module(min_id=args.min_id_res, min_cov=args.min_cov_res)
+        elif module_name == "biofilm":
+            return mod_pkg.Module(min_id=args.min_id_biofilm, min_cov=args.min_cov_biofilm)
+        else:
+            return mod_pkg.Module()
+            
     except Exception as e:
         sys.exit(f"Failed to import module '{module_name}': {e}")
 
@@ -39,6 +50,16 @@ def parse_arguments(available_modules):
     mod_group.add_argument("-m", "--modules",
                            help=f"Comma-separated list of modules to run. Available: {', '.join(available_modules)}",
                            default="all")
+
+    thresh_group = parser.add_argument_group("Thresholds")
+    thresh_group.add_argument("--min_id_mlst", type=float, default=95.0, help="Min identity for MLST")
+    thresh_group.add_argument("--min_cov_mlst", type=float, default=95.0, help="Min coverage for MLST")
+    thresh_group.add_argument("--min_id_vir", type=float, default=90.0, help="Min identity for Virulence")
+    thresh_group.add_argument("--min_cov_vir", type=float, default=80.0, help="Min coverage for Virulence")
+    thresh_group.add_argument("--min_id_res", type=float, default=90.0, help="Min identity for Resistance")
+    thresh_group.add_argument("--min_cov_res", type=float, default=80.0, help="Min coverage for Resistance")
+    thresh_group.add_argument("--min_id_biofilm", type=float, default=90.0, help="Min identity for Biofilm")
+    thresh_group.add_argument("--min_cov_biofilm", type=float, default=80.0, help="Min coverage for Biofilm")
 
     rep_group = parser.add_argument_group("Reporting")
     rep_group.add_argument("--complete", action="store_true")
@@ -76,8 +97,8 @@ def main():
 
     loaded_modules = {}
     for m in modules_to_run:
-        mod_instance = load_module(m)
-        if not mod_instance.check_db():
+        mod_instance = load_module(m, args)
+        if hasattr(mod_instance, 'check_db') and not mod_instance.check_db():
             sys.exit(f"Error: Database check failed for module '{m}'.")
         loaded_modules[m] = mod_instance
 

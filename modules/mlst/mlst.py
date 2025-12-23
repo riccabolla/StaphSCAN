@@ -7,7 +7,7 @@ from pathlib import Path
 from Bio import SeqIO
 
 class Module:
-    def __init__(self):
+    def __init__(self, min_id=95.0, min_cov=95.0):
         self.name = "mlst"
         self.module_dir = Path(__file__).parent
         self.data_dir = self.module_dir / "data"
@@ -15,8 +15,8 @@ class Module:
         self.alleles_fasta = self.data_dir / "alleles.fasta"
         self.refs_fasta = self.data_dir / "refs.fasta" 
         self.loci = ["arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL"]     
-        self.min_identity = 95.0 
-        self.min_coverage = 95.0       
+        self.min_identity = min_id 
+        self.min_coverage = min_cov     
         self.prof_df = None
         if self.db_profiles.exists():
             dtype_map = {locus: 'str' for locus in self.loci}
