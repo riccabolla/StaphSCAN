@@ -30,7 +30,7 @@ class BiofilmHit:
         return self.qseqid.split('_')[0]
 
 class Module:
-    def __init__(self):
+    def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "biofilm"
         self.module_dir = Path(__file__).resolve().parent
         self.db_fasta = self.module_dir / "data" / "biofilm.fasta"
@@ -39,6 +39,9 @@ class Module:
         self.fnb_targets = ['fnbA', 'fnbB']
         self.ica_targets = ['icaA', 'icaB', 'icaC', 'icaD']
         self.regulator = 'icaR'
+
+        self.min_identity = min_id
+        self.min_coverage = min_cov
 
         self.aligner_dna = Align.PairwiseAligner()
         self.aligner_dna.mode = 'global'
