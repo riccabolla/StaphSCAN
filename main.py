@@ -23,7 +23,7 @@ def load_module(module_name, args):
         if module_name == "mlst":
             return mod_pkg.Module(min_id=args.min_id_mlst, min_cov=args.min_cov_mlst)
         elif module_name == "virulence":
-            return mod_pkg.Module(min_id=args.min_id_vir, min_cov=args.min_cov_vir)
+           return mod_pkg.Module(min_id=args.min_id_vir, min_cov=args.min_cov_vir)
         elif module_name == "resistance":
             return mod_pkg.Module(min_id=args.min_id_res, min_cov=args.min_cov_res)
         elif module_name == "biofilm":
@@ -131,14 +131,14 @@ def main():
     df = pd.DataFrame(all_results).fillna("-")
 
     summary_cols = [
-        "Sample", "Species", "Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL""spa_type", #assembly module
+        "Sample", "Species", "Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL", "spa_type", #assembly module
         "cap_type", "cap_completeness", #capsule module
         "sccmec_type", #sccmec module
         "agr_type", #agr module
         "res_score", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Vancomycin", "Other_RES", #resistance module 
         "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
         "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", #biofilm module
-        "vir_pvl", "vir_tsst" #virulence module
+        "vir_pvl", "vir_tsst", "vir_et", "spurious_virulence_hits" #virulence module
     ]
 
     detailed_priority = [
