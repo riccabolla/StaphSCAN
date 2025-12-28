@@ -35,7 +35,7 @@ class GeneHit:
 
 
 class Module:
-    def __init__(self):
+    def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "resistance"
         self.module_dir = Path(__file__).resolve().parent
 
@@ -63,6 +63,9 @@ class Module:
             "rpoB": "Rifampicin-R",
         }
 
+        self.min_id = min_id
+        self.min_cov = min_cov
+        
         self.aligner_dna = Align.PairwiseAligner()
         self.aligner_dna.mode = "global"
         self.aligner_dna.match_score = 1
@@ -189,7 +192,7 @@ class Module:
         df = df.copy()
         df["coverage"] = (df["length"] / df["qlen"]) * 100
         
-        df = df[(df["pident"] >= 90) & (df["coverage"] >= 80)].copy()
+        df = df[(df["pident"] >= self.min_id) & (df["coverage"] >= self.min_cov)].copy()
         if df.empty:
             return df
             
@@ -299,8 +302,7 @@ class Module:
         out["Fluoroquinolones"] = "; ".join(cat_fq) if cat_fq else "-"
         out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
         out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
-        out["Other_RES"] = "; ".join(cat_other) if cat_other else "-"
-        
+        out["Other_RES"] = "; ".join(cat_other) if cat_other else "-"        
         out["Mec_AA_Found"] = " | ".join(mec_aa_found) if mec_aa_found else "-"
         out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
 
