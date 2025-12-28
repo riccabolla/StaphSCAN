@@ -1,6 +1,6 @@
 site_name: StaphSCAN
 site_url: https://staphscan.readthedocs.io/
-site_description: "A modular toolkit for Staphylococcus aureus genomic analysis"
+site_description: "StaphSCAN: a genome-based tool for Surveillance through Comprehensive Analysis and Normalized reporting of Staphylococcus aureus."
 site_author: "Riccardo Bollini"
 nav:
   - Home: index.md
