@@ -7,6 +7,7 @@ The biofilm module identifies key *Staphylococcus aureus* genes involved in biof
 A curated FASTA file containing representative biofilm gene sequences is bundled with the module and stored in the ``/data`` directory.
 
 All the genes found are annotated as follow:
+
 * No annotation: an exact nucelotide match is found
 
 * ``^``: inexact nucleotide match but perfect amino acidic match
