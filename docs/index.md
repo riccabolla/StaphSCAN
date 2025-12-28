@@ -16,9 +16,9 @@ It integrates the following steps:
 
 For more information, see the [Modules](modules.md) section.
 
-::: warning
-StaphSCAN is currently in beta version. Some features are limited and may be subject to change. <br>
-Report any issues or suggestions on the [GitHub repository](https://github.com/riccabolla/StaphSCAN). 
+!!! warning
+    StaphSCAN is currently in beta version. Some features are limited and may be subject to change. <br>
+    Report any issues or suggestions on the [GitHub repository](https://github.com/riccabolla/StaphSCAN). 
 
 
 Acknowledgements
