@@ -9,7 +9,8 @@ nav:
   - Modules: 
     - Overview: modules.md
     - Assembly: assembly.md
-    - Typing: typing.md                    
+    - Typing: typing.md
+    - Biofilm: biofilm.md                    
     - Resistance: resistance.md 
     - Virulence: virulence.md   
 theme:
