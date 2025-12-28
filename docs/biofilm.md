@@ -32,13 +32,13 @@ A biofilm score is calculated, based on the genes detected.
 
 It follows this criteria:
 
-* 3 – fnbAB and icaADBC complete
+* 3: fnbAB and icaADBC complete
 
-* 2 – clfAB and icaADBC complete
+* 2: clfAB and icaADBC complete
 
-* 1 – A single group complete
+* 1: A single group complete
 
-* 0 – no complete groups detected
+* 0: no complete groups detected
 
 ### Output
 
