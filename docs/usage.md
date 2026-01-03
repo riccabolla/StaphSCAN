@@ -8,15 +8,11 @@ Can be either draft or completed assemblies (completed is better because it redu
 ## Basic usage
 
 ```python
-staphscan -i *.fasta -o staphscan_output --complete
+staphscan -i *.fasta -o staphscan_output
 ```
 `-i *.fasta` : Specifies the input files (assemblies) to be analyzed (.fasta). 
 
-
 `-o` : Specifies the directory where the output files will be saved. 
-
-
-`--complete` : Specifies the output format (i.e. detailed output)
 
 ## Modules selection
 
