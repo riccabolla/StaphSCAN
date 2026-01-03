@@ -2,13 +2,11 @@
 
 StaphSCAN includes several typing methods, each of which can be run as a stand-alone module.
 
-For clarity, all these methods and their respective parameters are presented together on this page
-
 ## Multi Locus Sequence Typing
 
 ``-m mlst`` 
 
-All genomes identified as *Staphylococcus aureus* are subject to MLST using the seven-locus typing scheme described [here](https://pubmlst.org/organisms/staphylococcus-aureus) 
+All genomes identified as *Staphylococcus aureus* are subject to MLST using the seven-locus typing scheme described [here](https://pubmlst.org/organisms/staphylococcus-aureus) (1). 
 
 A copy of the MLST alleles and ST definitions is stored in the ``/data`` directory of this module.
 
@@ -33,6 +31,10 @@ For each locus, the following annotations may be reported:
 
 Imprecise or incomplete allelic profiles result in approximate ST assignments. In these cases, StaphSCAN reports the closest matching ST followed by the number of differing loci (n-locus variants, up to two). Example: `` ST1-1LV `` (closest match is ST1 with one differing allele)
 
+### Citations
+
+1) Jolley KA, Bray JE, Maiden MCJ. Open-access bacterial population genomics: BIGSdb software, the PubMLST.org website and their applications. Wellcome Open Res. 2018;3:124. Published 2018 Sep 24. doi:10.12688/wellcomeopenres.14826.1
+
 ## spa typing
 
 ``-m spa``
@@ -42,14 +44,6 @@ The spa-typing is a method based on the characterization of the repeat regions o
 For more information visit [here](https://spa.ridom.de/index.shtml). 
 
 A local copy of [Ridom database](https://spa.ridom.de/spatypes.shtml) is distributed with this module and stored the modules's ``/data`` directory.
-
-### How it works
-
-Genome assemblies are screened for the presence of the *spa* gene X-region by simulating PCR amplification with multiple published primer sets. Each primer set is tested against all contigs, and both forward and reverse-complement orientations are evaluated. 
-
-When multiple primer sets yield a valid amplicon, the first detected product is used for downstream analysis. Assemblies in which no valid amplicon is detected are reported as spa-negative.
-
-The amplified X-region is scanned to identify spa repeat units using a curated database of known repeat sequences. Detected repeats are recorded sequentially to generate a repeat pattern, which is then compared against the reference spa type database.
 
 ### Output
 
@@ -67,25 +61,12 @@ Spa typing is dependent on genome assembly quality, and fragmentation or sequenc
 
 ``-m agr``
 
-The agr module identifies the Staphylococcus aureus accessory gene regulator (agr) type, a quorum-sensing system involved in virulence regulation and commonly classified into four major groups (I–IV).
+The agr module identifies the *Staphylococcus aureus* accessory gene regulator (agr) type, a quorum-sensing system involved in virulence regulation and commonly classified into four major groups (I–IV) (1).
 
 A curated FASTA file containing representative agr group target sequences is bundled with the module and stored in the ``/data`` directory.
 
-### How it works
 
-Agr typing is performed using nucleotide BLAST against a local database of agr target sequences.
-
-Hits are filtered by minimum sequence identity (90.0%).
-
-Candidate matches are ranked by:
-
-* Percent identity
-
-* Alignment coverage
-
-* BLAST bitscore
-
-The top-ranking hit is used to assign the agr group.
+### Output
 
 Agr group identifiers are mapped to standard agr types as follows:
 
@@ -95,9 +76,6 @@ Agr group identifiers are mapped to standard agr types as follows:
 | gp2         | agr II            |
 | gp3         | agr III           |
 | gp4         | agr IV            |
-
-
-### Output
 
 The agr module reports:
 
@@ -124,3 +102,48 @@ The agr module reports:
 * Assemblies with fragmented or highly divergent agr loci may yield Negative results.
 * Reported confidence reflects percent identity, not overall locus completeness.
 * The module assumes one dominant agr group per genome.
+
+### Citations
+
+1) Raghuram V, Alexander AM, Loo HQ, Petit RA, Goldberg JB, Read TD.2022.Species-Wide Phylogenomics of the Staphylococcus aureus Agr Operon Revealed Convergent Evolution of Frameshift Mutations. Microbiol Spectr10:e01334-21.https://doi.org/10.1128/spectrum.01334-21
+
+## Capsule
+
+``-m capsule``
+
+The capsule module identifies the *Staphylococcus aureus* capsular polysaccharide operon and assigns the predominant capsule serotype (Type 5 or Type 8). Capsular polysaccharides are major virulence determinants involved in immune evasion and are encoded by the cap operon (capA–P), with serotype specificity driven by the H–K loci (1).
+
+A curated FASTA file containing representative capsule gene sequences is bundled with the module and stored in the ``/data`` directory.
+
+### Parameters
+
+Hits are filtered by minimum alignment identity and coverage:
+
+``--min_id_capsule`` : Minimum alignment percentage identity (default: 90)
+
+``--min_cov_capsule``: Minimum alignment percentage coverage (default: 80)
+
+### Output
+
+Capsule serotype is inferred based on the presence of serotype-specific loci:
+
+* **Type 5**: cap5H, cap5I, cap5J, cap5K
+* **Type 8**: cap8H, cap8I, cap8J, cap8K
+
+Once a serotype is assigned, operon completeness is evaluated by checking for the presence of all expected genes. 
+
+The operon is classified as:
+
+* **Complete** : all genes detected
+* **Incomplete** : at least one gene missing
+
+| Field            | Description                                        |
+| ---------------- | -------------------------------------------------- |
+| cap_type         | Assigned capsule serotype (Type 5, Type 8, or -)   |
+| cap_completeness | Capsule operon status (Complete, Incomplete, or -) |
+| cap_genes        | Semicolon-separated list of detected capsule genes |
+
+### Citations
+
+1) Cocchiaro, J.L., Gomez, M.I., Risley, A., Solinga, R., Sordelli, D.O. and Lee, J.C. (2006), Molecular characterization of the capsule locus from non-typeable Staphylococcus aureus. Molecular Microbiology, 59: 948-960. https://doi.org/10.1111/j.1365-2958.2005.04978.x
+
