@@ -147,3 +147,127 @@ The operon is classified as:
 
 1) Cocchiaro, J.L., Gomez, M.I., Risley, A., Solinga, R., Sordelli, D.O. and Lee, J.C. (2006), Molecular characterization of the capsule locus from non-typeable Staphylococcus aureus. Molecular Microbiology, 59: 948-960. https://doi.org/10.1111/j.1365-2958.2005.04978.x
 
+## sccmec 
+
+``-m sccmec``
+
+The sccmec module detects and classifies *Staphylococcus aureus* SCCmec elements, which carry methicillin resistance determinants and are defined by combinations of the mec gene complex and ccr recombinase genes.
+
+A curated FASTA file containing representative SCCmec-associated target genes is bundled with the module and stored in the ``/data`` directory.
+
+The module supports the classification of the following SCC*mec* types:
+
+| Type | Reference |
+| :---  | :--- |
+| **I** |(1) |
+| **II** |(1, 2) |
+| **III** |(1) |
+| **IV** |(3) |
+| **V** |(4) |
+| **VI** |(5) |
+| **VII** |(6) |
+| **VIII** |(7) |
+| **IX** | (8) |
+| **X** | (8) |
+| **XI** | (9) |
+| **XII** | (10)|
+| **XIII** | (11) |
+| **XIV** | (12) |
+| **XV** | (13) |
+
+### Parameters
+
+Hits are filtered based on the following parameters:
+
+* Minimum alignment percentage of 90
+* Minimum coverage percentage of 80
+
+### Output
+
+The mec gene complex is classified as follows:
+
+| mec class | Required components                 |
+| --------- | ----------------------------------- |
+| A         | mecI + mecR1 + mecA                 |
+| B         | IS1272 + mecA                       |
+| C         | IS431 + mecA                        |
+| Unknown   | mecA or mecC present but incomplete |
+| None      | No mec genes detected               |
+
+Both mecA and mecC are supported. 
+
+Detected recombinase complexes include:
+
+| ccr complex | Required genes |
+| ----------- | -------------- |
+| 1           | ccrA1 + ccrB1  |
+| 2           | ccrA2 + ccrB2  |
+| 3           | ccrA3 + ccrB3  |
+| 4           | ccrA4 + ccrB4  |
+| C1          | ccrC1          |
+| C2          | ccrC2          |
+| A1B6        | ccrA1 + ccrB6  |
+| A1B3        | ccrA1 + ccrB3  |
+
+SCCmec types are inferred by combining the detected mec class and ccr complex(es), following established nomenclature where possible:
+
+| mec class | ccr complex | Assigned type      |
+| --------- | ----------- | ------------------ |
+| B         | 1           | Type I (1B)        |
+| A         | 2           | Type II (2A)       |
+| B         | 2           | Type IV (2B)       |
+| A         | 3           | Type III (3A)      |
+| B         | 4           | Type VI (4B)       |
+| A         | 4           | Type VIII (4A)     |
+| C         | C1 (5)      | Type V (5C)        |
+| C + IS12960D         | C1 (5)      | Type VII (5C + IS12960D)        |
+| C         | 1           | Type IX (1C)       |
+| C/B       | A1B6 (7)    | Type X (A1B6)      |
+| A/E       | A1B3 (8)    | Type XI (mecC-associated)       |
+| C         | C2 (9)      | Type XII (9C)      |
+| A         | C2 (9)      | Type XIII (9A)     |
+| A         | C1 (5)      | Type XIV (5A)      | 
+| A         | A1B6 (7)    | Type XV (A1B6)     |
+
+If multiple compatible SCCmec types are detected, a Composite SCCmec assignment is reported.
+
+If mec genes are detected but no ccr genes are found, the element is reported as an "orphan" cassette.
+
+The module reports:
+
+| Field          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| sccmec_type    | Assigned SCCmec type                                         |
+| sccmec_genes   | Semicolon-separated list of detected SCCmec-associated genes |
+
+### Citations
+
+1) Katayama Y, Ito T, Hiramatsu K.2000.A New Class of Genetic Element, Staphylococcus Cassette Chromosome mec, Encodes Methicillin Resistance in Staphylococcus aureus. Antimicrob Agents Chemother44:.https://doi.org/10.1128/aac.44.6.1549-1555.2000
+
+2) Ito T, Katayama Y, Asada K, Mori N, Tsutsumimoto K, Tiensasitorn C, Hiramatsu K.2001.Structural Comparison of Three Types of Staphylococcal Cassette Chromosome mec Integrated in the Chromosome in Methicillin-Resistant Staphylococcus aureus. Antimicrob Agents Chemother45:.https://doi.org/10.1128/aac.45.5.1323-1336.2001
+
+3) Ma XX, Ito T, Tiensasitorn C, Jamklang M, Chongtrakool P, Boyle-Vavra S, Daum RS, Hiramatsu K2002.Novel Type of Staphylococcal Cassette Chromosome mec Identified in Community-Acquired Methicillin-Resistant Staphylococcus aureus Strains. Antimicrob Agents Chemother46:.https://doi.org/10.1128/aac.46.4.1147-1152.2002
+
+4) Ito TMa XX, Takeuchi F, Okuma K, Yuzawa H, Hiramatsu K.2004.Novel Type V Staphylococcal Cassette Chromosome mec Driven by a Novel Cassette Chromosome Recombinase, ccrC. Antimicrob Agents Chemother48:.https://doi.org/10.1128/aac.48.7.2637-2651.2004
+
+5) Oliveira DCMilheiriço C, de Lencastre H2006.Redefining a Structural Variant of Staphylococcal Cassette Chromosome mec, SCCmec Type VI. Antimicrob Agents Chemother50:.https://doi.org/10.1128/aac.00629-06
+
+6) Berglund CIto TIkeda M, Ma XX, Söderquist B, Hiramatsu K2008.Novel Type of Staphylococcal Cassette Chromosome mec in a Methicillin-Resistant Staphylococcus aureus Strain Isolated in Sweden. Antimicrob Agents Chemother52:.https://doi.org/10.1128/aac.00087-08
+
+7) Zhang KMcClure J, Elsayed S, Conly JM2009.Novel Staphylococcal Cassette Chromosome mec Type, Tentatively Designated Type VIII, Harboring Class A mec and Type 4 ccr Gene Complexes in a Canadian Epidemic Strain of Methicillin-Resistant Staphylococcus aureus. Antimicrob Agents Chemother53:.https://doi.org/10.1128/aac.01118-08
+
+8) Li SSkov RL, Han X, Larsen AR, Larsen J, Sørum M, Wulf M, Voss A, Hiramatsu K, Ito T2011.Novel Types of Staphylococcal Cassette Chromosome mec Elements Identified in Clonal Complex 398 Methicillin-Resistant Staphylococcus aureus Strains . Antimicrob Agents Chemother55:.https://doi.org/10.1128/aac.01475-10
+
+9) García-Álvarez L, Holden MT, Lindsay H, et al. Meticillin-resistant Staphylococcus aureus with a novel mecA homologue in human and bovine populations in the UK and Denmark: a descriptive study. Lancet Infect Dis. 2011;11(8):595-603. doi:10.1016/S1473-3099(11)70126-8
+
+10) Wu Z, Li F, Liu D, Xue H, Zhao X. 2015. Novel type XII staphylococcal
+cassette chromosome mec harboring a new cassette chromosome recombinase,
+CcrC2. Antimicrob Agents Chemother 59:7597–7601. doi:10.1128/AAC.01692-15.
+
+11) Sharmin Baig, Thor Bech Johannesen, Søren Overballe-Petersen, Jesper Larsen, Anders Rhod Larsen, Marc Stegger, Novel SCCmec type XIII (9A) identified in an ST152 methicillin-resistant Staphylococcus aureus,
+Infection, Genetics and Evolution, Volume 61, 2018, Pages 74-76,
+ISSN 1567-1348, https://doi.org/10.1016/j.meegid.2018.03.013.
+
+12) Noriko Urushibara, Meiji Soe Aung, Mitsuyo Kawaguchiya, Nobumichi Kobayashi, Novel staphylococcal cassette chromosome mec (SCCmec) type XIV (5A) and a truncated SCCmec element in SCC composite islands carrying speG in ST5 MRSA in Japan, Journal of Antimicrobial Chemotherapy, Volume 75, Issue 1, January 2020, Pages 46–50, https://doi.org/10.1093/jac/dkz406
+
+13) Wei Wang, Yue Hu, Michelle Baker, Tania Dottorini, Hui Li, Yinping Dong, Yao Bai, Séamus Fanning, Fengqin Li, Novel SCCmec type XV (7A) and two pseudo-SCCmec variants in foodborne MRSA in China, Journal of Antimicrobial Chemotherapy, Volume 77, Issue 4, April 2022, Pages 903–909, https://doi.org/10.1093/jac/dkab500
