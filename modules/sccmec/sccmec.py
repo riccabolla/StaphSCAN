@@ -57,11 +57,8 @@ class Module:
                 elif "mecc" in lower_id: found_genes.add("mecC")
 
             mec_class = self.get_mec_class(found_genes)
-
             ccr_complexes = self.get_ccr_complex(found_genes)
-
             final_type = self.assign_type(mec_class, ccr_complexes)
-
             genes_str = ";".join(sorted(list(found_genes)))
 
             return {
@@ -77,6 +74,7 @@ class Module:
         Class A: mecI + mecR1 + mecA
         Class B: IS1272 + mecA (mecR1 truncated, no mecI)
         Class C: IS431 + mecA (mecR1 truncated, no mecI, no IS1272)
+        Class C2/E: mecC presence often implies Class E (mecI+mecR1 absent, often ccrC associated)
         """
         has_mec = "mecA" in genes or "mecC" in genes
         if not has_mec: return "None"
@@ -88,30 +86,30 @@ class Module:
         elif "IS431" in genes and "mecI" not in genes and "IS1272" not in genes:
             return "C"
 
-        if "mecA" in genes: return "Unknown (mecA+)"
+        if "mecA" in genes: 
+            return "Unknown (mecA+)"
+        elif "mecC" in genes: 
+            return "Unknown (mecC+)"
+            
         return "None"
 
     def get_ccr_complex(self, genes):
-        """
-        Returns a list of detected ccr complexes
-        """
         complexes = []
-        
         # Type 1: ccrA1 + ccrB1
         if "ccrA1" in genes and "ccrB1" in genes: complexes.append("1")
-        
+
         # Type 2: ccrA2 + ccrB2
         if "ccrA2" in genes and "ccrB2" in genes: complexes.append("2")
-        
+
         # Type 3: ccrA3 + ccrB3
         if "ccrA3" in genes and "ccrB3" in genes: complexes.append("3")
-        
+
         # Type 4: ccrA4 + ccrB4
         if "ccrA4" in genes and "ccrB4" in genes: complexes.append("4")
-        
+
         # Type 5: ccrC
         if "ccrC" in genes: complexes.append("5")
-        
+
         return complexes
 
     def assign_type(self, mec_class, ccr_list):
@@ -121,23 +119,22 @@ class Module:
         types_found = []
         
         for ccr in ccr_list:
-            
             if ccr == "1" and mec_class == "B": types_found.append("Type I(1B)")
-            
+
             elif ccr == "2" and mec_class == "A": types_found.append("Type II(2A)")
             elif ccr == "2" and mec_class == "B": types_found.append("Type IV(2B)")
-            
+
             elif ccr == "3" and mec_class == "A": types_found.append("Type III(3A)")
-            
+
             elif ccr == "4" and mec_class == "B": types_found.append("Type VI(4B)")
             elif ccr == "4" and mec_class == "A": types_found.append("Type VIII(4A)")
             
             elif ccr == "5" and mec_class == "C": types_found.append("Type V(5C)")
-            elif ccr == "5" and mec_class == "C2": types_found.append("Type V(5C2)")
-            # Broad Type V catch
-            elif ccr == "5" and "Unknown" in mec_class: types_found.append("Type V(5C)")
             elif ccr == "5" and mec_class == "B": types_found.append("Type V(5B) variant")
-
+            
+            elif ccr == "5" and "mecC" in mec_class: types_found.append("Type XI (5C2/E)")
+            
+            elif ccr == "5" and "Unknown" in mec_class: types_found.append("Type V (Broad)")
             else:
                 types_found.append(f"Type ? ({ccr}{mec_class})")
 
