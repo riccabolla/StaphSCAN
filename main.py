@@ -67,6 +67,7 @@ def parse_arguments(available_modules):
 
     rep_group = parser.add_argument_group("Reporting")
     rep_group.add_argument("--complete", action="store_true")
+    rep_group.add_argument("--report", type=str, default=None, help="Custom filename for the report output")
 
     args = parser.parse_args()
 
@@ -156,19 +157,26 @@ def main():
     ]
 
     if args.complete:
-        final_detailed_cols = [c for c in detailed_priority if c in df.columns]
-        remaining = [c for c in df.columns if c not in final_detailed_cols and c not in summary_cols]
-        final_detailed_cols.extend(remaining)
-        detailed_file = out_path / "staphscan_detailed.tsv"
-        df[final_detailed_cols].to_csv(detailed_file, sep='\t', index=False)
-        print(f"\n Complete report saved: {detailed_file}")
+        final_cols = [c for c in detailed_priority if c in df.columns]
+        remaining = [c for c in df.columns if c not in final_cols and c not in summary_cols]
+        final_cols.extend(remaining)
+        default_filename = "staphscan_detailed.tsv"
     else:
-        final_summary_cols = [c for c in summary_cols if c in df.columns]
-        summary_file = out_path / "staphscan_summary.tsv"
-        df[final_summary_cols].to_csv(summary_file, sep='\t', index=False)
-        print(f"\n Summary report saved: {summary_file}")
+        final_cols = [c for c in summary_cols if c in df.columns]
+        default_filename = "staphscan_summary.tsv"
 
+    if args.report: 
+        filename = args.report
+        if not filename.lower().endswith('.tsv'):
+            filename += '.tsv'
+    else:
+        filename = default_filename
+
+    output_file = out_path / filename
+
+    df[final_cols].to_csv(output_file, sep='\t', index=False)
+    print(f"\nReport saved: {output_file}")
+    
     print("Analysis complete.")
-
 if __name__ == "__main__":
     main()
