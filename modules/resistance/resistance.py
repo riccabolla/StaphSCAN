@@ -197,7 +197,8 @@ class Module:
             return df
             
         df["family"] = df["qseqid"].str.split("_").str[0]
-        return df.sort_values("bitscore", ascending=False)
+        #return df.sort_values("bitscore", ascending=False)
+        return df.sort_values(["pident", "bitscore"], ascending=[False, False]) #first id then bitscore
 
     def make_output(self) -> Dict[str, str]:
         keys = [
