@@ -128,8 +128,6 @@ class Module:
 
         return None
 
-    # ------------------ MAIN ------------------
-
     def run(self, assembly_path: Path) -> Dict[str, str]:
         out = {k: "0" for k in [
             "clfA", "clfB", "fnbA", "fnbB", "icaA", "icaB", "icaC", "icaD"
