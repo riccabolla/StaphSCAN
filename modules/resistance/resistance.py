@@ -40,6 +40,7 @@ class Module:
         self.module_dir = Path(__file__).resolve().parent
 
         self.db_files = {
+            "amino": self.module_dir / "data" / "amino_res.fasta",
             "bla": self.module_dir / "data" / "bla_res.fasta",
             "flq": self.module_dir / "data" / "flq_res.fasta",
             "lin": self.module_dir / "data" / "lin_res.fasta", # added for linezolid res
@@ -218,6 +219,7 @@ class Module:
             "truncated_resistance_hits",
             "spurious_resistance_hits",
             "res_score",
+            "Aminoglycosides",
             "Mec_RES",
             "Beta_lactamases",
             "Fluoroquinolones",
@@ -241,7 +243,7 @@ class Module:
         best = df.drop_duplicates("family")
 
         strong, muts, trunc, spur = [], [], [], []
-        cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_other = [], [], [], [], [], [], []
+        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_other = [], [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
 
         for _, r in best.iterrows():
@@ -265,7 +267,7 @@ class Module:
                     muts.append(mut_str)
                     if hit.family in ["gyrA", "parC", "gyrB"]:
                         cat_fq.append(mut_str)
-                    elif hit.family == "23S": # new added
+                    elif hit.family == "23S": # linezolid
                         cat_lin.append(mut_str)
                     else:
                         cat_other.append(mut_str) #rpoB
@@ -305,8 +307,10 @@ class Module:
                 mec_aa_ref.append(f"{hit.family}_Ref:{ref}")
             elif hit.family == "blaZ":
                 cat_bla.append(display_str)
+            elif hit.family in ["AAC(6')-Ie-APH(2'')-Ia"]:
+                cat_amino.append(display_str)    #aminoglycosides added
             elif hit.family in ["cfrA"]:
-                cat_lin.append(display_str) # new added    
+                cat_lin.append(display_str) # lineozolid added
             elif hit.family.startswith("tet"):
                 cat_tet.append(display_str)
             elif hit.family == "vanA":
@@ -318,10 +322,11 @@ class Module:
         out["res_mutations"] = "; ".join(muts) if muts else "-"
         out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
         out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
+        out["Aminoglycosides"] = "; ".join(cat_amino) if cat_amino else "-" #aminoglycosides
         out["Mec_RES"] = "; ".join(cat_mec) if cat_mec else "-"
         out["Beta_lactamases"] = "; ".join(cat_bla) if cat_bla else "-"
         out["Fluoroquinolones"] = "; ".join(cat_fq) if cat_fq else "-"
-        out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # new added
+        out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
         out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
         out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
         out["Other_RES"] = "; ".join(cat_other) if cat_other else "-"        
