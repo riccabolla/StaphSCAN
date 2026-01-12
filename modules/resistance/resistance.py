@@ -42,18 +42,21 @@ class Module:
         self.db_files = {
             "bla": self.module_dir / "data" / "bla_res.fasta",
             "flq": self.module_dir / "data" / "flq_res.fasta",
+            "lin": self.module_dir / "data" / "lin_res.fasta", # added for linezolid res
+            "rif": self.module_dir / "data" / "rif_res.fasta", #rpoB 
             "tet": self.module_dir / "data" / "tet_res.fasta",
             "van": self.module_dir / "data" / "van_res.fasta",
         }
 
         self.ref_prot_dict: Dict[str, str] = {}
 
-        self.mutation_targets = ["gyrA", "parC", "gyrB", "rpoB"]
+        self.mutation_targets = ["gyrA", "parC", "gyrB", "23S", "rpoB"]
         self.known_mutations = {
             "gyrA": {84: ('S', ['L']), 88: ('S', ['P'])},
             "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
             "rpoB": {481: ('H', ['Y'])}, # look at comibinatorial mutations (ex. L466S+H481N) https://doi.org/10.1016/j.jgar.2021.12.005
             "gyrB": {451: ('T', ['S'])},
+            "23S": {2576: ('G', ['T']), 2447: ('G', ['T']), 2500: ('T', ['A'])}, # added for linezolid res
         }
 
         self.mutation_phenotypes = {
@@ -61,6 +64,7 @@ class Module:
             "gyrB": "Fluoroquinolones-R",
             "parC": "Fluoroquinolones-R",
             "rpoB": "Rifampicin-R",
+            "23S": "Linezolid-R", # added for linezolid res
         }
 
         self.min_id = min_id
@@ -92,6 +96,9 @@ class Module:
             if not fpath.exists():
                 continue
             for record in SeqIO.parse(fpath, "fasta"):
+                if "23S" in record.id: #23s rRNA exception
+                    self.ref_prot_dict[record.id] = str(record.seq)
+                    continue
                 seq = record.seq
                 remainder = len(seq) % 3
                 if remainder > 0:
@@ -141,7 +148,10 @@ class Module:
     def check_mutations(self, fam: str, found: str, ref: str) -> List[str]:
         if fam not in self.known_mutations:
             return []
-        aln = self.aligner_mut.align(ref, found)[0]
+        if fam == "23S":
+            aln = self.aligner_dna.align(ref, found)[0] #added to handle 23s rRNA
+        else:
+            aln = self.aligner_mut.align(ref, found)[0]
         r, f = aln[0], aln[1]
         pos = 0
         muts = []
@@ -150,9 +160,10 @@ class Module:
             if rc != "-":
                 pos += 1
             if pos in targets and fc != "-" and fc != rc:
-                ref_aa, allowed = targets[pos]
+                #ref_aa, allowed = targets[pos] #removed to handle 23s rRNA
+                ref_base, allowed = targets[pos] #added to handle 23s rRNA
                 if fc in allowed:
-                    muts.append(f"{ref_aa}{pos}{fc}")
+                    muts.append(f"{ref_base}{pos}{fc}") #modified to handle 23s rRNA
         return muts
 
     def run_blast(self, assembly: Path) -> pd.DataFrame:
@@ -211,6 +222,7 @@ class Module:
             "Beta_lactamases",
             "Fluoroquinolones",
             "Tetracyclines",
+            "Linezolid", # added for linezolid res
             "Vancomycin",
             "Other_RES",
         ]
@@ -229,7 +241,7 @@ class Module:
         best = df.drop_duplicates("family")
 
         strong, muts, trunc, spur = [], [], [], []
-        cat_mec, cat_bla, cat_fq, cat_tet, cat_van, cat_other = [], [], [], [], [], []
+        cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_other = [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
 
         for _, r in best.iterrows():
@@ -240,7 +252,11 @@ class Module:
             )
             dna = self.extract_gene(seqs, hit.sseqid, hit.sstart, hit.send)
             ref = self.ref_prot_dict.get(hit.qseqid, "")
-            found = self.trim_to_ref(self.best_translation(dna, ref), ref)
+            #found = self.trim_to_ref(self.best_translation(dna, ref), ref) #removed in 23s rRNA implementation
+            if hit.family == "23S":
+                found = str(dna) #added in 23s rRNA implementation
+            else:
+                found = self.trim_to_ref(self.best_translation(dna, ref), ref)
 
             if hit.family in self.mutation_targets and ref:
                 mm = self.check_mutations(hit.family, found, ref)
@@ -249,8 +265,10 @@ class Module:
                     muts.append(mut_str)
                     if hit.family in ["gyrA", "parC", "gyrB"]:
                         cat_fq.append(mut_str)
+                    elif hit.family == "23S": # new added
+                        cat_lin.append(mut_str)
                     else:
-                        cat_other.append(mut_str)
+                        cat_other.append(mut_str) #rpoB
                 continue
 
             if "*" in found:
@@ -287,6 +305,8 @@ class Module:
                 mec_aa_ref.append(f"{hit.family}_Ref:{ref}")
             elif hit.family == "blaZ":
                 cat_bla.append(display_str)
+            elif hit.family in ["cfrA"]:
+                cat_lin.append(display_str) # new added    
             elif hit.family.startswith("tet"):
                 cat_tet.append(display_str)
             elif hit.family == "vanA":
@@ -301,6 +321,7 @@ class Module:
         out["Mec_RES"] = "; ".join(cat_mec) if cat_mec else "-"
         out["Beta_lactamases"] = "; ".join(cat_bla) if cat_bla else "-"
         out["Fluoroquinolones"] = "; ".join(cat_fq) if cat_fq else "-"
+        out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # new added
         out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
         out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
         out["Other_RES"] = "; ".join(cat_other) if cat_other else "-"        
