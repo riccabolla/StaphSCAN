@@ -70,7 +70,7 @@ class Module:
             return "X", 0
 
     def run(self, assembly_path: Path) -> Dict[str, str]:
-        results = {"vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "spurious_virulence_hits": "-"}
+        results = {"vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", "spurious_virulence_hits": "-"}
         
         if not self.check_db():
             return results
@@ -145,6 +145,15 @@ class Module:
             
             et = find_genes(["eta", "etb"])
             results["vir_et"] = "; ".join(et) if et else "-"
+
+            lukE = find_genes(["luke"])
+            lukD = find_genes(["lukd"])
+            
+            if lukE and lukD:
+                results["vir_lukED"] = "Positive"
+            elif lukE or lukD:
+                present = lukE + lukD
+                results["vir_lukED"] = f"Partial ({', '.join(present)})"
             
             results["spurious_virulence_hits"] = "; ".join(spurious_hits) if spurious_hits else "-"
             

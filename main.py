@@ -143,7 +143,7 @@ def main():
         "res_score", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Vancomycin", "Other_RES", #resistance module 
         "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
         "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", "biofilm_truncated_hits", #biofilm module
-        "vir_pvl", "vir_tsst", "vir_et", "spurious_virulence_hits" #virulence module
+        "vir_pvl", "vir_tsst", "vir_et", "vir_lukED", "spurious_virulence_hits" #virulence module
     ]
 
     detailed_priority = [
