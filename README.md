@@ -1,5 +1,5 @@
 # StaphSCAN
-StaphSCAN is a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and **N**ormalized reporting of ***Staph**ylococcus aureus*.
+StaphSCAN is a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and sta**N**dardized reporting of ***Staph**ylococcus aureus*.
 
 It integrates the following steps:
 * Species identification
