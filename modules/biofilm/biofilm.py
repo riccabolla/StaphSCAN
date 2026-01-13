@@ -9,24 +9,24 @@ from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio import Align
 
-@dataclass
-class BiofilmHit:
-    qseqid: str
-    sseqid: str
-    pident: float
-    length: int
-    qlen: int
-    sstart: int
-    send: int
-    bitscore: float
+# @dataclass
+# class BiofilmHit:
+#     qseqid: str
+#     sseqid: str
+#     pident: float
+#     length: int
+#     qlen: int
+#     sstart: int
+#     send: int
+#     bitscore: float
 
-    @property
-    def coverage_pct(self) -> float:
-        return (self.length / self.qlen) * 100 if self.qlen else 0.0
+#     @property
+#     def coverage_pct(self) -> float:
+#         return (self.length / self.qlen) * 100 if self.qlen else 0.0
 
-    @property
-    def gene_name(self) -> str:
-        return self.qseqid.split("_")[0]
+#     @property
+#     def gene_name(self) -> str:
+#         return self.qseqid.split("_")[0]
 
 class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
@@ -135,8 +135,9 @@ class Module:
         out.update({
             "biofilm_score": "0",
             "biofilm_truncated_hits": "-",
+            "biofilm_spurious_hits": "-",
             "clfAB": "-", "fnbAB": "-", "icaADBC": "-",
-            "icaR_mutations": "-" # Added this back
+            "icaR_mutations": "-" 
         })
 
         if not assembly_path.exists(): return out
@@ -169,8 +170,8 @@ class Module:
         df["coverage_pct"] = (df["length"] / df["qlen"]) * 100
 
         df = df[
-            (df["pident"] >= self.min_identity) &
-            (df["coverage_pct"] >= self.min_coverage)
+            (df["pident"] >= 80) & # added min id for spurious hits
+            (df["coverage_pct"] >= 40) # added min cov for spurious hits    
         ]
 
         if df.empty: return out
@@ -180,11 +181,22 @@ class Module:
         df = df.drop_duplicates("gene")
 
         truncated = []
+        spurious = []
         found_genes = set()
+        gene_display_map = {}
         icar_trunc_str = None
 
         for _, r in df.iterrows():
             gene = r["gene"]
+            pid = r["pident"]
+            cov = r["coverage_pct"]
+
+            is_strong = (pid >= self.min_identity) and (cov >= self.min_coverage)
+
+            if not is_strong:
+                tag = f"{gene}"
+                spurious.append(tag)
+                continue
             
             dna = self.extract_gene(seqs, r["sseqid"], r["sstart"], r["send"])
             ref = self.ref_prot_dict.get(r["qseqid"], "")
@@ -205,11 +217,29 @@ class Module:
             found_genes.add(gene)
             out[gene] = "1"
 
+            display_str = gene
+
+            if pid < 100.0:
+                if ref and prot == ref:
+                    display_str += "^"
+                else:
+                    display_str += "*"
+            
+            if cov < 100.0:
+                display_str += "?"
+
+            gene_display_map[gene] = display_str
+
         out["biofilm_truncated_hits"] = "; ".join(truncated) if truncated else "-"
+        out["biofilm_spurious_hits"] = "; ".join(spurious) if spurious else "-"
         
         if icar_trunc_str:
             out["icaR_mutations"] = icar_trunc_str
 
+        # genes
+        out["clf_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.clf_targets])) or "-"
+        out["fnb_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.fnb_targets])) or "-"
+        out["ica_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.ica_targets])) or "-"
         #completeness    
         def status(targets):
             n = sum(g in found_genes for g in targets)
@@ -219,15 +249,35 @@ class Module:
         out["fnbAB"] = status(self.fnb_targets)
         out["icaADBC"] = status(self.ica_targets)
 
-        #score
+        has_ica = all(g in found_genes for g in self.ica_targets)
+        
+        has_clf = any(g in found_genes for g in self.clf_targets)
+        has_fnb = any(g in found_genes for g in self.fnb_targets)
+
+        # new score system
+        # it now considers only the completeness of icaAD relevant.
+        # the presence of just one clf or fnb gene is sufficient to increase the score
+        # the new score reflects just the biofilm potential, not prediction on the strength
         score = 0
-        if out["fnbAB"] == "Complete" and out["icaADBC"] == "Complete":
-            score = 3
-        elif out["clfAB"] == "Complete" and out["icaADBC"] == "Complete":
-            score = 2
-        elif any(out[x] == "Complete" for x in ("clfAB", "fnbAB", "icaADBC")):
-            score = 1
-            
+
+        if has_ica:
+            score = 1            
+            if has_clf and has_fnb:
+                score = 3
+            elif has_clf or has_fnb:
+                score = 2
+        
         out["biofilm_score"] = str(score)
 
         return out
+    
+        #old score
+        #score = 0
+        #if out["fnbAB"] == "Complete" and out["icaADBC"] == "Complete":
+        #    score = 3
+        #elif out["clfAB"] == "Complete" and out["icaADBC"] == "Complete":
+        #    score = 2
+        #elif any(out[x] == "Complete" for x in ("clfAB", "fnbAB", "icaADBC")):
+        #    score = 1    
+        #out["biofilm_score"] = str(score)
+        #return out

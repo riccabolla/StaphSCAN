@@ -26,19 +26,21 @@ Hits are filtered by minimum alignment identity and coverage:
 
 ``--min_cov_biofilm``: Minimum alignment percentage coverage (default: 80)
 
+All hits with 80–90% identity or 40–80% coverage are reported as spurious hits.
+
 ### Biofilm score
 
 A biofilm score is calculated, based on the genes detected (2) (3). 
 
 It follows this criteria:
 
-* 3: fnbAB and icaADBC complete
+* 3: icaABCD + clf + fnb detected
 
-* 2: clfAB and icaADBC complete
+* 2: icaABCD + clf/fnb
 
-* 1: A single group complete
+* 1: Only icaABCD detected
 
-* 0: no complete groups detected
+* 0: no icaABCD completeness
 
 ### Output
 
@@ -48,12 +50,13 @@ Results are grouped for each gene-family, and reported individually if any imper
 | ------------------------------ | ------------------------------------------------------------- |
 | biofilm_score                  | Biofilm score (0–3)                                           |
 | biofilm_truncated_hits         | Genes with truncations or premature stop codons               |
+| biofilm_spurious_hits          | Genes with weak hits                                          |
 | clfAB                          | Status of clfA and clfB genes (Complete/Incomplete/-)         |
 | fnbAB                          | Status of fnbA and fnbB genes (Complete/Incomplete/-)         |
 | icaADBC                        | Status of icaA–D genes (Complete/Incomplete/-)                |
-| clf_genes                      | Detected clf genes with annotation (truncated, partial, etc.) |
-| fnb_genes                      | Detected fnb genes with annotation                            |
-| ica_genes                      | Detected ica genes with annotation                            |
+| clf_genes                      | Detected clf genes                                            |
+| fnb_genes                      | Detected fnb genes                                            |
+| ica_genes                      | Detected ica genes                                            |
 | icaR_mutations (4)             | Truncated icaR regulator, if any                              |
 
 
