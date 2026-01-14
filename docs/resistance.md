@@ -1,8 +1,8 @@
 ## Resistance 
 
-``-m Module``
+``-m resistance``
 
-The **Resistance-m** module detects acquired antimicrobial resistance genes and chromosomal point mutations associated with reduced antimicrobial susceptibility in *Staphylococcus aureus*.
+The resistance module detects acquired antimicrobial resistance genes and chromosomal point mutations associated with reduced antimicrobial susceptibility in *Staphylococcus aureus*.
 
 It screens for resistance determinants across multiple antibiotic classes, including:
 
@@ -28,10 +28,10 @@ All detected genes are annotated as follows:
 
 Hits are filtered using minimum alignment identity and coverage thresholds:
 
-- ``--min_id_resistance``  
+- ``--min_id_res``  
   Minimum alignment percentage identity (default: 90)
 
-- ``--min_cov_resistance``  
+- ``--min_cov_res``  
   Minimum alignment percentage coverage (default: 80)
 
 All hits with 80–90% identity or 40–80% coverage are reported as spurious hits.
