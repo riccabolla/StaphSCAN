@@ -24,6 +24,16 @@ All detected genes are annotated as follows:
 - ``?``: incomplete match (low coverage)  
 - ``-X%``: truncated amino acid sequence  
 
+The module screens specific chromosomal loci for point mutations known to confer resistance.
+
+| Locus | Mutation targets | Associated phenotype |
+|------|------------------|----------------------|
+| gyrA | S84L, S88P | Fluoroquinolones-R |
+| gyrB | T451S | Fluoroquinolones-R |
+| parC | S80F, S80Y, E84K, E84G, E84V | Fluoroquinolones-R |
+| rpoB | H481Y | Rifampicin-R |
+| 23S rRNA | G2576T, G2447T, T2500A | Linezolid-R |
+
 ### Parameters
 
 Hits are filtered using minimum alignment identity and coverage thresholds:
@@ -36,27 +46,9 @@ Hits are filtered using minimum alignment identity and coverage thresholds:
 
 All hits with 80–90% identity or 40–80% coverage are reported as spurious hits.
 
----
+### Resistance Score
 
-## Point Mutations
-
-The module screens specific chromosomal loci for point mutations known to confer resistance.
-
-| Locus | Mutation targets | Associated phenotype |
-|------|------------------|----------------------|
-| gyrA | S84L, S88P | Fluoroquinolones-R |
-| gyrB | T451S | Fluoroquinolones-R |
-| parC | S80F, S80Y, E84K, E84G, E84V | Fluoroquinolones-R |
-| rpoB | H481Y | Rifampicin-R |
-| 23S rRNA | G2576T, G2447T, T2500A | Linezolid-R |
-
----
-
-## Resistance Score
-
-A resistance score is calculated to categorize isolates based on a hierarchy of clinical resistance:
-
-**Vancomycin > MRSA > Beta-lactamase**
+A resistance score is calculated to categorize isolates based on a hierarchy of clinical resistance.
 
 Scoring criteria:
 
@@ -65,9 +57,7 @@ Scoring criteria:
 - **1**: `blaZ` detected (Penicillin/Beta-lactamase resistance)  
 - **0**: No key resistance drivers detected  
 
----
-
-## Output
+### Output
 
 Results are grouped by antibiotic class and reported individually.
 
