@@ -221,11 +221,11 @@ class Module:
 
     def make_output(self) -> Dict[str, str]:
         keys = [
-            "res_genes",
-            "res_mutations",
             "truncated_resistance_hits",
             "spurious_resistance_hits",
             "res_score",
+            "res_gene_count",
+            "res_class_count",
             "Aminoglycosides",
             "Mec_RES",
             "Beta_lactamases",
@@ -245,12 +245,14 @@ class Module:
         seqs = SeqIO.to_dict(SeqIO.parse(assembly, "fasta"))
         df = self.filter_hits(self.run_blast(assembly))
         if df.empty:
+            out["res_gene_count"] = "0"
+            out["res_class_count"] = "0"
             return out
 
         best = df.drop_duplicates("family")
 
         strong, muts, trunc, spur = [], [], [], []
-        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_other = [], [], [], [], [], [], [], []
+        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_rif = [], [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
         #section mofified for spurious hit
         # for _, r in best.iterrows():
@@ -291,6 +293,8 @@ class Module:
 
             is_strong = (hit.pident >= self.min_id) and (hit.coverage >= self.min_cov)
             if not is_strong:
+                if hit.family in self.mutation_targets:
+                    continue
                 spur.append(display_str)
                 continue
 
@@ -304,7 +308,7 @@ class Module:
                     elif hit.family == "23S": # linezolid
                         cat_lin.append(mut_str)
                     else:
-                        cat_other.append(mut_str) #rpoB
+                        cat_rif.append(mut_str) #rpoB
                 continue
 
             if "*" in found:
@@ -337,10 +341,13 @@ class Module:
             elif hit.family == "vanA":
                 cat_van.append(display_str)
             else:
-                cat_other.append(display_str)
+                cat_rif.append(display_str)
 
-        out["res_genes"] = "; ".join(strong) if strong else "-"
-        out["res_mutations"] = "; ".join(muts) if muts else "-"
+        classes_to_check = [cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_rif]
+        class_count = sum(1 for c in classes_to_check if len(c) > 0)
+
+        out["res_gene_count"] = str(len(strong))
+        out["res_class_count"] = str(class_count)
         out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
         out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
         out["Aminoglycosides"] = "; ".join(cat_amino) if cat_amino else "-" #aminoglycosides
@@ -350,7 +357,7 @@ class Module:
         out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
         out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
         out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
-        out["Other_RES"] = "; ".join(cat_other) if cat_other else "-"        
+        out["Rifampin"] = "; ".join(cat_rif) if cat_rif else "-"        
         out["Mec_AA_Found"] = " | ".join(mec_aa_found) if mec_aa_found else "-"
         out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
 

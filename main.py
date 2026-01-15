@@ -140,8 +140,8 @@ def main():
         "cap_type", "cap_completeness", #capsule module
         "sccmec_type", #sccmec module
         "agr_type", #agr module
-        "res_score", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "Tetracyclines", "Vancomycin", "Other_RES", #resistance module 
-        "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
+        "res_score", "res_gene_count", "res_class_count", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "Tetracyclines", #resistance module 
+        "Vancomycin", "Rifampin", "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
         "biofilm_score", "clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", "biofilm_spurious_hits", "biofilm_truncated_hits", #biofilm module
         "vir_pvl", "vir_tsst", "vir_et", "vir_lukED", "spurious_virulence_hits" #virulence module
     ]
