@@ -44,6 +44,7 @@ class Module:
             "bla": self.module_dir / "data" / "bla_res.fasta",
             "flq": self.module_dir / "data" / "flq_res.fasta",
             "lin": self.module_dir / "data" / "lin_res.fasta", # added for linezolid res
+            "mlsb": self.module_dir / "data" / "mlsb_res.fasta", # added for mlsb res
             "rif": self.module_dir / "data" / "rif_res.fasta", #rpoB 
             "tet": self.module_dir / "data" / "tet_res.fasta",
             "van": self.module_dir / "data" / "van_res.fasta",
@@ -90,13 +91,17 @@ class Module:
         self.aligner_mut.open_gap_score = -10
         self.aligner_mut.extend_gap_score = -0.5
 
+        self.gene_source: Dict[str, str] = {}
         self.load_ref_seqs()
 
     def load_ref_seqs(self) -> None:
-        for fpath in self.db_files.values():
+        #for fpath in self.db_files.values():
+        for cat_key, fpath in self.db_files.items():
             if not fpath.exists():
                 continue
             for record in SeqIO.parse(fpath, "fasta"):
+                gene_family = record.id.split("_")[0]
+                self.gene_source[gene_family] = cat_key
                 if "23S" in record.id: #23s rRNA exception
                     self.ref_prot_dict[record.id] = str(record.seq)
                     continue
@@ -127,7 +132,7 @@ class Module:
             if not frag:
                 continue
             prot = str(frag.translate(table=11)).strip("*")
-            score = self.aligner_dna.score(ref, prot) if ref else 0
+            score = self.aligner_prot.score(ref, prot) if ref else 0 #fixed bug, it was self.aligner_dna
             if score > best_score:
                 best_score = score
                 best = prot
@@ -232,8 +237,9 @@ class Module:
             "Fluoroquinolones",
             "Tetracyclines",
             "Linezolid", # added for linezolid res
+            "MLSB", # added for mlsb res
             "Vancomycin",
-            "Other_RES",
+            "Rifampin",
         ]
         return {k: "-" for k in keys}
 
@@ -252,7 +258,7 @@ class Module:
         best = df.drop_duplicates("family")
 
         strong, muts, trunc, spur = [], [], [], []
-        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_rif = [], [], [], [], [], [], [], []
+        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_mlsb,cat_tet, cat_van, cat_rif = [], [], [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
         #section mofified for spurious hit
         # for _, r in best.iterrows():
@@ -327,27 +333,67 @@ class Module:
             #end of the section modified for spurious hit
 
             if is_mec:
-                cat_mec.append(display_str)
+                #cat_mec.append(display_str)
                 mec_aa_found.append(f"{hit.family}_Found:{found}")
                 mec_aa_ref.append(f"{hit.family}_Ref:{ref}")
-            elif hit.family == "blaZ":
-                cat_bla.append(display_str)
-            elif hit.family in ["AAC(6')-Ie-APH(2'')-Ia"]:
-                cat_amino.append(display_str)    #aminoglycosides added
-            elif hit.family in ["cfrA"]:
-                cat_lin.append(display_str) # lineozolid added
-            elif hit.family.startswith("tet"):
-                cat_tet.append(display_str)
-            elif hit.family == "vanA":
-                cat_van.append(display_str)
-            else:
-                cat_rif.append(display_str)
+            # elif hit.family == "blaZ":
+            #     cat_bla.append(display_str)
+            # elif hit.family in ["AAC(6')-Ie-APH(2'')-Ia"]:
+            #     cat_amino.append(display_str)    #aminoglycosides added
+            # elif hit.family in ["cfrA"]:
+            #     cat_lin.append(display_str) # lineozolid added
+            # elif hit.family.startswith("tet"):
+            #     cat_tet.append(display_str)
+            # elif hit.family == "vanA":
+            #     cat_van.append(display_str)
+            # else:
+            #     cat_rif.append(display_str)
+            source = self.gene_source.get(hit.family, "other")
+            if source == "mec_res": # If separate file, otherwise mecA is usually in 'other' or specific
+                 cat_mec.append(display_str)
+            elif is_mec: 
+                 cat_mec.append(display_str)
+            elif source == "bla":
+                 cat_bla.append(display_str)
+            elif source == "amino":
+                 cat_amino.append(display_str)
+            elif source == "lin":
+                 cat_lin.append(display_str)
+            elif source == "tet":
+                 cat_tet.append(display_str)
+            elif source == "van":
+                 cat_van.append(display_str)
+            elif source == "mlsb":
+                 cat_mlsb.append(display_str)
+            elif source == "rif":
+                 cat_rif.append(display_str)
+            elif source == "flq":
+                 cat_fq.append(display_str)
 
-        classes_to_check = [cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_rif]
-        class_count = sum(1 for c in classes_to_check if len(c) > 0)
 
+        # Count Classes (Genes + Mutations)
+        # Combine lists to see which classes are active
+        classes_map = {
+            "Aminoglycosides": cat_amino,
+            "Beta_lactamases": cat_bla,
+            "Fluoroquinolones": cat_fq,
+            "Linezolid": cat_lin,
+            "Mec_RES": cat_mec,
+            "MLSB": cat_mlsb,
+            "Rifampin": cat_rif,
+            "Tetracyclines": cat_tet,
+            "Vancomycin": cat_van
+        }
+        
+        active_classes = sum(1 for lst in classes_map.values() if len(lst) > 0)
+
+        # classes_to_check = [cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_mlsb,cat_tet, cat_van, cat_rif]
+        # class_count = sum(1 for c in classes_to_check if len(c) > 0)
+
+        #out["res_gene_count"] = str(len(strong))
+        #out["res_class_count"] = str(class_count)
         out["res_gene_count"] = str(len(strong))
-        out["res_class_count"] = str(class_count)
+        out["res_class_count"] = str(active_classes)
         out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
         out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
         out["Aminoglycosides"] = "; ".join(cat_amino) if cat_amino else "-" #aminoglycosides
@@ -355,6 +401,7 @@ class Module:
         out["Beta_lactamases"] = "; ".join(cat_bla) if cat_bla else "-"
         out["Fluoroquinolones"] = "; ".join(cat_fq) if cat_fq else "-"
         out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
+        out["MLSB"] = "; ".join(cat_mlsb) if cat_mlsb else "-" # mlsb
         out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
         out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
         out["Rifampin"] = "; ".join(cat_rif) if cat_rif else "-"        
@@ -362,7 +409,8 @@ class Module:
         out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
 
         score = 0
-        if any("vanA" in g for g in cat_van):
+        is_van_positive = any("vanA" in x or "vanB" in x for x in cat_van)
+        if is_van_positive:
             score = 3
         elif cat_mec:
             score = 2
