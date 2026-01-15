@@ -203,8 +203,15 @@ class Module:
             return df
         df = df.copy()
         df["coverage"] = (df["length"] / df["qlen"]) * 100
+
+        # section added for spurious hit
+        df = df[
+            (df["pident"] >= 80) &
+            (df["coverage"] >= 40)
+        ]
         
-        df = df[(df["pident"] >= self.min_id) & (df["coverage"] >= self.min_cov)].copy()
+        #df = df[(df["pident"] >= self.min_id) & (df["coverage"] >= self.min_cov)].copy()
+        # end of the section modified for spurious hit
         if df.empty:
             return df
             
@@ -245,7 +252,16 @@ class Module:
         strong, muts, trunc, spur = [], [], [], []
         cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_tet, cat_van, cat_other = [], [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
+        #section mofified for spurious hit
+        # for _, r in best.iterrows():
+        #     gene_family = r["qseqid"].split("_")[0]
+        #     pid = r["pident"]
+        #     cov = r["coverage"]
+        #     is_strong = (pid >= self.min_id) and (cov >= self.min_cov)
 
+        #     if not is_strong:
+        #         spur.append(gene_family)
+        #         continue
         for _, r in best.iterrows():
             hit = GeneHit(
                 qseqid=r.qseqid, sseqid=r.sseqid, pident=r.pident,
@@ -259,6 +275,24 @@ class Module:
                 found = str(dna) #added in 23s rRNA implementation
             else:
                 found = self.trim_to_ref(self.best_translation(dna, ref), ref)
+
+            display_str = hit.family
+            #is_synonymous = False
+
+            if hit.pident < 100:
+                if ref and found == ref:
+                    #is_synonymous = True
+                    display_str += "^"
+                else:
+                    display_str += "*"
+            
+            if hit.coverage < 100:
+                display_str += "?"
+
+            is_strong = (hit.pident >= self.min_id) and (hit.coverage >= self.min_cov)
+            if not is_strong:
+                spur.append(display_str)
+                continue
 
             if hit.family in self.mutation_targets and ref:
                 mm = self.check_mutations(hit.family, found, ref)
@@ -278,28 +312,15 @@ class Module:
                 trunc.append(f"{hit.family}-{pct}%")
                 continue
 
-            is_synonymous = False
-            display_str = hit.family
-
-            if hit.pident < 100:
-                if ref and found == ref:
-                    is_synonymous = True
-                    display_str += "^"
-                else:
-                    display_str += "*"
-            
-            if hit.coverage < 100:
-                display_str += "?"
+            strong.append(display_str)
 
             is_mec = hit.family in ["mecA", "mecC"]
-            is_perfect = (hit.pident == 100 and hit.coverage == 100)
-            is_valid = is_perfect or is_synonymous or is_mec
-
-            if not is_valid:
-                spur.append(display_str)
-                continue
-
-            strong.append(display_str)
+            # is_perfect = (hit.pident == 100 and hit.coverage == 100)
+            # is_valid = is_perfect or is_synonymous or is_mec
+            # if not is_valid:
+            #    spur.append(display_str)
+            #    continue
+            #end of the section modified for spurious hit
 
             if is_mec:
                 cat_mec.append(display_str)
