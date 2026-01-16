@@ -37,6 +37,7 @@ class Module:
         self.clf_targets = ["clfA", "clfB"]
         self.fnb_targets = ["fnbA", "fnbB"]
         self.ica_targets = ["icaA", "icaB", "icaC", "icaD"]
+        self.cna_targets = ["cna"] # added cna 
         self.regulator = "icaR"  
 
         self.min_identity = float(min_id)
@@ -130,13 +131,13 @@ class Module:
 
     def run(self, assembly_path: Path) -> Dict[str, str]:
         out = {k: "0" for k in [
-            "clfA", "clfB", "fnbA", "fnbB", "icaA", "icaB", "icaC", "icaD"
+            "clfA", "clfB", "fnbA", "fnbB", "icaA", "icaB", "icaC", "icaD", "cna" #added cna
         ]}
         out.update({
             "biofilm_score": "0",
             "biofilm_truncated_hits": "-",
             "biofilm_spurious_hits": "-",
-            "clfAB": "-", "fnbAB": "-", "icaADBC": "-",
+            "clfAB": "-", "fnbAB": "-", "icaADBC": "-", "cna": "-", #added cna
             "icaR_mutations": "-" 
         })
 
@@ -191,12 +192,11 @@ class Module:
             pid = r["pident"]
             cov = r["coverage_pct"]
 
+            display_str = gene #moved here to add annotation on spurious hits
+
             is_strong = (pid >= self.min_identity) and (cov >= self.min_coverage)
 
-            if not is_strong:
-                tag = f"{gene}"
-                spurious.append(tag)
-                continue
+            #moved to line 231-234
             
             dna = self.extract_gene(seqs, r["sseqid"], r["sstart"], r["send"])
             ref = self.ref_prot_dict.get(r["qseqid"], "")
@@ -214,10 +214,7 @@ class Module:
                 
                 continue
 
-            found_genes.add(gene)
-            out[gene] = "1"
-
-            display_str = gene
+            #display_str = gene
 
             if pid < 100.0:
                 if ref and prot == ref:
@@ -228,6 +225,13 @@ class Module:
             if cov < 100.0:
                 display_str += "?"
 
+            if not is_strong:
+                #tag = f"{gene}"
+                spurious.append(display_str)
+                continue
+            
+            found_genes.add(gene)
+            out[gene] = "1"            
             gene_display_map[gene] = display_str
 
         out["biofilm_truncated_hits"] = "; ".join(truncated) if truncated else "-"
@@ -240,6 +244,8 @@ class Module:
         out["clf_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.clf_targets])) or "-"
         out["fnb_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.fnb_targets])) or "-"
         out["ica_genes"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.ica_targets])) or "-"
+        out["cna"] = ";".join(sorted([gene_display_map[g] for g in found_genes if g in self.cna_targets])) or "-" #added cna
+
         #completeness    
         def status(targets):
             n = sum(g in found_genes for g in targets)
@@ -253,16 +259,21 @@ class Module:
         
         has_clf = any(g in found_genes for g in self.clf_targets)
         has_fnb = any(g in found_genes for g in self.fnb_targets)
+        has_cna = any(g in found_genes for g in self.cna_targets)  # added cna
 
         # new score system
         # it now considers only the completeness of icaAD relevant.
         # the presence of just one clf or fnb gene is sufficient to increase the score
         # the new score reflects just the biofilm potential, not prediction on the strength
+        # adding cna allows to evaluate the "versatility" of the strain
+
         score = 0
 
         if has_ica:
-            score = 1            
-            if has_clf and has_fnb:
+            score = 1
+            if has_cna and has_fnb and has_clf:
+                score = 4            
+            elif has_clf and has_fnb:
                 score = 3
             elif has_clf or has_fnb:
                 score = 2
