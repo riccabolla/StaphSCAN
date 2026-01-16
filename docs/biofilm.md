@@ -2,7 +2,7 @@
 
 ``-m biofilm``
 
-The biofilm module identifies key *Staphylococcus aureus* genes involved in biofilm formation, including surface proteins (*clfA*, *clfB*, *fnbA*, *fnbB*), polysaccharide intercellular adhesin genes (*icaA–D*), and the *icaR* regulator. These genes contribute to adhesion, biofilm maturation, and regulation of the biofilm phenotype (1).
+The biofilm module identifies key *Staphylococcus aureus* genes involved in biofilm formation, including surface proteins (*clfA*, *clfB*, *fnbA*, *fnbB*), the collagen-binding protein *cna*, polysaccharide intercellular adhesin genes (*icaA–D*), and the *icaR* regulator. These genes contribute to adhesion, biofilm maturation, and regulation of the biofilm phenotype (1).
 
 A curated FASTA file containing representative biofilm gene sequences is bundled with the module and stored in the ``/data`` directory.
 
@@ -34,13 +34,15 @@ A biofilm score is calculated, based on the genes detected (2) (3).
 
 It follows this criteria:
 
-* 3: icaABCD + clf + fnb detected
+* 4: cna + icaABCD + clf + fnb
+
+* 3: icaABCD + clf + fnb
 
 * 2: icaABCD + clf/fnb
 
-* 1: Only icaABCD detected
+* 1: icaABCD
 
-* 0: no icaABCD completeness
+* 0: icaABCD incomplete/absent
 
 ### Output
 
@@ -48,9 +50,10 @@ Results are grouped for each gene-family, and reported individually if any imper
 
 | Field                          | Description                                                   |
 | ------------------------------ | ------------------------------------------------------------- |
-| biofilm_score                  | Biofilm score (0–3)                                           |
+| biofilm_score                  | Biofilm score (0–4)                                           |
 | biofilm_truncated_hits         | Genes with truncations or premature stop codons               |
 | biofilm_spurious_hits          | Genes with weak hits                                          |
+| cna                            | Detected cna                                                  |
 | clfAB                          | Status of clfA and clfB genes (Complete/Incomplete/-)         |
 | fnbAB                          | Status of fnbA and fnbB genes (Complete/Incomplete/-)         |
 | icaADBC                        | Status of icaA–D genes (Complete/Incomplete/-)                |
