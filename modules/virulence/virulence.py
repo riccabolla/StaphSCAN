@@ -95,7 +95,7 @@ class Module:
 
     def run(self, assembly_path: Path) -> Dict[str, str]:
         results = {
-            "vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", 
+            "vir_score": "-", "vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", "vir_se": "-",
             "spurious_virulence_hits": "-", "truncated_virulence_hits": "-"
         }
         
@@ -201,10 +201,42 @@ class Module:
             elif lukE or lukD:
                 present = lukE + lukD
                 results["vir_lukED"] = f"Partial ({', '.join(present)})"
-            
+
+            #added se genes block    
+            se_genes = ["sea", "sec", "seh", "selk", "sell", "selq"]
+            se_found = []
+            for gene in se_genes:
+                se_found.extend(find_genes([gene]))
+            se_found = sorted(list(set(se_found)))
+            results["vir_se"] = "; ".join(se_found) if se_found else "-"    
+            #end of se genes block
+
             results["spurious_virulence_hits"] = "; ".join(spurious_hits) if spurious_hits else "-"
             results["truncated_virulence_hits"] = "; ".join(truncated_hits) if truncated_hits else "-"
             
+            #score logic block
+            clean_hits = set()
+            for h in strong_hits:
+                clean_name = h.replace("*", "").replace("^", "").replace("?", "").lower()
+                clean_hits.add(clean_name)
+
+            score = 0
+            if "lukf" in clean_hits and "luks" in clean_hits:
+                score = 4
+            elif "tst" in clean_hits:
+                score = 3
+            elif "eta" in clean_hits or "etb" in clean_hits:
+                score = 2
+            else:
+                has_se = not clean_hits.isdisjoint(se_genes)
+                has_luk = "lukd" in clean_hits and "luke" in clean_hits
+                
+                if has_se or has_luk:
+                    score = 1
+
+            results["vir_score"] = score
+            #end of score logic block
+
             return results
 
         except Exception as e:

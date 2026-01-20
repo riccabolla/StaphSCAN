@@ -143,7 +143,7 @@ def main():
         "res_score", "res_gene_count", "res_class_count", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "MLSB", "Tetracyclines", #resistance module 
         "Vancomycin", "Rifampin", "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
         "biofilm_score", "cna","clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", "biofilm_spurious_hits", "biofilm_truncated_hits", #biofilm module
-        "vir_pvl", "vir_tsst", "vir_et", "vir_lukED", "spurious_virulence_hits", "truncated_virulence_hits" #virulence module
+        "vir_score","vir_pvl", "vir_tsst", "vir_et", "vir_lukED","vir_se", "spurious_virulence_hits", "truncated_virulence_hits" #virulence module
     ]
 
     detailed_priority = [
