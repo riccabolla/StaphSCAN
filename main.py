@@ -4,8 +4,8 @@ import pandas as pd
 from pathlib import Path
 import importlib
 
-if sys.version_info < (3, 8):
-    sys.exit("StaphScan requires Python 3.8+")
+if sys.version_info < (3, 10):
+    sys.exit("StaphScan requires Python 3.10+")
 
 def get_available_modules():
     modules_dir = Path(__file__).parent / "modules"
@@ -143,7 +143,7 @@ def main():
         "res_score", "res_gene_count", "res_class_count", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "MLSB", "Tetracyclines", #resistance module 
         "Vancomycin", "Rifampin", "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
         "biofilm_score", "cna","clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", "biofilm_spurious_hits", "biofilm_truncated_hits", #biofilm module
-        "vir_pvl", "vir_tsst", "vir_et", "vir_lukED", "spurious_virulence_hits" #virulence module
+        "vir_pvl", "vir_tsst", "vir_et", "vir_lukED", "spurious_virulence_hits", "truncated_virulence_hits" #virulence module
     ]
 
     detailed_priority = [
