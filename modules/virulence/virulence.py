@@ -225,7 +225,7 @@ class Module:
             score = 0
             if "lukf" in clean_hits and "luks" in clean_hits:
                 score = 4
-            elif "tst" in clean_hits:
+            elif "tsst1" in clean_hits:
                 score = 3
             elif "eta" in clean_hits or "etb" in clean_hits:
                 score = 2
