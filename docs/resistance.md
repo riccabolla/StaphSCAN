@@ -20,9 +20,9 @@ A curated FASTA file containing representative resistance gene sequences is bund
 All detected genes are annotated as follows:
 
 - No annotation**: exact nucleotide match  
-- ``^``: inexact nucleotide match but perfect amino acid match (synonymous mutation)  
+- ``^``: inexact nucleotide match but perfect amino acid match
 - ``*``: inexact nucleotide and inexact amino acid match  
-- ``?``: incomplete match (low coverage)  
+- ``?``: incomplete match  
 - ``-X%``: truncated amino acid sequence  
 
 The module screens specific chromosomal loci for point mutations known to confer resistance.
@@ -53,7 +53,7 @@ A resistance score is calculated to categorize isolates based on a hierarchy of 
 
 Scoring criteria:
 
-- **3**: `vanA` detected (Vancomycin resistance)  
+- **3**: `vanA` or `vanB` detected (Vancomycin resistance)  
 - **2**: `mecA` or `mecC` detected (Methicillin resistance – MRSA)  
 - **1**: `blaZ` detected (Penicillin/Beta-lactamase resistance)  
 - **0**: No key resistance drivers detected  
