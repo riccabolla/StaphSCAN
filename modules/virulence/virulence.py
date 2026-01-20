@@ -120,7 +120,9 @@ class Module:
             
             df = df[(df['pident'] >= 80.0) & (df['coverage'] >= 40.0)]
             
-            if df.empty: return results
+            if df.empty: 
+                results["vir_score"] = 0
+                return results
             
             seqs = SeqIO.to_dict(SeqIO.parse(assembly_path, "fasta"))
             
@@ -188,7 +190,7 @@ class Module:
                 present = lukS + lukF
                 results["vir_pvl"] = f"Partial ({', '.join(present)})"
             
-            tsst = find_genes(["tst"])
+            tsst = find_genes(["tsst1"])
             results["vir_tsst"] = "; ".join(tsst) if tsst else "-"
             
             et = find_genes(["eta", "etb"])
