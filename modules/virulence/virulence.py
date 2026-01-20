@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 from Bio.Seq import Seq
 from Bio import SeqIO
+from Bio import Align
 
 @dataclass
 class GeneHit:
@@ -38,39 +39,65 @@ class Module:
         self.min_id = min_id
         self.min_cov = min_cov
 
+        self.aligner_prot = Align.PairwiseAligner()
+        self.aligner_prot.mode = "global"
+        self.aligner_prot.match_score = 5
+        self.aligner_prot.mismatch_score = -4
+
+        self.ref_prot_dict: Dict[str, str] = {}
+        self.load_ref_seqs()
+
+    def load_ref_seqs(self):
+        if not self.db_fasta.exists(): return
+        for rec in SeqIO.parse(self.db_fasta, "fasta"):
+            seq = rec.seq
+            remainder = len(seq) % 3
+            if remainder > 0:
+                seq = seq[:-remainder]
+            prot = str(seq.translate(table=11)).strip("*")
+            self.ref_prot_dict[rec.id] = prot
+
     def check_db(self) -> bool:
         return self.db_fasta.exists()
 
-    def extract_and_translate(self, seqs: Dict[str, Seq], hit: GeneHit) -> Tuple[str, int]:
-        """
-        Extracts DNA based on BLAST coords and translates immediately.
-        """
-        if hit.sseqid not in seqs: return "", 0
-        contig_seq = seqs[hit.sseqid].seq
-        
-        if hit.sstart < hit.send:
-            dna = contig_seq[hit.sstart-1 : hit.send]
-        else:
-            dna = contig_seq[hit.send-1 : hit.sstart].reverse_complement()
+    def extract_gene(self, seqs: Dict[str, Seq], contig: str, start: int, end: int) -> Seq:
+        if contig not in seqs: return Seq("")
+        s = seqs[contig].seq
+        return s[start - 1:end] if start < end else s[end - 1:start].reverse_complement()
 
-        dna_str = str(dna).replace("-", "")
+    def best_translation(self, dna: Seq, ref_prot: str) -> str:
+        best_cand = ""
+        best_score = -float("inf")
         
-        remainder = len(dna_str) % 3
-        if remainder > 0:
-            dna_str = dna_str[:-remainder]
+        for frame in range(3):
+            sub = dna[frame:]
+            trim = len(sub) % 3
+            if trim > 0: sub = sub[:-trim]
+            if not sub: continue
             
-        if not dna_str: return "", 0
+            cand = str(sub.translate(table=11)).strip("*")
+            score = self.aligner_prot.score(ref_prot, cand) if ref_prot else 0
+            
+            if score > best_score:
+                best_score = score
+                best_cand = cand
+        return best_cand
 
-        try:
-            prot = str(Seq(dna_str).translate(table=11))
-            if "*" in prot:
-                prot = prot.split("*")[0]
-            return prot, len(prot)
-        except Exception:
-            return "X", 0
+    def trim_to_ref(self, found: str, ref: str) -> str:
+        if not found or not ref: return found
+        aln = self.aligner_prot.align(ref, found)[0]
+        r, f = aln[0], aln[1]
+        idx = 0
+        for rc, fc in zip(r, f):
+            if rc != "-": break
+            if fc != "-": idx += 1
+        return found[idx:]
 
     def run(self, assembly_path: Path) -> Dict[str, str]:
-        results = {"vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", "spurious_virulence_hits": "-"}
+        results = {
+            "vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", 
+            "spurious_virulence_hits": "-", "truncated_virulence_hits": "-"
+        }
         
         if not self.check_db():
             return results
@@ -90,6 +117,7 @@ class Module:
                              names=["qseqid", "sseqid", "pident", "length", "slen", "qlen", "sstart", "send", "bitscore"])
             
             df['coverage'] = (df['length'] / df['qlen']) * 100
+            
             df = df[(df['pident'] >= 80.0) & (df['coverage'] >= 40.0)]
             
             if df.empty: return results
@@ -98,32 +126,53 @@ class Module:
             
             strong_hits = []
             spurious_hits = []
+            truncated_hits = []
             
             df['family'] = df['qseqid'].apply(lambda x: x.split('_')[0])
-            best_hits = df.sort_values("bitscore", ascending=False).drop_duplicates("family")
+
+            best_hits = df.sort_values(["pident", "bitscore"], ascending=[False, False]).drop_duplicates("family")
 
             for _, row in best_hits.iterrows():
                 hit_data = row.drop(['family', 'coverage'], errors='ignore').to_dict()
                 hit = GeneHit(**hit_data)
                 
+                dna = self.extract_gene(seqs, hit.sseqid, hit.sstart, hit.send)
+                ref = self.ref_prot_dict.get(hit.qseqid, "")
+                prot = self.trim_to_ref(self.best_translation(dna, ref), ref)
+
+                is_truncated = False
+                trunc_pct = 0
+                
+                if "*" in prot:
+                    is_truncated = True
+                    trunc_pct = int((prot.find("*") / len(ref)) * 100) if ref else 0
+                else:
+                     expected_len = hit.qlen / 3
+                     if len(prot) < (expected_len * 0.9):
+                         is_truncated = True
+                         trunc_pct = int((len(prot) / expected_len) * 100)
+
+                if is_truncated:
+                    truncated_hits.append(f"{hit.family}-{trunc_pct}%")
+                    continue 
+
+                display_str = hit.family
+                
+                if hit.pident < 100.0:
+                    if ref and prot == ref:
+                        display_str += "^"
+                    else:
+                        display_str += "*"
+                
+                if hit.coverage < 100.0:
+                    display_str += "?"
+
                 is_strong = (hit.pident >= self.min_id) and (hit.coverage >= self.min_cov)
-                display_name = hit.family 
                 
-                if not is_strong:
-                    tag = f"(Id:{int(hit.pident)}% Cov:{int(hit.coverage)}%)"
-                    spurious_hits.append(f"{display_name}{tag}")
-                    continue
-                
-                prot_seq, prot_len = self.extract_and_translate(seqs, hit)
-                
-                annotation = ""
-                if hit.pident < 100.0: annotation += "*"
-                
-                expected_len = hit.qlen / 3
-                if prot_len < (expected_len * 0.9):
-                    annotation += "^"
-                
-                strong_hits.append(f"{display_name}{annotation}")
+                if is_strong:
+                    strong_hits.append(display_str)
+                else:
+                    spurious_hits.append(display_str)
 
             def find_genes(search_terms):
                 found = []
@@ -133,7 +182,6 @@ class Module:
 
             lukS = find_genes(["luks"])
             lukF = find_genes(["lukf"])
-            
             if lukS and lukF:
                 results["vir_pvl"] = "Positive"
             elif lukS or lukF:
@@ -148,7 +196,6 @@ class Module:
 
             lukE = find_genes(["luke"])
             lukD = find_genes(["lukd"])
-            
             if lukE and lukD:
                 results["vir_lukED"] = "Positive"
             elif lukE or lukD:
@@ -156,6 +203,7 @@ class Module:
                 results["vir_lukED"] = f"Partial ({', '.join(present)})"
             
             results["spurious_virulence_hits"] = "; ".join(spurious_hits) if spurious_hits else "-"
+            results["truncated_virulence_hits"] = "; ".join(truncated_hits) if truncated_hits else "-"
             
             return results
 
