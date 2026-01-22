@@ -67,15 +67,15 @@ Results are grouped by antibiotic class and reported individually.
 | `res_score` | Resistance score (0–3) |
 | `res_gene_count` | Number of genes conferring resistance |
 | `res_class_count` | Number of classes with at least one resistance determinants |
-| `Aminoglycosides` | Detected aminoglycoside resistance genes (e.g., AAC(6')-Ie-APH(2'')-Ia) |
-| `Mec_RES` | Detected methicillin resistance genes (`mecA`, `mecC`) |
-| `Beta_lactamases` | Detected beta-lactamase genes (`blaZ`) |
+| `Aminoglycosides` | Detected aminoglycoside resistance genes |
+| `Mec_RES` | Detected methicillin resistance genes |
+| `Beta_lactamases` | Detected beta-lactamase genes |
 | `Fluoroquinolones` | Genes/mutations conferring fluoroquinolone resistance |
 | `MLSB` | Detected macrolide/streptogramin B/lincosamide resistance genes |
 | `Rifampicin` | Genes/mutations conferring rifampicin resistance |
 | `Tetracyclines` | Detected tetracycline resistance genes (tet family) |
-| `Linezolid` | Genes/mutations conferring linezolid resistance (`cfrA`, 23S rRNA) |
-| `Vancomycin` | Detected vancomycin resistance genes (`vanA`) |
+| `Linezolid` | Genes/mutations conferring linezolid resistance |
+| `Vancomycin` | Detected vancomycin resistance genes |
 | `truncated_resistance_hits` | Genes with truncations |
 | `spurious_resistance_hits` | Genes with weak hits |
 

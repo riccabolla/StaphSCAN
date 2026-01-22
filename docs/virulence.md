@@ -40,10 +40,10 @@ A virulence score is calculated to categorize isolates based on a hierarchy of c
 
 Scoring criteria:
 
-- **4**: PVL detected (*lukS-PV* + *lukF-PV*)
-- **3**: TSST-1 detected (*tst* or *tsst1*)
-- **2**: Exfoliative toxins detected (*eta*, *etb*)
-- **1**: Enterotoxins (*sea*—*set*) OR LukED detected
+- **4**: PVL detected
+- **3**: TSST-1 detected
+- **2**: Exfoliative toxins detected
+- **1**: Enterotoxins OR LukED detected
 - **0**: No major accessory virulence factors detected
 
 The following criteria also apply:
@@ -61,8 +61,8 @@ Results are reported as follows:
 | `vir_score` | Virulence score (0–4) |
 | `vir_pvl` | Detection status of Panton-Valentine Leukocidin (Positive, Partial, or -) |
 | `vir_tsst` | Detected Toxic Shock Syndrome Toxin genes |
-| `vir_et` | Detected exfoliative toxin genes (`eta`, `etb`) |
+| `vir_et` | Detected exfoliative toxin genes |
 | `vir_lukED` | Detection status of Leukocidin ED (Positive, Partial, or -) |
-| `vir_se` | Detected enterotoxin genes (e.g., `sea`, `sec`, `seh`) |
+| `vir_se` | Detected enterotoxin genes |
 | `truncated_virulence_hits` | Genes with truncations or premature stop codons |
-| `spurious_virulence_hits` | Genes with weak hits (low identity/coverage) |
+| `spurious_virulence_hits` | Genes with weak hits |
