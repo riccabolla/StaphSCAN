@@ -66,7 +66,7 @@ def parse_arguments(available_modules):
     thresh_group.add_argument("--min_cov_biofilm", type=float, default=80.0, help="Min coverage for Biofilm")
 
     rep_group = parser.add_argument_group("Reporting")
-    rep_group.add_argument("--complete", action="store_true")
+    #rep_group.add_argument("--complete", action="store_true") # removed in this version, maybe later
     rep_group.add_argument("--report", type=str, default=None, help="Custom filename for the report output")
 
     args = parser.parse_args()
@@ -137,7 +137,7 @@ def main():
 
     summary_cols = [
         "Sample", "Species", "Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL", "spa_type", #assembly module
-        "cap_type", "cap_completeness", #capsule module
+        "cap_type", "cap_completeness", "cap_genes", #capsule module
         "sccmec_type", #sccmec module
         "agr_type", #agr module
         "res_score", "res_gene_count", "res_class_count", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "MLSB", "Tetracyclines", #resistance module 
@@ -145,25 +145,27 @@ def main():
         "biofilm_score", "cna","clfAB", "clf_genes", "fnbAB", "fnb_genes", "icaADBC", "ica_genes", "icaR_mutations", "biofilm_spurious_hits", "biofilm_truncated_hits", #biofilm module
         "vir_score","vir_pvl", "vir_tsst", "vir_et", "vir_lukED","vir_se", "spurious_virulence_hits", "truncated_virulence_hits" #virulence module
     ]
+    # currently removed the detailed report option
+    # detailed_priority = [
+    #     "Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats",
+    #     "cap_type", "cap_genes", "sccmec_type", "sccmec_genes",
+    #     "agr_type", "Mec_RES", "Mec_AA_Found", "Mec_AA_Ref", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Other_RES",
+    #     "truncated_resistance_hits", "spurious_resistance_hits",
+    #     "biofilm_score", "biofilm_genes", "biofilm_truncated_hits", "clfAB", "clf_genes", "clfA", "clfB",
+    #     "fnbAB", "fnb_genes","fnbA", "fnbB", "icaADBC", "ica_genes", "icaA", "icaB", "icaC", "icaD", "icaR_mutations",
+    #     "vir_pvl", "vir_tsst", "vir_genes", "vir_spurious"
+    # ]
 
-    detailed_priority = [
-        "Sample", "Species", "Mash_distance", "ST", "spa_type", "spa_repeats",
-        "cap_type", "cap_genes", "sccmec_type", "sccmec_genes",
-        "agr_type", "Mec_RES", "Mec_AA_Found", "Mec_AA_Ref", "Beta_lactamases", "Fluoroquinolones", "Tetracyclines", "Other_RES",
-        "truncated_resistance_hits", "spurious_resistance_hits",
-        "biofilm_score", "biofilm_genes", "biofilm_truncated_hits", "clfAB", "clf_genes", "clfA", "clfB",
-        "fnbAB", "fnb_genes","fnbA", "fnbB", "icaADBC", "ica_genes", "icaA", "icaB", "icaC", "icaD", "icaR_mutations",
-        "vir_pvl", "vir_tsst", "vir_genes", "vir_spurious"
-    ]
-
-    if args.complete:
-        final_cols = [c for c in detailed_priority if c in df.columns]
-        remaining = [c for c in df.columns if c not in final_cols and c not in summary_cols]
-        final_cols.extend(remaining)
-        default_filename = "staphscan_detailed.tsv"
-    else:
-        final_cols = [c for c in summary_cols if c in df.columns]
-        default_filename = "staphscan_summary.tsv"
+    # if args.complete:
+    #     final_cols = [c for c in detailed_priority if c in df.columns]
+    #     remaining = [c for c in df.columns if c not in final_cols and c not in summary_cols]
+    #     final_cols.extend(remaining)
+    #     default_filename = "staphscan_detailed.tsv"
+    # else:
+    #     final_cols = [c for c in summary_cols if c in df.columns]
+    #     default_filename = "staphscan_summary.tsv"
+    final_cols = [c for c in summary_cols if c in df.columns]
+    default_filename = "staphscan_summary.tsv"
 
     if args.report: 
         filename = args.report

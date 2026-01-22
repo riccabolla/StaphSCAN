@@ -40,7 +40,7 @@ staphscan [--list_modules] [--version] [-h]
 
 ## Output files
 
-Output files are tab-delimited (.tsv) files. Columns included in each output file will depend on the modules that are run, and on the report version selected (simplified or detailed).
+Output files are tab-delimited (.tsv) files. Columns included in each output file will depend on the modules that are run.
 
 To use a custom report name:
 
@@ -59,9 +59,6 @@ FASTA file(s) for assemblies
 `-o OUTDIR, --outdir OUTDIR` <br>
 Directory for storing output files (default: staphscan_results)
 <br>
-
-`--complete` <br>
-Create a complete final report based on the modules run
 
 `--report` <br>
 Add a custom name for the output report
