@@ -349,7 +349,7 @@ class Module:
             # else:
             #     cat_rif.append(display_str)
             source = self.gene_source.get(hit.family, "other")
-            if source == "mec_res": # If separate file, otherwise mecA is usually in 'other' or specific
+            if source == "mec_res": 
                  cat_mec.append(display_str)
             elif is_mec: 
                  cat_mec.append(display_str)
@@ -371,8 +371,6 @@ class Module:
                  cat_fq.append(display_str)
 
 
-        # Count Classes (Genes + Mutations)
-        # Combine lists to see which classes are active
         classes_map = {
             "Aminoglycosides": cat_amino,
             "Beta_lactamases": cat_bla,
