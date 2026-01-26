@@ -35,7 +35,6 @@ class Module:
             found_genes = set()
             for raw_id in target_res['sseqid'].unique():
                 lower_id = raw_id.lower()
-                # CCR Recombinases
                 if "ccra1" in lower_id: found_genes.add("ccrA1")
                 elif "ccrb1" in lower_id: found_genes.add("ccrB1")
                 elif "ccra2" in lower_id: found_genes.add("ccrA2")
@@ -71,7 +70,8 @@ class Module:
             region_res = self.run_blast(assembly_path, self.regions_db, min_ident=90.0, min_cov=70.0)
             
             if not region_res.empty:
-                # Sort by bitscore/coverage to get the best hit
+                # id first
+                region_res = region_res.sort_values(by=['pident', 'cov'], ascending=[False, False])
                 best_hit = region_res.iloc[0]['sseqid']
                 # Parse header format
                 if "|" in best_hit:
@@ -103,8 +103,8 @@ class Module:
             # Filter
             df = df[ (df['pident'] >= min_ident) & (df['cov'] >= min_cov) ]
             
-            # Sort by coverage descending (optional but good for best hit)
-            df = df.sort_values(by='cov', ascending=False)
+            #sort by id first
+            df = df.sort_values(by=['pident', 'cov'], ascending=[False, False])
             
             return df
         except Exception:
@@ -143,7 +143,7 @@ class Module:
         if "ccrC1" in genes: complexes.append("C1") 
         if "ccrC2" in genes: complexes.append("C2")
         
-        # Mixed Pairs for Higher Types
+        # Mixed Pairs
         if "ccrA1" in genes and "ccrB6" in genes: complexes.append("A1B6") 
         if "ccrA1" in genes and "ccrB3" in genes: complexes.append("A1B3") 
 
