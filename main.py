@@ -138,7 +138,7 @@ def main():
     summary_cols = [
         "Sample", "Species", "Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL", "spa_type", #assembly module
         "cap_type", "cap_completeness", "cap_genes", #capsule module
-        "sccmec_type", #sccmec module
+        "sccmec_type", "sccmec_subtype", "sccmec_genes", #sccmec module
         "agr_type", #agr module
         "res_score", "res_gene_count", "res_class_count", "Aminoglycosides", "Mec_RES", "Beta_lactamases", "Fluoroquinolones", "Linezolid", "MLSB", "Tetracyclines", #resistance module 
         "Vancomycin", "Rifampin", "truncated_resistance_hits", "spurious_resistance_hits", #resistance module
