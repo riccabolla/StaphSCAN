@@ -68,16 +68,16 @@ Results are grouped by antibiotic class and reported individually.
 | `res_gene_count` | Number of genes conferring resistance |
 | `res_class_count` | Number of classes with at least one resistance determinants |
 | `Amino_res` | Detected aminoglycoside resistance genes |
-| `Mec_res` | Detected methicillin resistance genes |
 | `Bla_res` | Detected beta-lactamase genes |
 | `Flq_res` | Genes/mutations conferring fluoroquinolone resistance |
+| `Gly_res` | Detected glycopeptide resistance genes |
+| `Mec_res` | Detected methicillin resistance genes |
 | `MLSB_res` | Detected macrolide/streptogramin B/lincosamide resistance genes |
+| `Oxa_res` | Genes/mutations conferring oxazolinidones resistance |
 | `Rif_res` | Genes/mutations conferring rifampicin resistance |
 | `Tet_res` | Detected tetracycline resistance genes (tet family) |
-| `Oxa_res` | Genes/mutations conferring oxazolinidones resistance |
-| `Gly_res` | Detected glycopeptide resistance genes |
-| `truncated_resistance_hits` | Genes with truncations |
 | `spurious_resistance_hits` | Genes with weak hits |
+| `truncated_resistance_hits` | Genes with truncations |
 
 For `res_gene_count` and `res_class_count` the following criteria is used:
 

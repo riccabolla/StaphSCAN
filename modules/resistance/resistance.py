@@ -231,16 +231,16 @@ class Module:
             "res_score",
             "res_gene_count",
             "res_class_count",
-            "Aminoglycosides",
-            "Mec_RES",
-            "Beta_lactamases",
-            "Fluoroquinolones",
-            "Tetracyclines",
-            "Linezolid", # added for linezolid res
-            "MLSB", # added for mlsb res
-            "Vancomycin",
-            "Rifampin",
-        ]
+            "Amino_res",
+            "Bla_res",
+            "Flq_res",
+            "Gly_res",
+            "Mec_res",
+            "MLSB_res",
+            "Oxa_res",
+            "Rif_res",
+            "Tet_res",       
+            ]
         return {k: "-" for k in keys}
 
     def run(self, assembly: Path) -> Dict[str, str]:
@@ -372,15 +372,15 @@ class Module:
 
 
         classes_map = {
-            "Aminoglycosides": cat_amino,
-            "Beta_lactamases": cat_bla,
-            "Fluoroquinolones": cat_fq,
-            "Linezolid": cat_lin,
-            "Mec_RES": cat_mec,
-            "MLSB": cat_mlsb,
-            "Rifampin": cat_rif,
-            "Tetracyclines": cat_tet,
-            "Vancomycin": cat_van
+            "Amino_res": cat_amino,
+            "Bla_res": cat_bla,
+            "Flq_res": cat_fq,
+            "Gly_res": cat_van,            
+            "Mec_res": cat_mec,
+            "MLSB_res": cat_mlsb,
+            "Oxa_res": cat_lin,
+            "Rif_res": cat_rif,
+            "Tet_res": cat_tet,
         }
         
         active_classes = sum(1 for lst in classes_map.values() if len(lst) > 0)
@@ -394,17 +394,17 @@ class Module:
         out["res_class_count"] = str(active_classes)
         out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
         out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
-        out["Aminoglycosides"] = "; ".join(cat_amino) if cat_amino else "-" #aminoglycosides
-        out["Mec_RES"] = "; ".join(cat_mec) if cat_mec else "-"
-        out["Beta_lactamases"] = "; ".join(cat_bla) if cat_bla else "-"
-        out["Fluoroquinolones"] = "; ".join(cat_fq) if cat_fq else "-"
-        out["Linezolid"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
-        out["MLSB"] = "; ".join(cat_mlsb) if cat_mlsb else "-" # mlsb
-        out["Tetracyclines"] = "; ".join(cat_tet) if cat_tet else "-"
-        out["Vancomycin"] = "; ".join(cat_van) if cat_van else "-"
-        out["Rifampin"] = "; ".join(cat_rif) if cat_rif else "-"        
-        out["Mec_AA_Found"] = " | ".join(mec_aa_found) if mec_aa_found else "-"
-        out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
+        out["Amino_res"] = "; ".join(cat_amino) if cat_amino else "-" #aminoglycosides
+        out["Mec_res"] = "; ".join(cat_mec) if cat_mec else "-"
+        out["Bla_res"] = "; ".join(cat_bla) if cat_bla else "-"
+        out["Flq_res"] = "; ".join(cat_fq) if cat_fq else "-"
+        out["Oxa_res"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
+        out["MLSB_res"] = "; ".join(cat_mlsb) if cat_mlsb else "-" # mlsb
+        out["Tet_res"] = "; ".join(cat_tet) if cat_tet else "-"
+        out["Gly_res"] = "; ".join(cat_van) if cat_van else "-"
+        out["Rif_res"] = "; ".join(cat_rif) if cat_rif else "-"        
+        #out["Mec_AA_Found"] = " | ".join(mec_aa_found) if mec_aa_found else "-"
+        #out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
 
         score = 0
         is_van_positive = any("vanA" in x or "vanB" in x for x in cat_van)
