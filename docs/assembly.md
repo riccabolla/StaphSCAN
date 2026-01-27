@@ -45,13 +45,11 @@ For assembly quality the following parameters are considered:
 
 The assembly module generates the following output columns in the default report:
 
-* **Species**: <br>
-Detected species based on Mash distance to reference genomes (the strongest match is considered). 
+|Field|Description|
+|-----|-----------|
+|`Species`|Detected specie|
+|`Total_size`|Assembly size (bp)|
+|`QC`|Overall QC status (`PASS`  or `FAILED`)|
 
-* **Total_size**: <br>
-Total assembly size (in bp).
-
-* **QC**: <br>
-Overall QC status of the assembly: `PASS`  or `FAILED` . 
 
 All results from failed QC checks should be treated with caution.
