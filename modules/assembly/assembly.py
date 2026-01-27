@@ -23,8 +23,8 @@ class Module:
         contig_count, n50, longest, total_size, ambig = self.get_contig_stats(assembly_path)
         species_call, mash_dist = self.run_mash(assembly_path)
         qc_failures = []
-        if total_size < self.min_size: qc_failures.append("Undersized")
-        if total_size > self.max_size: qc_failures.append("Oversized")
+        if total_size < self.min_size: qc_failures.append("Too short")
+        if total_size > self.max_size: qc_failures.append("Too long")
         if n50 < self.min_n50: qc_failures.append("Low_N50")
         if "yes" in ambig: qc_failures.append("Ambiguous_Bases")
         
@@ -63,17 +63,24 @@ class Module:
             elif "S_epidermidis" in best_name: display_name = "S. epidermidis"
             elif "S_lugdunensis" in best_name: display_name = "S. lugdunensis"
             elif "S_haemolyticus" in best_name: display_name = "S. haemolyticus"
+            elif "S_argenteus" in best_name: display_name = "S. argenteus"
+            elif "S_capitis" in best_name: display_name = "S. capitis"
+            elif "S_schweitzeri" in best_name: display_name = "S. schweitzeri"
             else: display_name = best_name
-            if best_dist <= 0.02:
-                if display_name == "S. aureus":
-                    return "S. aureus (Strong match)", str(best_dist)
-                else:
-                    return display_name, str(best_dist)
-            elif best_dist <= 0.04:
-                if display_name == "S. aureus":
-                    return "S. aureus (Weak match)", str(best_dist)
-                else:
-                    return display_name, str(best_dist)
+            # if best_dist <= 0.02:
+            #     if display_name == "S. aureus":
+            #         return "S. aureus (Strong match)", str(best_dist)
+            #     else:
+            #         return display_name, str(best_dist)
+            # elif best_dist <= 0.04:
+            #     if display_name == "S. aureus":
+            #         return "S. aureus (Weak match)", str(best_dist)
+            #     else:
+            #         return display_name, str(best_dist)
+            # else:
+            #     return "No match found", str(best_dist)
+            if best_dist <= 0.04:
+                return display_name, str(best_dist)
             else:
                 return "No match found", str(best_dist)
 
