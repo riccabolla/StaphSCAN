@@ -10,21 +10,28 @@ This module will attempt to identify the species of each input assembly, and gen
 
 
 Species identification is performed using Mash (Ondov et al., 2016) to compare the input assembly against a database of reference genomes.
-The database includes high-quality complete genomes of several *Staphylococcus* species downloaded from NCBI RefSeq.
+The database includes the following high-quality genomes:
 
-Currently, it uses two thresholds:
+|Specie|Genome|
+|------|---------|
+|*Staphylococcus argenteus*|[GCF_000236925.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000236925.1/)|
+|*Staphylococcus aureus*|[GCF_000013425.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000013425.1/)|
+|*Staphylococcus capitis*|[GCF_040739365.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_040739365.1/)|
+|*Staphylococcus epidermidis*|[GCF_006094375.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_006094375.1/)|
+|*Staphylococcus haemolyticus*|[GCF_006094395.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_006094395.1/)|
+|*Staphylococcus lugdunensis*|[GCF_001558775.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_001558775.1/)|
+|*Staphylococcus schweitzeri*|[GCF_900636685.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_900636685.1/)|
 
-* Mash distance threshold for a strong species match (default: 0.02)
 
-* Mash distance threshold for a weak species match (default: 0.04)
+Currently, it uses a mash distance threshold of 0.04. 
 
 To report the species, the following criteria are used:
 
-* The species with the lowest distance is reported. 
-* If *Staphylococcus aureus* is identified with a distance below the strong threshold, it is reported as a "Strong match". 
-* If *Staphylococcus aureus* is identified with a distance between the strong and weak threshold, it is reported as a "Weak match".
-* If *Staphyloccocus aureus* is not the best match, but one of the listed genomes is, it is reported.
+* The species with the lowest distance is reported, if lower than the threshold. 
 * If the lowest Mash distance is > 0.04, the result is reported as “No match found”.
+
+!!! note
+    All genomes identified as not *Staphylococcus aureus* are skipped for downstream analysis. 
 
 ## Contigs stats
 

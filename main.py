@@ -121,11 +121,30 @@ def main():
         print(f"Processing: {fpath.stem}...")
         record = {'Sample': fpath.stem}
 
+        perform_downstream = True
+
+        if "assembly" in loaded_modules:
+            try: 
+                asm_res = loaded_modules["assembly"].run(fpath)
+                record.update(asm_res)
+                species = asm_res.get("Species", "Unknown")
+                if species != "S. aureus":
+                    print(f"Species identified as '{species}'. Skipping downstream analyses.") #species filtering
+                    perform_downstream = False
+            except Exception as e:
+                print(f"Error running assembly: {e}")
+                record["assembly_error"] = "Fail"
+                perform_downstream = False
+
         for name, mod in loaded_modules.items():
+            if name == "assembly":
+                continue
+            if not perform_downstream:
+                continue
             try:
                 record.update(mod.run(fpath))
             except Exception as e:
-                print(f"  [!] Error running {name}: {e}")
+                print(f"Error running {name}: {e}")
                 record[f"{name}_error"] = "Fail"
 
         all_results.append(record)
