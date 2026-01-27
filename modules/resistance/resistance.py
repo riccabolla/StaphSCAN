@@ -43,11 +43,11 @@ class Module:
             "amino": self.module_dir / "data" / "amino_res.fasta",
             "bla": self.module_dir / "data" / "bla_res.fasta",
             "flq": self.module_dir / "data" / "flq_res.fasta",
-            "lin": self.module_dir / "data" / "lin_res.fasta", # added for linezolid res
-            "mlsb": self.module_dir / "data" / "mlsb_res.fasta", # added for mlsb res
-            "rif": self.module_dir / "data" / "rif_res.fasta", #rpoB 
+            "oxa": self.module_dir / "data" / "oxa_res.fasta", 
+            "mlsb": self.module_dir / "data" / "mlsb_res.fasta", 
+            "rif": self.module_dir / "data" / "rif_res.fasta", 
             "tet": self.module_dir / "data" / "tet_res.fasta",
-            "van": self.module_dir / "data" / "van_res.fasta",
+            "gly": self.module_dir / "data" / "gly_res.fasta",
         }
 
         self.ref_prot_dict: Dict[str, str] = {}
@@ -209,14 +209,14 @@ class Module:
         df = df.copy()
         df["coverage"] = (df["length"] / df["qlen"]) * 100
 
-        # section added for spurious hit
+        # section for spurious hit
         df = df[
             (df["pident"] >= 80) &
             (df["coverage"] >= 40)
         ]
         
         #df = df[(df["pident"] >= self.min_id) & (df["coverage"] >= self.min_cov)].copy()
-        # end of the section modified for spurious hit
+        # end of the section for spurious hit
         if df.empty:
             return df
             
@@ -258,7 +258,7 @@ class Module:
         best = df.drop_duplicates("family")
 
         strong, muts, trunc, spur = [], [], [], []
-        cat_amino, cat_mec, cat_bla, cat_fq, cat_lin, cat_mlsb,cat_tet, cat_van, cat_rif = [], [], [], [], [], [], [], [], []
+        cat_amino, cat_mec, cat_bla, cat_fq, cat_oxa, cat_mlsb,cat_tet, cat_gly, cat_rif = [], [], [], [], [], [], [], [], []
         mec_aa_found, mec_aa_ref = [], []
         #section mofified for spurious hit
         # for _, r in best.iterrows():
@@ -312,7 +312,7 @@ class Module:
                     if hit.family in ["gyrA", "parC", "gyrB"]:
                         cat_fq.append(mut_str)
                     elif hit.family == "23S": # linezolid
-                        cat_lin.append(mut_str)
+                        cat_oxa.append(mut_str)
                     else:
                         cat_rif.append(mut_str) #rpoB
                 continue
@@ -357,12 +357,12 @@ class Module:
                  cat_bla.append(display_str)
             elif source == "amino":
                  cat_amino.append(display_str)
-            elif source == "lin":
-                 cat_lin.append(display_str)
+            elif source == "oxa":
+                 cat_oxa.append(display_str)
             elif source == "tet":
                  cat_tet.append(display_str)
-            elif source == "van":
-                 cat_van.append(display_str)
+            elif source == "gly":
+                 cat_gly.append(display_str)
             elif source == "mlsb":
                  cat_mlsb.append(display_str)
             elif source == "rif":
@@ -375,10 +375,10 @@ class Module:
             "Amino_res": cat_amino,
             "Bla_res": cat_bla,
             "Flq_res": cat_fq,
-            "Gly_res": cat_van,            
+            "Gly_res": cat_gly,            
             "Mec_res": cat_mec,
             "MLSB_res": cat_mlsb,
-            "Oxa_res": cat_lin,
+            "Oxa_res": cat_oxa,
             "Rif_res": cat_rif,
             "Tet_res": cat_tet,
         }
@@ -398,16 +398,16 @@ class Module:
         out["Mec_res"] = "; ".join(cat_mec) if cat_mec else "-"
         out["Bla_res"] = "; ".join(cat_bla) if cat_bla else "-"
         out["Flq_res"] = "; ".join(cat_fq) if cat_fq else "-"
-        out["Oxa_res"] = "; ".join(cat_lin) if cat_lin else "-" # linezolid
+        out["Oxa_res"] = "; ".join(cat_oxa) if cat_oxa else "-" # linezolid
         out["MLSB_res"] = "; ".join(cat_mlsb) if cat_mlsb else "-" # mlsb
         out["Tet_res"] = "; ".join(cat_tet) if cat_tet else "-"
-        out["Gly_res"] = "; ".join(cat_van) if cat_van else "-"
+        out["Gly_res"] = "; ".join(cat_gly) if cat_gly else "-"
         out["Rif_res"] = "; ".join(cat_rif) if cat_rif else "-"        
         #out["Mec_AA_Found"] = " | ".join(mec_aa_found) if mec_aa_found else "-"
         #out["Mec_AA_Ref"] = " | ".join(mec_aa_ref) if mec_aa_ref else "-"
 
         score = 0
-        is_van_positive = any("vanA" in x or "vanB" in x for x in cat_van)
+        is_van_positive = any("vanA" in x or "vanB" in x for x in cat_gly)
         if is_van_positive:
             score = 3
         elif cat_mec:
