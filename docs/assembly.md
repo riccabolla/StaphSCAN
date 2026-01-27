@@ -43,7 +43,7 @@ For assembly quality the following parameters are considered:
 
 ## Outputs
 
-The assembly module generates the following output columns in the default report:
+The assembly module generates the following output columns in the report:
 
 |Field|Description|
 |-----|-----------|
