@@ -6,7 +6,7 @@ StaphSCAN includes several typing methods, each of which can be run as a stand-a
 
 ``-m mlst`` 
 
-All genomes identified as *Staphylococcus aureus* are subject to MLST using the seven-locus typing scheme described [here](https://pubmlst.org/organisms/staphylococcus-aureus) (1). 
+All genomes identified as *Staphylococcus aureus* are subject to MLST using the seven-locus typing scheme described [here](https://pubmlst.org/organisms/staphylococcus-aureus). When you use this module, please remember to cite [Jolley et al. 2018](https://pmc.ncbi.nlm.nih.gov/articles/PMC6192448/). 
 
 A copy of the MLST alleles and ST definitions is stored in the ``/data`` directory of this module.
 
@@ -30,10 +30,6 @@ For each locus, the following annotations may be reported:
 * Missing loci: loci not detected in the assembly are reported as `` - ``.
 
 Imprecise or incomplete allelic profiles result in approximate ST assignments. In these cases, StaphSCAN reports the closest matching ST followed by the number of differing loci (n-locus variants, up to two). Example: `` ST1-1LV `` (closest match is ST1 with one differing allele)
-
-### Citations
-
-1) Jolley KA, Bray JE, Maiden MCJ. Open-access bacterial population genomics: BIGSdb software, the PubMLST.org website and their applications. Wellcome Open Res. 2018;3:124. Published 2018 Sep 24. doi:10.12688/wellcomeopenres.14826.1
 
 ## spa typing
 
@@ -61,10 +57,21 @@ Spa typing is dependent on genome assembly quality, and fragmentation or sequenc
 
 ``-m agr``
 
-The agr module identifies the *Staphylococcus aureus* accessory gene regulator (agr) type, a quorum-sensing system involved in virulence regulation and commonly classified into four major groups (I–IV) (1).
+The agr module identifies the *Staphylococcus aureus* accessory gene regulator (agr) type, a quorum-sensing system involved in virulence regulation and commonly classified into four major groups (I–IV) ([Raghuram V et al. 2022](https://doi.org/10.1128/spectrum.01334-21)).
 
-A curated FASTA file containing representative agr group target sequences is bundled with the module and stored in the ``/data`` directory.
+It is an adaption of the tool [agrVATE](https://github.com/VishnuRaghuram94/AgrVATE/tree/main).
 
+A curated set of reference sequences is bundled with the module and stored in the ``/data`` directory.
+
+This module tries to
+
+1) Identify agr type: 
+    
+    The assembly is queried against group-specific probes in `targets.fasta` file. The *agr* type is assigned to the group with the highest count of unique matching probes.
+
+2) Evaluate operon functionality: 
+
+    The full *agr* operon is extracted from the assembly using the specific reference sequence (`.gbk`) for the identified group
 
 ### Output
 
@@ -72,46 +79,45 @@ Agr group identifiers are mapped to standard agr types as follows:
 
 | Internal ID | Reported agr type |
 |-------------|-------------------|
-| gp1         | agr I             |
-| gp2         | agr II            |
-| gp3         | agr III           |
-| gp4         | agr IV            |
+| `gp1`         | `agr I`             |
+| `gp2`         | `agr II`            |
+| `gp3`         | `agr III`           |
+| `gp4`         | `agr IV`            |
 
 The agr module reports:
 
-| Field               | Description                                  |
-|---------------------|----------------------------------------------|
-| agr_type            | Assigned agr group (agr I–IV)                 |
-| agr_match_confidence| Percent identity of the best BLAST hit        |
+| Field  | Description|
+|--------|------------|
+|`agr_type`| Assigned agr group (agr I–IV)|
+|`agr_ confidence`| N of probes matching the assigned group |
+|`agr_frameshifts`|Report eventual gene defections|
+|`agr_operon_status`|Operon functionality assessment|
 
+The following criteria are used to report the `agr_operon-status`:
 
-* agr I–IV
+* `Intact`: *agrC* and *agrA* coding sequences are complete and functional.
 
-    A valid agr group was identified and reported.
+* `Pseudogene`: Frameshifts, or premature stop codons detected in *agrC* or *agrA*.
 
-* Negative
+* `Assembly Gap`: The gene appears truncated but ends precisely at the edge of a contig. This suggests the gene might be intact but wasn't fully assembled, rather than a biological mutation.
 
-    No BLAST hits passed the identity threshold.
+* `Missing/Fragmented`: The operon could not be extracted or is too fragmented to analyze.
 
-* Error
- 
-    An unexpected error occurred during analysis.
+* `Ref Missing`: Reference data for the identified group is unavailable.
 
 ### Notes and limitations
-* Only the top-ranked BLAST hit is used for agr assignment.
-* Assemblies with fragmented or highly divergent agr loci may yield Negative results.
-* Reported confidence reflects percent identity, not overall locus completeness.
-* The module assumes one dominant agr group per genome.
 
-### Citations
+* While the module attempts to distinguish assembly breaks (`Assembly Gap`) from true mutations (`Pseudogene`), highly fragmented assemblies may still result in ambiguous functionality calls. For this reason, positive `Pseudogene` results, should be treated with caution, and investigate properly using a read-based method (i.e. [Snippy](https://github.com/tseemann/snippy))
 
-1) Raghuram V, Alexander AM, Loo HQ, Petit RA, Goldberg JB, Read TD.2022.Species-Wide Phylogenomics of the Staphylococcus aureus Agr Operon Revealed Convergent Evolution of Frameshift Mutations. Microbiol Spectr10:e01334-21.https://doi.org/10.1128/spectrum.01334-21
+* Typing uses relaxed BLAST parameters (90% identity) to correctly classify divergent lineages, but relies on a strict count of unique probes to ensure specificity.
+
+* The module is tuned to ignore natural allelic variation (SNPs) while catching structural defects (indels/stops) that destroy protein function.
 
 ## Capsule
 
 ``-m capsule``
 
-The capsule module identifies the *Staphylococcus aureus* capsular polysaccharide operon and assigns the predominant capsule serotype (Type 5 or Type 8). Capsular polysaccharides are major virulence determinants involved in immune evasion and are encoded by the cap operon (capA–P), with serotype specificity driven by the H–K loci (1).
+The capsule module identifies the *Staphylococcus aureus* capsular polysaccharide operon and assigns the predominant capsule serotype (Type 5 or Type 8). Capsular polysaccharides are major virulence determinants involved in immune evasion and are encoded by the cap operon (capA–P), with serotype specificity driven by the H–K loci ([Cocchiaro et al. 2006](https://doi.org/10.1111/j.1365-2958.2005.04978.x)).
 
 A curated FASTA file containing representative capsule gene sequences is bundled with the module and stored in the ``/data`` directory.
 
@@ -142,10 +148,6 @@ The operon is classified as:
 | cap_type         | Assigned capsule serotype (Type 5, Type 8, or -)   |
 | cap_completeness | Capsule operon status (Complete, Incomplete, or -) |
 | cap_genes        | Semicolon-separated list of detected capsule genes |
-
-### Citations
-
-1) Cocchiaro, J.L., Gomez, M.I., Risley, A., Solinga, R., Sordelli, D.O. and Lee, J.C. (2006), Molecular characterization of the capsule locus from non-typeable Staphylococcus aureus. Molecular Microbiology, 59: 948-960. https://doi.org/10.1111/j.1365-2958.2005.04978.x
 
 ## sccmec 
 
