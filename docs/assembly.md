@@ -33,7 +33,7 @@ To report the species, the following criteria are used:
 !!! note
     All genomes identified as not *Staphylococcus aureus* are skipped for downstream analysis. 
 
-## Contigs stats
+## Assembly stats
 
 For assembly quality the following parameters are considered:
 
