@@ -99,9 +99,7 @@ class Module:
             return None
 
     def analyze_gene(self, ref_prot, sample_frames): #removed gene_name and sample_len_bp
-        """
-        Aligns Ref vs All Frames and checks for Edge Truncation.
-        """
+
         best_score = -1.0
         best_seq = ""
         #best_frame_idx = -1
