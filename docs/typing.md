@@ -67,11 +67,11 @@ This module tries to
 
 1) Identify agr type: 
     
-    The assembly is queried against group-specific probes in `targets.fasta` file. The *agr* type is assigned to the group with the highest count of unique matching probes.
+The assembly is queried against group-specific probes in `targets.fasta` file. The *agr* type is assigned to the group with the highest count of unique matching probes.
 
 2) Evaluate operon functionality: 
 
-    The full *agr* operon is extracted from the assembly using the specific reference sequence (`.gbk`) for the identified group
+The full *agr* operon is extracted from the assembly using the specific reference sequence (`.gbk`) for the identified group
 
 ### Output
 
