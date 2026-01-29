@@ -5,6 +5,7 @@
 The biofilm module identifies key *Staphylococcus aureus* genes involved in biofilm formation, including surface proteins (*clfA*, *clfB*, *fnbA*, *fnbB*), the collagen-binding protein *cna*, polysaccharide intercellular adhesin genes (*icaA–D*), and the *icaR* regulator. These genes contribute to adhesion, biofilm maturation, and regulation of the biofilm phenotype ([Idrees et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). <br>
 
 ![Figure 1. Biofilm formation](images/biofilm.png)
+
 *Figure 1. Biofilm formation (Idrees et al. 2021).*
 
 A curated FASTA file containing representative biofilm gene sequences is bundled with the module and stored in the ``/data`` directory.
