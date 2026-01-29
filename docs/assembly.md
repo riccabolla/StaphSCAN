@@ -9,7 +9,7 @@ This module will attempt to identify the species of each input assembly, and gen
 ## Species identification
 
 
-Species identification is performed using Mash (Ondov et al., 2016) to compare the input assembly against a database of reference genomes.
+Species identification is performed using Mash ([Ondov et al., 2016](https://pubmed.ncbi.nlm.nih.gov/27323842/)) to compare the input assembly against a database of reference genomes.
 The database includes the following high-quality genomes:
 
 |Specie|Genome|

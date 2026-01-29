@@ -113,7 +113,7 @@ The following criteria are used to report the `agr_operon-status`:
 
 * The module is tuned to ignore natural allelic variation (SNPs) while catching structural defects (indels/stops) that destroy protein function.
 
-## Capsule
+## Capsule Typing
 
 ``-m capsule``
 
@@ -145,11 +145,11 @@ The operon is classified as:
 
 | Field            | Description                                        |
 | ---------------- | -------------------------------------------------- |
-| cap_type         | Assigned capsule serotype (Type 5, Type 8, or -)   |
-| cap_completeness | Capsule operon status (Complete, Incomplete, or -) |
-| cap_genes        | Semicolon-separated list of detected capsule genes |
+| `cap_type`         | Assigned capsule serotype (Type 5, Type 8, or -)   |
+| `cap_completeness` | Capsule operon status (Complete, Incomplete, or -) |
+| `cap_genes`        | Semicolon-separated list of detected capsule genes |
 
-## sccmec 
+## SCCmec Typing 
 
 ``-m sccmec``
 
@@ -268,6 +268,6 @@ The module reports:
 
 | Field          | Description                                                  |
 | -------------- | ------------------------------------------------------------ |
-| sccmec_type    | Assigned SCCmec type                                         |
-| sccmec_subtype | Assigned subtype                                             |
-| sccmec_genes   | Semicolon-separated list of detected SCCmec-associated genes |
+| `sccmec_type `   | Assigned SCCmec type                                         |
+| `sccmec_subtype` | Assigned subtype                                             |
+| `sccmec_genes`   | Semicolon-separated list of detected SCCmec-associated genes |
