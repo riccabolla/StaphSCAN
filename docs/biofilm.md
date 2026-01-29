@@ -2,7 +2,17 @@
 
 ``-m biofilm``
 
-The biofilm module identifies key *Staphylococcus aureus* genes involved in biofilm formation, including surface proteins (*clfA*, *clfB*, *fnbA*, *fnbB*), the collagen-binding protein *cna*, polysaccharide intercellular adhesin genes (*icaA–D*), and the *icaR* regulator. These genes contribute to adhesion, biofilm maturation, and regulation of the biofilm phenotype (1).
+The biofilm module identifies key *Staphylococcus aureus* genes involved in biofilm formation, including surface proteins (*clfA*, *clfB*, *fnbA*, *fnbB*), the collagen-binding protein *cna*, polysaccharide intercellular adhesin genes (*icaA–D*), and the *icaR* regulator. These genes contribute to adhesion, biofilm maturation, and regulation of the biofilm phenotype ([Idrees et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). <br>
+
+
+<p align="center">
+  <img src="../images/assembly_workflow.png" width="600">
+</p>
+
+<figure>
+  <img src="../images/assembly_workflow.png" alt="" width="700">
+  <figcaption><b>Figure 1.</b> Biofilm formation (Idrees et al. 2021).</figcaption>
+</figure>
 
 A curated FASTA file containing representative biofilm gene sequences is bundled with the module and stored in the ``/data`` directory.
 
@@ -30,19 +40,27 @@ All hits with 80–90% identity or 40–80% coverage are reported as spurious hi
 
 ### Biofilm score
 
-A biofilm score is calculated, based on the genes detected (2) (3). 
+A biofilm score is calculated, based on the genes detected. 
 
 It follows this criteria:
 
-* 4: cna + icaABCD + clf + fnb
+* 4: *cna* + *icaABCD* + *clf* + *fnb*
 
-* 3: icaABCD + clf + fnb
+* 3: *icaABCD* + *clf* + *fnb*
 
-* 2: icaABCD + clf/fnb
+* 2: *icaABCD* + *clf*/*fnb*
 
-* 1: icaABCD
+* 1: *icaABCD*
 
-* 0: icaABCD incomplete/absent
+* 0: *icaABCD* incomplete/absent
+
+This scoring system reflects the multifactorial nature of *S. aureus* biofilm formation, wherein the cumulative presence of these specific genes signifies increased biofilm-forming capacity and enhanced virulence ([Nathan K et al. 2011](https://www.tandfonline.com/doi/full/10.4161/viru.2.5.17724#d1e149); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). 
+
+The presence of the *icaABCD* operon is crucial for biofilm development (Score 1), particularly in methicillin-sensitive *S. aureus isolates* ([Cramton et al. 2001](https://pmc.ncbi.nlm.nih.gov/articles/PMC98472/); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). A complete icaADBC operon, along with its repressor *icaR*, is essential for the synthesis of PIA polysaccharides, which are crucial for intercellular adhesion and biofilm formation ([Piechota et al. 2018](https://doi.org/10.1155/2018/4657396Digital)).
+
+Increasing the biofilm potential (Scores 2–3), the co-occurrence of surface proteins like *clfA*, *clfB*, *fnbA*, and *fnbB* with the icaABCD operon, facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/); [Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/)).
+
+Finally, the additional presence of the *cna* gene, encoding for collagen-binding protein, distinguishes the highest biofilm capacity (Score 4). It strengthens adherence to host extracellular matrix components, contributing to the persistent nature of *S. aureus* infections ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). 
 
 ### Output
 
@@ -50,25 +68,14 @@ Results are grouped for each gene-family, and reported individually if any imper
 
 | Field                          | Description                                                   |
 | ------------------------------ | ------------------------------------------------------------- |
-| biofilm_score                  | Biofilm score (0–4)                                           |
-| biofilm_truncated_hits         | Genes with truncations or premature stop codons               |
-| biofilm_spurious_hits          | Genes with weak hits                                          |
-| cna                            | Detected cna                                                  |
-| clfAB                          | Status of clfA and clfB genes (Complete/Incomplete/-)         |
-| fnbAB                          | Status of fnbA and fnbB genes (Complete/Incomplete/-)         |
-| icaADBC                        | Status of icaA–D genes (Complete/Incomplete/-)                |
-| clf_genes                      | Detected clf genes                                            |
-| fnb_genes                      | Detected fnb genes                                            |
-| ica_genes                      | Detected ica genes                                            |
-| icaR_mutations (4)             | Truncated icaR regulator, if any                              |
-
-
-### Citations
-
-1) Idrees M, Sawant S, Karodia N, Rahman A. Staphylococcus aureus Biofilm: Morphology, Genetics, Pathogenesis and Treatment Strategies. Int J Environ Res Public Health. 2021 Jul 16;18(14):7602. doi: 10.3390/ijerph18147602. 
-
-2) O'Neill E, Pozzi C, Houston P, et al. A novel Staphylococcus aureus biofilm phenotype mediated by the fibronectin-binding proteins, FnBPA and FnBPB. J Bacteriol. 2008;190(11):3835-3850. doi:10.1128/JB.00167-08
-
-3) Foster TJ. Surface Proteins of Staphylococcus aureus. Microbiol Spectr. 2019;7(4):10.1128/microbiolspec.gpp3-0046-2018. doi:10.1128/microbiolspec.GPP3-0046-2018
-
-4) Schwartbeck B, Rumpf CH, Hait RJ, Janssen T, Deiwick S, Schwierzeck V, Mellmann A, Kahl BC. Various mutations in icaR, the repressor of the icaADBC locus, occur in mucoid Staphylococcus aureus isolates recovered from the airways of people with cystic fibrosis. Microbes Infect. 2024 May-Jun;26(4):105306. doi: 10.1016/j.micinf.2024.105306.
+| `biofilm_score`                  | Biofilm score (0–4)                                           |
+| `biofilm_truncated_hits`        | Genes with truncations or premature stop codons               |
+| `biofilm_spurious_hits`          | Genes with weak hits                                          |
+| `cna`                            | Detected cna                                                  |
+| `clfAB`                          | Status of clfA and clfB genes (Complete/Incomplete/-)         |
+| `fnbAB`                          | Status of fnbA and fnbB genes (Complete/Incomplete/-)         |
+| `icaADBC`                        | Status of icaA–D genes (Complete/Incomplete/-)                |
+| `clf_genes`                      | Detected clf genes                                            |
+| `fnb_genes`                      | Detected fnb genes                                            |
+| `ica_genes`                      | Detected ica genes                                            |
+| `icaR_mutations` ([Schwartbeck et al. 2024](https://pubmed.ncbi.nlm.nih.gov/38316375/)) | Truncated icaR regulator                              |
