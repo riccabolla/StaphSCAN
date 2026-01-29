@@ -6,11 +6,9 @@ The biofilm module identifies key *Staphylococcus aureus* genes involved in biof
 
 
 <p align="center">
-  <img src="../images/assembly_workflow.png" width="600">
-</p>
+  <img title="biofilm" src="images/biofilm.png">
 
 <figure>
-  <img src="../images/assembly_workflow.png" alt="" width="700">
   <figcaption><b>Figure 1.</b> Biofilm formation (Idrees et al. 2021).</figcaption>
 </figure>
 
