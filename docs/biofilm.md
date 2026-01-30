@@ -38,11 +38,13 @@ A biofilm score is calculated, based on the genes detected.
 
 It follows this criteria:
 
-* 4: *cna* + *icaABCD* + *clf* + *fnb*
+* 5: *cna* + *icaABCD* + *clf* + *fnb*
 
-* 3: *icaABCD* + *clf* + *fnb*
+* 4: *icaABCD* + *clf*/*cna* + *fnb*
 
-* 2: *icaABCD* + *clf*/*fnb*
+* 3: *icaABCD* + *fnb*
+
+* 2: *icaABCD* + *clf*/*cna*
 
 * 1: *icaABCD*
 
@@ -52,9 +54,9 @@ This scoring system reflects the multifactorial nature of *S. aureus* biofilm fo
 
 The presence of the *icaABCD* operon is crucial for biofilm development (Score 1), particularly in methicillin-sensitive *S. aureus isolates* ([Cramton et al. 2001](https://pmc.ncbi.nlm.nih.gov/articles/PMC98472/); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). A complete icaADBC operon, along with its repressor *icaR*, is essential for the synthesis of PIA polysaccharides, which are crucial for intercellular adhesion and biofilm formation ([Piechota et al. 2018](https://doi.org/10.1155/2018/4657396Digital)).
 
-Increasing the biofilm potential (Scores 2–3), the co-occurrence of surface proteins like *clfA*, *clfB*, *fnbA*, and *fnbB* with the icaABCD operon, facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/); [Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/)).
+Increasing the biofilm potential (Score 2), the co-occurrence of surface proteins like *cna*, *clfA* or *clfB*, facilitates adhesion to different surfaces ([Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). The genes *fnbA* and/or *fnbB* with the icaABCD operon (Score 3), facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/)). 
 
-Finally, the additional presence of the *cna* gene, encoding for collagen-binding protein, distinguishes the highest biofilm capacity (Score 4). It strengthens adherence to host extracellular matrix components, contributing to the persistent nature of *S. aureus* infections ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). 
+Finally, the combinations of the previously genes (Score 4 and 5), characterize isolates with both versatility and production capacity.  ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). 
 
 ### Output
 
@@ -62,7 +64,7 @@ Results are grouped for each gene-family, and reported individually if any imper
 
 | Field                          | Description                                                   |
 | ------------------------------ | ------------------------------------------------------------- |
-| `biofilm_score`                  | Biofilm score (0–4)                                           |
+| `biofilm_score`                  | Biofilm score (0–5)                                           |
 | `biofilm_truncated_hits`        | Genes with truncations or premature stop codons               |
 | `biofilm_spurious_hits`          | Genes with weak hits                                          |
 | `cna`                            | Detected cna                                                  |

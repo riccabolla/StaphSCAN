@@ -261,21 +261,24 @@ class Module:
         has_fnb = any(g in found_genes for g in self.fnb_targets)
         has_cna = any(g in found_genes for g in self.cna_targets)  # added cna
 
-        # new score system
+        # score system
         # it now considers only the completeness of icaAD relevant.
         # the presence of just one clf or fnb gene is sufficient to increase the score
-        # the new score reflects just the biofilm potential, not prediction on the strength
+        # the new score tries to summarise the biofilm potential, including versatility and quantity
         # adding cna allows to evaluate the "versatility" of the strain
+        # fnb genes are associated with strong biofilm formation, and considered as more relevant
 
         score = 0
 
         if has_ica:
             score = 1
             if has_cna and has_fnb and has_clf:
-                score = 4            
-            elif has_clf and has_fnb:
-                score = 3
-            elif has_clf or has_fnb:
+                score = 5             
+            elif has_fnb and (has_clf or has_cna) :
+                score = 4 
+            elif has_fnb:
+                score = 3    
+            elif has_clf or has_cna: 
                 score = 2
         
         out["biofilm_score"] = str(score)
