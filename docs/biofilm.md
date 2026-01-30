@@ -56,7 +56,7 @@ The presence of the *icaABCD* operon is crucial for biofilm development (Score 1
 
 Increasing the biofilm potential (Score 2), the co-occurrence of surface proteins like *cna*, *clfA* or *clfB*, facilitates adhesion to different surfaces ([Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). The genes *fnbA* and/or *fnbB* with the icaABCD operon (Score 3), facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/)). 
 
-Finally, the combinations of the previously genes (Score 4 and 5), characterize isolates with both versatility and production capacity.  ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). 
+Finally, the combinations of the previously genes (Score 4 and 5), characterize isolates with both versatility and high-production capacity.  ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). 
 
 ### Output
 
