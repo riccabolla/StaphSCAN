@@ -1,4 +1,6 @@
 # StaphSCAN
+[![DOI](https://zenodo.org/badge/1105319303.svg)](https://doi.org/10.5281/zenodo.18458858)
+
 StaphSCAN is a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and sta**N**dardized reporting of ***Staph**ylococcus aureus*.
 
 It integrates the following steps:
@@ -23,6 +25,10 @@ Despite this, we strongly encourage you to use it, helping to accelerate its imp
 ## Documentation
 
 A draft documentation is available [here](https://staphscan.readthedocs.io/)
+
+## Citation
+
+You can cite StaphSCAN uisng Bollini, R. (2026). StaphSCAN v0.1.0 (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.18458859. 
 
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
