@@ -9,7 +9,7 @@ Other two important leukocidins, are *lukD* and *lukE*, which enhance virulence 
 
 The Toxic Shock Syndrome Toxin-1 (TSST-1) is an enterotoxin associated with the development of the toxic shock syndrome, a severe life-threatening condition ([Manosur et al. 2021](https://www.mdpi.com/2072-6651/13/10/677)) 
 
-The exofoliative toxin *etA* and *etB*, which can cause the staphylococcal scaled skin syndrome (SSSS), a severe infection ([Nishifuji et al. 2008](https://pubmed.ncbi.nlm.nih.gov/17582744/)).
+The exofoliative toxin *etA*, *etB*, *etD*, and *etE* can cause the staphylococcal scaled skin syndrome (SSSS), a severe infection ([Nishifuji et al. 2008](https://pubmed.ncbi.nlm.nih.gov/17582744/)).
 
 The *Staphylococcal* enterotoxins (SE) are mainly responsible of food poisoning, and are classified as *superantigens*, due to the ability to stimulate large populations of T cells ([Pinchuk et al. 2010](https://pmc.ncbi.nlm.nih.gov/articles/PMC3153290/); [Choi et al. 1989](https://pubmed.ncbi.nlm.nih.gov/2479030/)).   
 
@@ -73,7 +73,7 @@ Results are reported as follows:
 
 ### List of genes
 
-| Gene |Accession^ |Citation|
+| Gene |Accession^ |Citation^^|
 |------|----------|--------|
 |etA|[AAA17490](https://www.ncbi.nlm.nih.gov/protein/AAA17490)|[Sakurai et al. 1988](https://pubmed.ncbi.nlm.nih.gov/3183619/)|
 |etB|[ WP_010994026](https://www.ncbi.nlm.nih.gov/protein/WP_010994026)|[Lee at al. 1987](https://pubmed.ncbi.nlm.nih.gov/3040666/)|
@@ -89,4 +89,8 @@ Results are reported as follows:
 |sell|[WP_000746599](https://www.ncbi.nlm.nih.gov/protein/WP_000746599); [WP_000746597](https://www.ncbi.nlm.nih.gov/protein/WP_000746597)|[Baba et al. 2008](https://pubmed.ncbi.nlm.nih.gov/17951380/) |
 |selk|[WP_000733775](https://www.ncbi.nlm.nih.gov/protein/WP_000733775); [WP_000733771](https://www.ncbi.nlm.nih.gov/protein/WP_000733771); [WP_000734020](https://www.ncbi.nlm.nih.gov/protein/WP_000734020)|-|
 |selq|[WP_001033316](https://www.ncbi.nlm.nih.gov/protein/WP_001033316);[WP_001033320](https://www.ncbi.nlm.nih.gov/protein/WP_001033320);[ WP_001033321](https://www.ncbi.nlm.nih.gov/protein/WP_001033321) |[McClure et al. 2018](https://pubmed.ncbi.nlm.nih.gov/30042755/)|
-|tsst-1|||
+|tsst-1|[WP_001035599](https://www.ncbi.nlm.nih.gov/protein/WP_001035599); [WP_001035596](https://www.ncbi.nlm.nih.gov/protein/WP_001035596) |[Blomster-Hautamaa et al. 1986](https://pubmed.ncbi.nlm.nih.gov/3782090/)|
+
+*Note*: <br>
+^ One accession per variant is incuded. <br>
+^^ The citation is the one provided at the accession page
