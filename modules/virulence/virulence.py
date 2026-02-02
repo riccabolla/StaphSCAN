@@ -188,12 +188,14 @@ class Module:
                 results["vir_pvl"] = "Positive"
             elif lukS or lukF:
                 present = lukS + lukF
-                results["vir_pvl"] = f"Partial ({', '.join(present)})"
+                #results["vir_pvl"] = f"Partial ({', '.join(present)})"
+                results["vir_pvl"] = "; ".join(present) if present else "-"
             
             tsst = find_genes(["tsst1"])
             results["vir_tsst"] = "; ".join(tsst) if tsst else "-"
             
-            et = find_genes(["eta", "etb"])
+            et_targets = ["eta", "etb", "etd", "ete"]
+            et = find_genes(et_targets)
             results["vir_et"] = "; ".join(et) if et else "-"
 
             lukE = find_genes(["luke"])
@@ -202,7 +204,8 @@ class Module:
                 results["vir_lukED"] = "Positive"
             elif lukE or lukD:
                 present = lukE + lukD
-                results["vir_lukED"] = f"Partial ({', '.join(present)})"
+                #results["vir_lukED"] = f"Partial ({', '.join(present)})"
+                results["vir_lukED"] = "; ".join(present) if present else "-"
 
             #added se genes block    
             se_genes = ["sea", "sec", "seh", "selk", "sell", "selq"]
@@ -227,7 +230,8 @@ class Module:
                 score = 4
             elif "tsst1" in clean_hits:
                 score = 3
-            elif "eta" in clean_hits or "etb" in clean_hits:
+            #elif "eta" in clean_hits or "etb" in clean_hits:
+            elif any(gene in clean_hits for gene in et_targets):
                 score = 2
             else:
                 has_se = not clean_hits.isdisjoint(se_genes)
