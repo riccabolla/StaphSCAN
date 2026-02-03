@@ -10,7 +10,7 @@ setup(
     author="Riccardo Bollini",  
     url="https://github.com/riccabolla/StaphSCAN", 
     
-     packages=find_packages(),
+    packages=find_packages(),
         
     package_data={
         'staphscan': ['modules/*/data/*']
