@@ -38,7 +38,7 @@ def load_module(module_name, args):
 
 def parse_arguments(available_modules):
     parser = argparse.ArgumentParser(
-        description="StaphScan: Staphylococcus aureus Genomic Typer",
+        description="Staphylococcus aureus Surveillance through Comprehensive Analysis and staNdardized reporting ",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
