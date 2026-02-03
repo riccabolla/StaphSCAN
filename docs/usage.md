@@ -79,6 +79,6 @@ Module-specific parameters are available in the [Modules](modules.md) section.
 Show a help message and exit <br>
 
 
-`-v, --version` <br>
+`--version` <br>
 Show program's version number and exit
 

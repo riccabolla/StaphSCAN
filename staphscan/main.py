@@ -3,9 +3,16 @@ import sys
 import pandas as pd
 from pathlib import Path
 import importlib
+from importlib.metadata import version, PackageNotFoundError
 
 if sys.version_info < (3, 10):
     sys.exit("StaphScan requires Python 3.10+")
+
+def get_version():
+    try:
+        return version("staphscan")
+    except PackageNotFoundError:
+        return "unknown"    
 
 def get_available_modules():
     modules_dir = Path(__file__).parent / "modules"
@@ -38,10 +45,15 @@ def load_module(module_name, args):
 
 def parse_arguments(available_modules):
     parser = argparse.ArgumentParser(
-        description="Staphylococcus aureus Surveillance through Comprehensive Analysis and staNdardized reporting ",
+        description=f"Staphylococcus aureus Surveillance through Comprehensive Analysis and staNdardized reporting (v{get_version()})",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        
     )
-
+    parser.add_argument(
+    "--version",
+    action="version",
+    version=f"staphscan {get_version()}"
+    )
     parser.add_argument("--list-modules", action="store_true")
 
     io_group = parser.add_argument_group("Input/Output")
@@ -68,7 +80,7 @@ def parse_arguments(available_modules):
     rep_group = parser.add_argument_group("Reporting")
     #rep_group.add_argument("--complete", action="store_true") # removed in this version, maybe later
     rep_group.add_argument("--report", type=str, default=None, help="Custom filename for the report output")
-
+    
     args = parser.parse_args()
 
     if not args.list_modules:
