@@ -11,11 +11,9 @@ setup(
     url="https://github.com/riccabolla/StaphSCAN", 
     
      packages=find_packages(),
-    
-    py_modules=["main"],
-    
+        
     package_data={
-        'modules': ['*/data/*']
+        'staphscan': ['modules/*/data/*']
     },
     include_package_data=True,
     
@@ -23,7 +21,7 @@ setup(
     
     entry_points={
         'console_scripts': [
-            'staphscan=main:main',  
+            'staphscan=staphscan.main:main',  
         ],
     },
     

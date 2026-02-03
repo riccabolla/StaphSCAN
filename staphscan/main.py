@@ -18,7 +18,7 @@ def get_available_modules():
 
 def load_module(module_name, args):
     try:
-        mod_pkg = importlib.import_module(f"modules.{module_name}.{module_name}")
+        mod_pkg = importlib.import_module(f"staphscan.modules.{module_name}.{module_name}")
         
         if module_name == "mlst":
             return mod_pkg.Module(min_id=args.min_id_mlst, min_cov=args.min_cov_mlst)
