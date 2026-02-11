@@ -14,7 +14,7 @@ And the following libraries:
 
 ### Install StaphSCAN
 
-Install with conda (available soon):
+Install with conda:
 
 ```bash
 conda create -n staphscan -c bioconda staphscan -y

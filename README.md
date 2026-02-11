@@ -1,5 +1,9 @@
 # StaphSCAN
 [![DOI](https://zenodo.org/badge/1105319303.svg)](https://doi.org/10.5281/zenodo.18458858)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/downloads.svg)](https://anaconda.org/bioconda/staphscan)
 
 StaphSCAN is a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and sta**N**dardized reporting of ***Staph**ylococcus aureus*.
 
@@ -44,20 +48,16 @@ And the following packages:
 ## Usage
 
 ```bash
-conda create -n staphscan -c bioconda python=3.10 mash blast biopython pandas -y
+conda create -n staphscan -c bioconda staphscan -y
 
 conda activate staphscan
 
-git clone https://github.com/riccabolla/StaphSCAN.git
-
-cd StaphSCAN/
-
-python main.py -h
+staphscan -h
 ```
 ### Basic usage
 
 ```bash
-python main.py -i /path/to/genomes/*.fasta -o results_directory
+staphscan -i /path/to/genomes/*.fasta -o results_directory
 ```
 ### Options
 
