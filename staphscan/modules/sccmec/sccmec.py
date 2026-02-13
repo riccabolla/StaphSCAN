@@ -7,25 +7,29 @@ class Module:
     def __init__(self):
         self.name = "sccmec"
         self.module_dir = Path(__file__).parent
-        self.targets_fasta = self.module_dir / "data" / "targets.fasta"
-        self.targets_db = self.module_dir / "data" / "sccmec_targets_db"
-        self.regions_fasta = self.module_dir /"data" / "regions.fasta"
-        self.regions_db = self.module_dir / "data" / "sccmec_regions_db"
-
+        self.data_dir = self.module_dir / "data"
+        self.targets_fasta = self.data_dir / "targets.fasta"
+        self.targets_db = self.data_dir / "sccmec_targets_db"
+        self.regions_fasta = self.data_dir / "regions.fasta"
+        self.regions_db = self.data_dir / "sccmec_regions_db"
 
     def check_db(self):
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        
         if not self.targets_fasta.exists(): return False
-        if not (self.module_dir / "data" / "sccmec_targets_db.nhr").exists():
+        if not (self.data_dir / "sccmec_targets_db.nhr").exists():
             cmd = ["makeblastdb", "-in", str(self.targets_fasta), "-dbtype", "nucl", "-out", str(self.targets_db)]
             subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            
         if not self.regions_fasta.exists(): return False
-        if not (self.module_dir / "data" / "sccmec_regions_db.nhr").exists():
+        if not (self.data_dir / "sccmec_regions_db.nhr").exists():
             cmd = ["makeblastdb", "-in", str(self.regions_fasta), "-dbtype", "nucl", "-out", str(self.regions_db)]
             subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            
         return True
 
     def run(self, assembly_path):
-        # determine type
+        # Determine type
         target_res = self.run_blast(assembly_path, self.targets_db, min_ident=90.0, min_cov=80.0)
         
         sccmec_type = "Negative"
@@ -34,7 +38,7 @@ class Module:
         if not target_res.empty:
             found_genes = set()
             for raw_id in target_res['sseqid'].unique():
-                lower_id = raw_id.lower()
+                lower_id = raw_id.lower()                
                 if "ccra1" in lower_id: found_genes.add("ccrA1")
                 elif "ccrb1" in lower_id: found_genes.add("ccrB1")
                 elif "ccra2" in lower_id: found_genes.add("ccrA2")
@@ -43,18 +47,18 @@ class Module:
                 elif "ccrb3" in lower_id: found_genes.add("ccrB3")
                 elif "ccra4" in lower_id: found_genes.add("ccrA4")
                 elif "ccrb4" in lower_id: found_genes.add("ccrB4")
-                elif "ccrb6" in lower_id: found_genes.add("ccrB6")
+                elif "ccrb6" in lower_id: found_genes.add("ccrB6")                
                 # Differentiate ccrC1 vs ccrC2
                 elif "ccrc1" in lower_id: found_genes.add("ccrC1")
                 elif "ccrc2" in lower_id: found_genes.add("ccrC2")
-                elif "ccrc" in lower_id: found_genes.add("ccrC1")
+                elif "ccrc" in lower_id: found_genes.add("ccrC1")                
                 # Mec Complex Components
                 elif "meci" in lower_id: found_genes.add("mecI")
                 elif "mecr1" in lower_id: found_genes.add("mecR1")
                 elif "is1272" in lower_id: found_genes.add("IS1272")
-                elif "is431" in lower_id: found_genes.add("IS431")
+                elif "is431" in lower_id: found_genes.add("IS431")                
                 # Specific Insertion Sequences
-                elif "is12960d" in lower_id: found_genes.add("IS12960D")
+                elif "is12960d" in lower_id: found_genes.add("IS12960D")                
                 # Resistance Genes
                 elif "meca" in lower_id: found_genes.add("mecA")
                 elif "mecc" in lower_id: found_genes.add("mecC")
@@ -64,15 +68,16 @@ class Module:
             ccr_complexes = self.get_ccr_complex(found_genes)
             sccmec_type = self.assign_type(mec_class, ccr_complexes, found_genes)
             sccmec_genes = ";".join(sorted(list(found_genes)))
-        # determine subtype
+            
+        # Determine subtype
         sccmec_subtype = "-"
         if self.regions_fasta.exists():
             region_res = self.run_blast(assembly_path, self.regions_db, min_ident=90.0, min_cov=70.0)
             
             if not region_res.empty:
-                # id first
-                region_res = region_res.sort_values(by=['pident', 'cov'], ascending=[False, False])
-                best_hit = region_res.iloc[0]['sseqid']
+                # Sort by coverage first, then identity to find best match
+                region_res = region_res.sort_values(by=['cov', 'pident'], ascending=[False, False])
+                best_hit = str(region_res.iloc[0]['sseqid'])                
                 # Parse header format
                 if "|" in best_hit:
                     sccmec_subtype = best_hit.split("|")[-1]
@@ -86,27 +91,75 @@ class Module:
         }
 
     def run_blast(self, assembly_path, db_path, min_ident, min_cov):
-        """Helper to run blast and filter results"""
+        """Helper to run blast and calculate cumulative sequence coverage"""
+        #added sstart and send to map fragmented contigs
         cmd = [
             "blastn", "-query", str(assembly_path), "-db", str(db_path),
-            "-outfmt", "6 sseqid pident length slen",
+            "-outfmt", "6 sseqid pident length slen sstart send",
             "-max_target_seqs", "100"
         ]
         try:
             res = subprocess.run(cmd, capture_output=True, text=True)
-            if not res.stdout:
+            if not res.stdout or not res.stdout.strip():
                 return pd.DataFrame()
 
-            df = pd.read_csv(io.StringIO(res.stdout), sep="\t", names=["sseqid", "pident", "length", "slen"])
-            df['cov'] = (df['length'] / df['slen']) * 100
+            df = pd.read_csv(io.StringIO(res.stdout), sep="\t", names=["sseqid", "pident", "length", "slen", "sstart", "send"])
             
-            # Filter
-            df = df[ (df['pident'] >= min_ident) & (df['cov'] >= min_cov) ]
+            if df.empty:
+                return pd.DataFrame()
+
+            df = df[df['pident'] >= min_ident]
+            if df.empty:
+                return pd.DataFrame()
             
-            #sort by id first
-            df = df.sort_values(by=['pident', 'cov'], ascending=[False, False])
+            records = []
             
-            return df
+            # it does not look to single blast-hit, instead it looks to cumulative coverage of all blast-hits 
+            # to the same reference sequence, which is more robust to fragmented assemblies
+            # added to fix subtyiping issues
+            for sseqid, group in df.groupby('sseqid'):
+                slen = group['slen'].iloc[0]                
+                intervals = []
+                for _, row in group.iterrows():
+                    start, end = sorted([row['sstart'], row['send']])
+                    intervals.append([start, end])
+                
+                intervals.sort()
+                merged = []
+                for interval in intervals:
+                    if not merged:
+                        merged.append(interval)
+                    else:
+                        prev = merged[-1]
+                        if interval[0] <= prev[1] + 1:
+                            prev[1] = max(prev[1], interval[1])
+                        else:
+                            merged.append(interval)
+                
+                # Calculate total cumulative coverage length and percentage
+                cov_len = sum(interval[1] - interval[0] + 1 for interval in merged)
+                cov = (cov_len / slen) * 100
+                
+                # Calculate weighted identity across all alignments
+                weighted_ident = (group['pident'] * group['length']).sum() / group['length'].sum()
+                
+                records.append({
+                    "sseqid": sseqid,
+                    "pident": weighted_ident,
+                    "length": cov_len,
+                    "slen": slen,
+                    "cov": cov
+                })
+                
+            res_df = pd.DataFrame(records)
+            if res_df.empty:
+                return res_df
+            
+            res_df = res_df[res_df['cov'] >= min_cov]
+            
+            res_df = res_df.sort_values(by=['cov', 'pident'], ascending=[False, False])
+            
+            return res_df
         except Exception:
             return pd.DataFrame()
 
@@ -123,6 +176,9 @@ class Module:
         # Class C: IS431 + mecA (and no mecI/IS1272)
         elif "IS431" in genes and "mecI" not in genes and "IS1272" not in genes:
             return "C"
+        # Class E: Contains mecC
+        elif "mecC" in genes:
+            return "E"
 
         # Fallbacks
         if "mecA" in genes: return "Unknown (mecA+)"
@@ -156,7 +212,6 @@ class Module:
         types_found = []
         
         for ccr in ccr_list:
-            
             # Standard Types (I - IV, VI, VIII)
             if ccr == "1" and mec_class == "B": types_found.append("Type I(1B)")
             elif ccr == "2" and mec_class == "A": types_found.append("Type II(2A)")
@@ -183,14 +238,14 @@ class Module:
 
             # Type X / XV (ccrA1B6 based)
             elif ccr == "A1B6":
-                if mec_class == "C" or mec_class == "B": 
+                if mec_class in ["C", "B"]: 
                     types_found.append("Type X (A1B6-C)")
                 elif mec_class == "A":
                     types_found.append("Type XV (A1B6-A)")
 
             # Type XI (ccrA1B3 based)
             elif ccr == "A1B3":
-                # Usually Class A/E (mecA/mecC + mecI + mecR1)
+                # Usually Class E/A
                 types_found.append("Type XI (A1B3)")
 
             # Type XII / XIII (ccrC2 based)

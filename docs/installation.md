@@ -25,7 +25,7 @@ conda activate staphscan
 CLone repo:
 
 ```bash
-conda create -n staphscan -c bioconda python=3.10 mash blast biopython -y
+conda create -n staphscan -c bioconda python=3.10 mash pandas blast biopython -y
 
 conda activate staphscan
 
