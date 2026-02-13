@@ -29,6 +29,7 @@ class Module:
         return True
 
     def run(self, assembly_path):
+        import re #added for type string parsing
         # Determine type
         target_res = self.run_blast(assembly_path, self.targets_db, min_ident=90.0, min_cov=80.0)
         
@@ -68,21 +69,29 @@ class Module:
             ccr_complexes = self.get_ccr_complex(found_genes)
             sccmec_type = self.assign_type(mec_class, ccr_complexes, found_genes)
             sccmec_genes = ";".join(sorted(list(found_genes)))
-            
+
+        base_type = None
+        match = re.search(r"Type\s+([IVX]+)", sccmec_type)
+        if match:
+            base_type = match.group(1)    
         # Determine subtype
         sccmec_subtype = "-"
         if self.regions_fasta.exists():
             region_res = self.run_blast(assembly_path, self.regions_db, min_ident=90.0, min_cov=70.0)
-            
             if not region_res.empty:
-                # Sort by coverage first, then identity to find best match
+                region_res['subtype_name'] = region_res['sseqid'].apply(
+                    lambda x: str(x).split("|")[-1] if "|" in str(x) else str(x)
+                )
+                if base_type:
+                    pattern = f"^{base_type}[a-z]*$"
+                    filtered_res = region_res[region_res['subtype_name'].str.match(pattern, na=False)]
+                    if not filtered_res.empty:
+                        region_res = filtered_res
+                    else:
+                        region_res = pd.DataFrame()            
+            if not region_res.empty:
                 region_res = region_res.sort_values(by=['cov', 'pident'], ascending=[False, False])
-                best_hit = str(region_res.iloc[0]['sseqid'])                
-                # Parse header format
-                if "|" in best_hit:
-                    sccmec_subtype = best_hit.split("|")[-1]
-                else:
-                    sccmec_subtype = best_hit 
+                sccmec_subtype = region_res.iloc[0]['subtype_name']
 
         return {
             "sccmec_type": sccmec_type,
