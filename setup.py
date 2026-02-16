@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="staphscan",
-    version="0.1.2",  
+    version="0.1.3",  
     description="A tool for Staphylococcus aureus analysis",
     author="Riccardo Bollini",  
     url="https://github.com/riccabolla/StaphSCAN", 
