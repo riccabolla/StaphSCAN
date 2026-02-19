@@ -29,10 +29,10 @@ The module screens specific chromosomal loci for point mutations known to confer
 
 | Locus | Mutation targets | Associated phenotype |
 |------|------------------|----------------------|
-| `gyrA` | `S84L`, `S88P` | `Fluoroquinolones-R` |
+| `gyrA` | `S84L`, `E88K`, `E88G` | `Fluoroquinolones-R` |
 | `gyrB` | `T451S` | `Fluoroquinolones-R` |
 | `parC` | `S80F`, `S80Y`, `E84K`, `E84G`, `E84V` | `Fluoroquinolones-R` |
-| `rpoB` | `H481Y` | `Rifampicin-R` |
+| `rpoB` | `H481Y`, `H481N`, `L466N`, `A473T`, `A477T` | `Rifampicin-R` |
 | `23S rRNA` | `G2576T`, `G2447T`, `T2500A` | `Linezolid-R` |
 
 ### Parameters
