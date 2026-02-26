@@ -146,6 +146,9 @@ class Module:
         Checks for specific point mutations using Alignment-Based Coordinates.
         Handles indels by counting biological reference positions.
         """
+        if not found or not ref: # add safety check to prevent crushing
+            return []
+        
         if fam not in self.known_mutations:
             return []
 
@@ -219,6 +222,7 @@ class Module:
                 io.StringIO(res.stdout),
                 sep="\t",
                 names=["qseqid", "sseqid", "pident", "length", "slen", "qlen", "sstart", "send", "bitscore"],
+                dtype={"qseqid": str, "sseqid": str} # add to fix contig name issues
             )
 
     def filter_hits(self, df: pd.DataFrame) -> pd.DataFrame:
