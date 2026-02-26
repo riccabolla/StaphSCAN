@@ -32,7 +32,7 @@ A draft documentation is available [here](https://staphscan.readthedocs.io/)
 
 ## Citation
 
-You can cite StaphSCAN uisng Bollini, R. (2026). StaphSCAN (v0.1.3). Zenodo.  https://doi.org/10.5281/zenodo.18657595
+You can cite StaphSCAN uisng Bollini, R. (2026). StaphSCAN (v0.2.0). Zenodo.  https://doi.org/10.5281/zenodo.18787528
 
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
