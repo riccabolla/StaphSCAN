@@ -108,7 +108,6 @@ For `res_gene_count` and `res_class_count` the following criteria is used:
 |msrA|streptogramin antibiotic, streptogramin B antibiotic, macrolide antibiotic|1|[3000251](https://card.mcmaster.ca/ontology/36390)|[Poole K. 2005](http://www.ncbi.nlm.nih.gov/pubmed/15914491)|
 |tetM|tetracycline antibiotic|3|[3000186](https://card.mcmaster.ca/ontology/36325); [SAV0398](https://www.genome.jp/dbget-bin/www_bget?sav:SAV0398); [M21136.1](https://www.ncbi.nlm.nih.gov/nuccore/M21136)|[Akhtar M, et al. 2009](http://www.ncbi.nlm.nih.gov/pubmed/19475445)|
 |tetK|tetracycline antibiotic|1|[3000178](https://card.mcmaster.ca/ontology/36317)|[Roberts MC. 2005](http://www.ncbi.nlm.nih.gov/pubmed/15837373)|
-|tet38|tetracycline antibiotic|1|[3000565](https://card.mcmaster.ca/ontology/36704)|[Truong-Bolduc QC, et al. 2005](http://www.ncbi.nlm.nih.gov/pubmed/15774883)|
 |vanA|glycopeptide antibiotic|1|[3000010](https://card.mcmaster.ca/ontology/36019)|[Marshall CG, et al. 1997](http://www.ncbi.nlm.nih.gov/pubmed/9177243)|
 |vanB|glycopeptide antibiotic|1|[3000013](https://card.mcmaster.ca/ontology/36022)|[Marshall CG, et al. 1997](http://www.ncbi.nlm.nih.gov/pubmed/9177243)|
 
