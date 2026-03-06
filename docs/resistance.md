@@ -96,11 +96,13 @@ For `res_gene_count` and `res_class_count` the following criteria is used:
 |ANT(4')-Ib|aminoglycoside antibiotic|1|[3003905](https://card.mcmaster.ca/ontology/40608)|[McDougal LK, et al. 2010](http://www.ncbi.nlm.nih.gov/pubmed/20585117)|
 |APH(3')-IIIa|aminoglycoside antibiotic|1|[3002647](https://card.mcmaster.ca/ontology/39047)|[Trieu-Cuot P and Courvalin P. 1983](http://www.ncbi.nlm.nih.gov/pubmed/6313476)|
 |ANT(6)-Ia|aminoglycoside antibiotic|1|[3002626](https://card.mcmaster.ca/ontology/39026)|[Gill SR, et al. 200](http://www.ncbi.nlm.nih.gov/pubmed/15774886)|
+|ANT(9)-Ia|aminoglycoside antibiotic|1|[3002630](https://card.mcmaster.ca/ontology/39030)|[Murphy et al. 1985](http://www.ncbi.nlm.nih.gov/pubmed/3004956)|
 |mecA|penicillin beta-lactam|291|[3000617](https://card.mcmaster.ca/ontology/36911)|[Ubukata K, et al. 1989](http://www.ncbi.nlm.nih.gov/pubmed/2708325)|
 |mecC|penicillin beta-lactam|6|[3001209](https://card.mcmaster.ca/ontology/37590)|[Garcia-Alvarez L, et al. 2011](http://www.ncbi.nlm.nih.gov/pubmed/21641281)|
 |blaZ|penicillin beta-lactam|473|[3000621](https://card.mcmaster.ca/ontology/36963)|[McLaughlin JR, et al. 1981](http://www.ncbi.nlm.nih.gov/pubmed/6793593)|
 |blaZ mecC-type|penicillin beta-lactam|5|[3005097](https://card.mcmaster.ca/ontology/43312)|[Shore AC, et al. 2011](http://www.ncbi.nlm.nih.gov/pubmed/21636525)|
 |cfrA|phenicol antibiotic|1|[3003441](https://card.mcmaster.ca/ontology/40028)|[Schwarz S, et al. 2000](http://www.ncbi.nlm.nih.gov/pubmed/10952608)|
+|poxtA|oxazolinidone antibiotic|1|[3004470](https://card.mcmaster.ca/ontology/41688)|[Antonelli A, et al. 2018](http://www.ncbi.nlm.nih.gov/pubmed/29635422)|
 |ermA|streptogramin antibiotic, streptogramin B antibiotic, streptogramin A antibiotic, lincosamide antibiotic, macrolide antibiotic|1|[3000347](https://card.mcmaster.ca/ontology/36486)|[Malhotra-Kumar S, et al. 2008](http://www.ncbi.nlm.nih.gov/pubmed/18952616)|
 |ermB|streptogramin antibiotic, streptogramin B antibiotic, streptogramin A antibiotic, lincosamide antibiotic, macrolide antibiotic|1|[3000375](https://card.mcmaster.ca/ontology/36514)|[Yu L, et al. 1997](http://www.ncbi.nlm.nih.gov/pubmed/9187657)|
 |ermC|streptogramin antibiotic, streptogramin B antibiotic, streptogramin A antibiotic, lincosamide antibiotic, macrolide antibiotic|1|[3000250](https://card.mcmaster.ca/ontology/36389)|[Shivakumar AG and Dubnau D. 1981](http://www.ncbi.nlm.nih.gov/pubmed/6792593)|
