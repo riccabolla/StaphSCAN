@@ -341,7 +341,7 @@ class Module:
         
         active_classes = sum(1 for lst in classes_map.values() if len(lst) > 0)
 
-        out["res_gene_count"] = str(len(strong) + len(muts))
+        out["res_gene_count"] = str(len(strong)) # do not count mutations
         out["res_class_count"] = str(active_classes)
         out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
         out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
