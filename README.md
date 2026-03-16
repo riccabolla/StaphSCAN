@@ -19,13 +19,6 @@ It integrates the following steps:
 * Detection of antimicrobial resistance genes (i.e. mecA)
 * Detection of clinically-relevant mutations (i.e. involved in AMR development)
 
-## Recommendation
-⚠️ StaphSCAN is currently in its beta stage. ⚠️ <br>
-
-During this phase, you may encounter bugs, have access to a limited set of features, and experience frequent updates and changes.. <br>
-
-Despite this, we strongly encourage you to use it, helping to accelerate its improvement and its transition to a stable release. <br>
-
 ## Documentation
 
 A draft documentation is available [here](https://staphscan.readthedocs.io/)
