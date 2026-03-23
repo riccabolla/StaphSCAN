@@ -11,6 +11,8 @@ And the following libraries:
 
 * [Biopython](https://biopython.org/) v1.75 or later
 * [Pandas](https://pandas.pydata.org/)
+* [Rauth](https://rauth.readthedocs.io/en/latest/)
+* [Requests](https://pypi.org/project/requests/)
 
 ### Install StaphSCAN
 
@@ -65,7 +67,7 @@ Enter your PubMLST Client Secret (hidden): #your client secret code
 Requesting temporary token...
 
 Please visit this URL to authorize StaphScan:
-https://pubmlst.org/cgi-bin/bigsdb/bigsdb.pl?db=pubmlst_saureus_seqdef&page=authorizeClient&oauth_token=EPHIKB3znyfZ5kLpCGeJS3ZgEl6xcegJ
+https://pubmlst.org/cgi-bin/bigsdb/bigsdb.pl?db=pubmlst_saureus_seqdef&page=authorizeClient&oauth_token=#randomtoken
 
 Enter the verification code from the website: #your verification code
 
