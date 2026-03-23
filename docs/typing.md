@@ -10,6 +10,9 @@ All genomes identified as *Staphylococcus aureus* are subject to MLST using the 
 
 A copy of the MLST alleles and ST definitions is stored in the ``/data`` directory of this module.
 
+!!! warning
+    Due to new PubMLST policies (read [this](https://pubmlst.org/terms-conditions)) it is no more possible to redistribute data published after 31/12/2024. For this reason, all the MLST data bundled with StaphSCAN are up to that date. To update the db follow the guide in the [installation section](installation.md).
+
 ### Parameters
 
 Locus detection is filtered by minimum alignment identity and coverage:

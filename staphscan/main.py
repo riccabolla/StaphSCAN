@@ -56,6 +56,8 @@ def parse_arguments(available_modules):
     )
     parser.add_argument("--list-modules", action="store_true")
 
+    parser.add_argument("--mlst_update", action="store_true", help="Authenticate and update the local PubMLST database") #mlst update option
+
     io_group = parser.add_argument_group("Input/Output")
     io_group.add_argument("-i", "--input", nargs="+")
     io_group.add_argument("-o", "--outdir")
@@ -83,7 +85,7 @@ def parse_arguments(available_modules):
     
     args = parser.parse_args()
 
-    if not args.list_modules:
+    if not (args.list_modules or args.mlst_update):
         if not args.input or not args.outdir:
             parser.error("The following arguments are required: -i/--input, -o/--outdir")
 
@@ -98,6 +100,16 @@ def main():
         for m in available:
             print(f"  - {m}")
         sys.exit(0)
+
+    if args.mlst_update:
+        print("--- Initializing MLST Database Update ---")
+        try:
+            # imported only if called
+            from staphscan.modules.mlst.update import run_update
+            run_update()
+            sys.exit(0)    
+        except Exception as e:
+            sys.exit(f"Failed to run MLST update: {e}")    
 
     if args.modules.lower() == "all":
         modules_to_run = available

@@ -1,2 +1,4 @@
 biopython>=1.78
 pandas
+rauth
+requests
