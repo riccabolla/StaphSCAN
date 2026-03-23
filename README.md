@@ -37,6 +37,8 @@ It requires:
 And the following packages:
 * pandas
 * biopython
+* rauth
+* requests
 
 ## Usage
 
@@ -62,7 +64,8 @@ staphscan -i /path/to/genomes/*.fasta -o results_directory
                         Output directory
   -m MODULES, --modules MODULES
                         Comma-separated list of modules to run (default: "all")
-  --list-modules        Generate the list of available modules                        
+  --list-modules        Generate the list of available modules
+  --mlst_update         Update mlst database                        
   --report REPORT_NAME  Generate a report with a custom name
   --version             Print current version and exit
 ```
