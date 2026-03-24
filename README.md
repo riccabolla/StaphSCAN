@@ -1,5 +1,5 @@
 # StaphSCAN
-[![DOI](https://zenodo.org/badge/1105319303.svg)](https://doi.org/10.5281/zenodo.18458858)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19187702.svg)](https://doi.org/10.5281/zenodo.19187702)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
@@ -25,7 +25,7 @@ A draft documentation is available [here](https://staphscan.readthedocs.io/)
 
 ## Citation
 
-You can cite StaphSCAN uisng Bollini, R. (2026). StaphSCAN (v0.2.1). Zenodo.   https://doi.org/10.5281/zenodo.18890447
+You can cite StaphSCAN uisng Bollini, R. (2026). StaphSCAN (v0.3.0). Zenodo.   https://doi.org/10.5281/zenodo.18458858
 
 ## Requirements
 StaphSCAN has been built to optimize dependecies. 
