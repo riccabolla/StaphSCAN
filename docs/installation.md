@@ -9,7 +9,7 @@ StaphSCAN requires the following software to be installed and available in your 
 
 And the following libraries:
 
-* [Biopython](https://biopython.org/) v1.75 or later
+* [Biopython](https://biopython.org/) v1.83 or later
 * [Pandas](https://pandas.pydata.org/)
 * [Rauth](https://rauth.readthedocs.io/en/latest/)
 * [Requests](https://pypi.org/project/requests/)
