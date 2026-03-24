@@ -1,4 +1,4 @@
-biopython>=1.83
+biopython>=1.78
 pandas
 rauth
 requests
