@@ -3,7 +3,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/downloads.svg)](https://anaconda.org/bioconda/staphscan)
+[![Conda Downloads](https://img.shields.io/conda/dn/bioconda/staphscan)](https://anaconda.org/bioconda/staphscan)
 
 StaphSCAN is a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and sta**N**dardized reporting of ***Staph**ylococcus aureus*.
 
