@@ -1,5 +1,4 @@
 # StaphSCAN
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19187702.svg)](https://doi.org/10.5281/zenodo.19187702)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
