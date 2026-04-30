@@ -1,2 +1,3 @@
 graft staphscan
+global-include *.nhr *.nin *.nsq
 global-exclude *.py[cod] __pycache__ .DS_Store
