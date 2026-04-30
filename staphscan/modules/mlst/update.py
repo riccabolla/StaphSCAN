@@ -15,17 +15,22 @@ OAUTH_ACCESS_TOKEN_URL  = f"{AUTH_BASE_URL}/oauth/get_access_token"
 OAUTH_SESSION_TOKEN_URL = f"{AUTH_BASE_URL}/oauth/get_session_token"
 OAUTH_AUTHORIZE_URL     = "https://pubmlst.org/cgi-bin/bigsdb/bigsdb.pl?db=pubmlst_saureus_seqdef&page=authorizeClient"
 
-def get_auth_config_path():
+def get_auth_config_path(db_dir=None):
     """Returns the path where user credentials will be securely stored."""
-    config_dir = Path.home() / ".config" / "staphscan"
+    # allow update when using containers
+    if db_dir:
+        config_dir = Path(db_dir)
+    else:
+        config_dir = Path.home() / ".config" / "staphscan"
+
     config_dir.mkdir(parents=True, exist_ok=True)
     os.chmod(config_dir, 0o700)
     return config_dir / "pubmlst_credentials.json"
 
 
-def authenticate():
+def authenticate(db_dir=None):
     """Handles the BIGSdb OAuth 1.0a workflow mirroring rauth logic."""
-    config_path = get_auth_config_path()
+    config_path = get_auth_config_path(db_dir)
 
     # Try to use saved permanent tokens to get a fresh 12-hour session token
     if config_path.exists():
@@ -139,9 +144,12 @@ def authenticate():
         sys.exit(f"\nAuthentication failed: {e}")
 
 
-def run_update():
+def run_update(db_dir=None):
     """Main logic to fetch and save the S. aureus MLST schema."""
-    target_dir = Path(__file__).parent / "data"
+    if db_dir:
+        target_dir = Path(db_dir) / "mlst"
+    else:
+        target_dir = Path(__file__).parent / "modules" / "mlst" / "data"
     target_dir.mkdir(parents=True, exist_ok=True)
     print(f"Data will be downloaded to: {target_dir}")
 
