@@ -71,6 +71,12 @@ Print a list of all available modules and then quit (default: False)
 `-m MODULES, --modules MODULES`: <br>
 Comma-delimited list of staphscan modules to use (default: all)
 
+`--mlst_update` <br>
+Download latest database from PubMLST
+
+`--db_mlst` <br>
+Location of the alternative folder containing the mlst database (useful when working in read-only env)
+
 Module-specific parameters are available in the [Modules](modules.md) section.
 
 **Help**
