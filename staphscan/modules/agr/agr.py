@@ -30,9 +30,8 @@ class Module:
 
     def check_db(self):
         if not self.db_fasta.exists(): return False
-        if not (self.data_dir / "agr_db.nhr").exists():
-            cmd = ["makeblastdb", "-in", str(self.db_fasta), "-dbtype", "nucl", "-out", str(self.blast_db), "-parse_seqids"]
-            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+        if not (self.data_dir / "agr_db.nhr").exists(): 
+            return False
         return True
 
     def load_references(self):

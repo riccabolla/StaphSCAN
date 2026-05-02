@@ -45,7 +45,9 @@ Once installed, you have to update the MLST database if you want to run it with 
 To do that, you have first to:
 
 1) Create an account on https://pubmlst.org/ 
+
 2) Subscribe to the *Staphylococcus aureus* database  (you can do it by My Account -> Database registrations -> search for Staphylococcus aureus typing database -> Register)
+
 3) Generate your API keys (My Account -> API keys -> Submit)
 
 Once you have done this, you can run `staphscan --mlst_update`
@@ -87,3 +89,6 @@ Downloading yqiL.fas...
 Successfully updated S. aureus MLST database!
 
 ```
+
+!!! note
+    If you are running StaphScan in a read-only container environment, you must mount a local directory and use the `--db_mlst` parameter to specify a writable location for the updated database.

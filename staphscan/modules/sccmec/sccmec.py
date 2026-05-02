@@ -14,17 +14,16 @@ class Module:
         self.regions_db = self.data_dir / "sccmec_regions_db"
 
     def check_db(self):
-        self.data_dir.mkdir(parents=True, exist_ok=True)
         
         if not self.targets_fasta.exists(): return False
         if not (self.data_dir / "sccmec_targets_db.nhr").exists():
-            cmd = ["makeblastdb", "-in", str(self.targets_fasta), "-dbtype", "nucl", "-out", str(self.targets_db)]
-            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            return False
             
         if not self.regions_fasta.exists(): return False
         if not (self.data_dir / "sccmec_regions_db.nhr").exists():
-            cmd = ["makeblastdb", "-in", str(self.regions_fasta), "-dbtype", "nucl", "-out", str(self.regions_db)]
-            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            return False
+            
+        return True
             
         return True
 

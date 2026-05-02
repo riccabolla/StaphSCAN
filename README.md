@@ -64,7 +64,8 @@ staphscan -i /path/to/genomes/*.fasta -o results_directory
   -m MODULES, --modules MODULES
                         Comma-separated list of modules to run (default: "all")
   --list-modules        Generate the list of available modules
-  --mlst_update         Update mlst database                        
+  --mlst_update         Update mlst database
+  --db_mlst             Custom folder for mlst db                        
   --report REPORT_NAME  Generate a report with a custom name
   --version             Print current version and exit
 ```

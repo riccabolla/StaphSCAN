@@ -28,7 +28,7 @@ def load_module(module_name, args):
         mod_pkg = importlib.import_module(f"staphscan.modules.{module_name}.{module_name}")
         
         if module_name == "mlst":
-            return mod_pkg.Module(min_id=args.min_id_mlst, min_cov=args.min_cov_mlst)
+            return mod_pkg.Module(min_id=args.min_id_mlst, min_cov=args.min_cov_mlst, db_dir=args.db_mlst)
         elif module_name == "capsule":
            return mod_pkg.Module(min_id=args.min_id_capsule, min_cov=args.min_cov_capsule)
         elif module_name == "virulence":
@@ -57,6 +57,8 @@ def parse_arguments(available_modules):
     parser.add_argument("--list-modules", action="store_true")
 
     parser.add_argument("--mlst_update", action="store_true", help="Authenticate and update the local PubMLST database") #mlst update option
+
+    parser.add_argument("--db_mlst", type=str, default=None, help="Path to custom db folder for MLST")
 
     io_group = parser.add_argument_group("Input/Output")
     io_group.add_argument("-i", "--input", nargs="+")
@@ -106,7 +108,7 @@ def main():
         try:
             # imported only if called
             from staphscan.modules.mlst.update import run_update
-            run_update()
+            run_update(db_dir=args.db_mlst)
             sys.exit(0)    
         except Exception as e:
             sys.exit(f"Failed to run MLST update: {e}")    

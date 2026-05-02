@@ -3,14 +3,22 @@ import subprocess
 import io
 import sys
 import re
+import os
 from pathlib import Path
 from Bio import SeqIO
 
 class Module:
-    def __init__(self, min_id=95.0, min_cov=95.0):
+    def __init__(self, min_id=95.0, min_cov=95.0, db_dir=None):
         self.name = "mlst"
         self.module_dir = Path(__file__).parent
-        self.data_dir = self.module_dir / "data"
+        # to allow custom db dir input
+        if db_dir:
+            self.data_dir = Path(db_dir) / "mlst"
+            self.data_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            self.data_dir = self.module_dir / "data"
+
+        #self.data_dir = self.module_dir / "data"
         self.db_profiles = self.data_dir / "profiles.tsv"
         self.alleles_fasta = self.data_dir / "alleles.fasta"
         self.refs_fasta = self.data_dir / "refs.fasta" 
