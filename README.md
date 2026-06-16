@@ -1,5 +1,5 @@
 # StaphSCAN
-[![Version](https://img.shields.io/github/v/release/riccabolla/staphscan)](https://github.com/riccabolla/staphscan/releases)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
 [![Conda Downloads](https://img.shields.io/conda/dn/bioconda/staphscan)](https://anaconda.org/bioconda/staphscan)
