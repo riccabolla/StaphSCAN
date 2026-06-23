@@ -226,10 +226,13 @@ class Module:
                 clean_hits.add(clean_name)
 
             score = 0
-            if "lukf" in clean_hits and "luks" in clean_hits:
-                score = 4
-            elif "tsst1" in clean_hits:
+            if (
+                ("lukf" in clean_hits and "luks" in clean_hits)
+                or ("tsst1" in clean_hits) #v0.4.0 update, tsst-1 and pvl have the same score
+            ):
                 score = 3
+            #elif "tsst1" in clean_hits:
+            #    score = 3
             #elif "eta" in clean_hits or "etb" in clean_hits:
             elif any(gene in clean_hits for gene in et_targets):
                 score = 2
