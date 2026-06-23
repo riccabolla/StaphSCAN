@@ -8,7 +8,7 @@ from pathlib import Path
 from Bio import SeqIO
 
 class Module:
-    def __init__(self, min_id=95.0, min_cov=95.0, db_dir=None):
+    def __init__(self, min_id=100.0, min_cov=100.0, db_dir=None):
         self.name = "mlst"
         self.module_dir = Path(__file__).parent
         # to allow custom db dir input
