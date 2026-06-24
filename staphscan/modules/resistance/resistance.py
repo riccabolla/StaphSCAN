@@ -2,6 +2,7 @@ import pandas as pd
 import subprocess
 import io
 import tempfile
+import json
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, List
@@ -55,15 +56,28 @@ class Module:
 
         self.ref_prot_dict: Dict[str, str] = {}
 
-        self.mutation_targets = ["gyrA", "parC", "gyrB", "23S", "rpoB"]
+        try:
+            mutations_file = next(self.data_dir.glob("mutation*.json"))
+        except StopIteration:
+            raise FileNotFoundError(f"Database missing: No file matching 'mutation*.json' found.")
         
-        self.known_mutations = {
-            "gyrA": {84: ('S', ['L']), 88: ('E', ['K', 'G'])}, 
-            "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
-            "rpoB": {481: ('H', ['Y', 'N']), 466: ('L', ['S']), 473: ('A', ['T']), 477: ('A', ['T'])}, 
-            "gyrB": {451: ('T', ['S'])},
-            "23S": {2576: ('G', ['T']), 2447: ('G', ['T']), 2500: ('T', ['A'])}, 
-        }
+        with open(mutations_file, "r") as f:
+            raw_mutations = json.load(f)
+        self.known_mutations = {}
+        for gene, mutations in raw_mutations.items():
+            self.known_mutations[gene] = {
+                int(pos): tuple(data) for pos, data in mutations.items()
+            }
+        self.mutation_targets = list(self.known_mutations.keys())
+        #self.mutation_targets = ["gyrA", "parC", "gyrB", "23S", "rpoB"]
+        
+        #self.known_mutations = {
+        #    "gyrA": {84: ('S', ['L']), 88: ('E', ['K', 'G'])}, 
+        #    "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
+        #    "rpoB": {481: ('H', ['Y', 'N']), 466: ('L', ['S']), 473: ('A', ['T']), 477: ('A', ['T'])}, 
+        #    "gyrB": {451: ('T', ['S'])},
+        #    "23S": {2576: ('G', ['T']), 2447: ('G', ['T']), 2500: ('T', ['A'])}, 
+        #}
 
         self.min_id = min_id
         self.min_cov = min_cov
