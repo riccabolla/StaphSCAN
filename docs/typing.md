@@ -17,9 +17,9 @@ A copy of the MLST alleles and ST definitions is stored in the ``/data`` directo
 
 Locus detection is filtered by minimum alignment identity and coverage:
 
-``--min_id_mlst `` : Minimum alignment percentage identity (default: 95)
+``--min_id_mlst `` : Minimum alignment percentage identity (default: 100)
 
-``--min_cov_mlst `` : Minimum alignment percent coverage (default: 95)
+``--min_cov_mlst `` : Minimum alignment percent coverage (default: 100)
 
 ### Output
 
