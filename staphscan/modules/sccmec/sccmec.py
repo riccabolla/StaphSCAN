@@ -8,9 +8,15 @@ class Module:
         self.name = "sccmec"
         self.module_dir = Path(__file__).parent
         self.data_dir = self.module_dir / "data"
-        self.targets_fasta = self.data_dir / "targets.fasta"
+        db_targets = list(self.data_dir.glob("targets*.fasta"))
+        db_regions = list(self.data_dir.glob("regions*.fasta"))
+        if not db_targets:
+            raise FileNotFoundError(f"Missing database: No targets fasta file found in {self.data_dir}")
+        if not db_regions:
+            raise FileNotFoundError(f"Missing database: No regions fasta file found in {self.data_dir}")
+        self.targets_fasta = db_targets[0]
         self.targets_db = self.data_dir / "sccmec_targets_db"
-        self.regions_fasta = self.data_dir / "regions.fasta"
+        self.regions_fasta = db_regions[0]
         self.regions_db = self.data_dir / "sccmec_regions_db"
 
     def check_db(self):

@@ -32,7 +32,12 @@ class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "biofilm"
         self.module_dir = Path(__file__).resolve().parent
-        self.db_fasta = self.module_dir / "data" / "biofilm.fasta"
+        self.data_dir = self.module_dir / "data"
+        db_files = list(self.data_dir.glob("biofilm*.fasta")) #global path for v0.4.0 update
+        if not db_files:
+            raise FileNotFoundError(f"Database missing: No files matching the biofilm fasta file found in {self.data_dir}") #safety check
+        self.db_fasta = db_files[0] 
+        #self.db_fasta = self.module_dir / "data" / "biofilm.fasta"
 
         self.clf_targets = ["clfA", "clfB"]
         self.fnb_targets = ["fnbA", "fnbB"]

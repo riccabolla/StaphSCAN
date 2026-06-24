@@ -35,16 +35,22 @@ class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "resistance"
         self.module_dir = Path(__file__).resolve().parent
+        self.data_dir = self.module_dir / "data"
+        def get_db(prefix):
+            try:
+                return next(self.data_dir.glob(f"{prefix}*.fasta"))
+            except StopIteration:
+                raise FileNotFoundError(f"Database missing: No file matching '{prefix}*.fasta' found.")
 
         self.db_files = {
-            "amino": self.module_dir / "data" / "amino_res.fasta",
-            "bla": self.module_dir / "data" / "bla_res.fasta",
-            "flq": self.module_dir / "data" / "flq_res.fasta",
-            "oxa": self.module_dir / "data" / "oxa_res.fasta", 
-            "mlsb": self.module_dir / "data" / "mlsb_res.fasta", 
-            "rif": self.module_dir / "data" / "rif_res.fasta", 
-            "tet": self.module_dir / "data" / "tet_res.fasta",
-            "gly": self.module_dir / "data" / "gly_res.fasta",
+            "amino": get_db("amino_res"),
+            "bla":   get_db("bla_res"),
+            "flq":   get_db("flq_res"),
+            "oxa":   get_db("oxa_res"), 
+            "mlsb":  get_db("mlsb_res"), 
+            "rif":   get_db("rif_res"), 
+            "tet":   get_db("tet_res"),
+            "gly":   get_db("gly_res"),
         }
 
         self.ref_prot_dict: Dict[str, str] = {}

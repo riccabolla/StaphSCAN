@@ -34,7 +34,11 @@ class Module:
         self.name = "virulence"
         self.module_dir = Path(__file__).resolve().parent
         self.data_dir = self.module_dir / "data"
-        self.db_fasta = self.data_dir / "targets.fasta"
+        db_files = list(self.data_dir.glob("targets*.fasta")) #global path for v0.4.0 update
+        if not db_files:
+            raise FileNotFoundError(f"Database missing: No files matching 'targets*.fasta' found in {self.data_dir}") #sfaety check
+        self.db_fasta = db_files[0]
+        #self.db_fasta = self.data_dir / "targets.fasta"
         
         self.min_id = min_id
         self.min_cov = min_cov
