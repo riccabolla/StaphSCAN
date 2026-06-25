@@ -189,6 +189,15 @@ class Module:
 
         muts = []
         targets = self.known_mutations[fam]
+
+        # ecoli numeration is reported
+        ecoli_translation = {
+            2603: 2576,
+            2527: 2500,
+            2474: 2447,
+            2085: 2058,
+            2086: 2059
+        }
         
         # Iterate through alignment to track position
         ref_biological_pos = 0
@@ -213,7 +222,10 @@ class Module:
                 
                 # mutation check:
                 if f_char != expected_ref_base and f_char in allowed_muts:
-                    muts.append(f"{expected_ref_base}{ref_biological_pos}{f_char}")
+                    display_pos = ref_biological_pos
+                    if fam == "23S":
+                        display_pos = ecoli_translation.get(ref_biological_pos, ref_biological_pos)
+                    muts.append(f"{expected_ref_base}{display_pos}{f_char}")
 
         return muts
 
@@ -327,7 +339,7 @@ class Module:
                 if mm:
                     mut_str = f"{hit.family} [{','.join(mm)}]"
                     muts.append(mut_str)
-                    if hit.family in ["gyrA", "parC", "gyrB"]: cat_fq.append(mut_str)
+                    if hit.family in ["gyrA", "parE", "parC", "gyrB"]: cat_fq.append(mut_str)
                     elif hit.family == "23S": cat_oxa.append(mut_str)
                     else: cat_rif.append(mut_str)
                 continue
