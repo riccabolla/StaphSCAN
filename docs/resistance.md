@@ -100,7 +100,7 @@ For `res_gene_count` and `res_class_count` the following criteria is used:
 |ANT(9)-Ia|aminoglycoside antibiotic|1|[3002630](https://card.mcmaster.ca/ontology/39030)|[Murphy et al. 1985](http://www.ncbi.nlm.nih.gov/pubmed/3004956)|
 |mecA|penicillin beta-lactam|291|[3000617](https://card.mcmaster.ca/ontology/36911)|[Ubukata K, et al. 1989](http://www.ncbi.nlm.nih.gov/pubmed/2708325)|
 |mecC|penicillin beta-lactam|6|[3001209](https://card.mcmaster.ca/ontology/37590)|[Garcia-Alvarez L, et al. 2011](http://www.ncbi.nlm.nih.gov/pubmed/21641281)|
-|blaZ|penicillin beta-lactam|473|[3000621](https://card.mcmaster.ca/ontology/36963)|[McLaughlin JR, et al. 1981](http://www.ncbi.nlm.nih.gov/pubmed/6793593)|
+|blaZ|penicillin beta-lactam|470|[3000621](https://card.mcmaster.ca/ontology/36963)|[McLaughlin JR, et al. 1981](http://www.ncbi.nlm.nih.gov/pubmed/6793593)|
 |blaZ mecC-type|penicillin beta-lactam|5|[3005097](https://card.mcmaster.ca/ontology/43312)|[Shore AC, et al. 2011](http://www.ncbi.nlm.nih.gov/pubmed/21636525)|
 |cfrA|phenicol antibiotic|1|[3003441](https://card.mcmaster.ca/ontology/40028)|[Schwarz S, et al. 2000](http://www.ncbi.nlm.nih.gov/pubmed/10952608)|
 |poxtA|oxazolinidone antibiotic|1|[3004470](https://card.mcmaster.ca/ontology/41688)|[Antonelli A, et al. 2018](http://www.ncbi.nlm.nih.gov/pubmed/29635422)|
