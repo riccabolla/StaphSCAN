@@ -42,19 +42,19 @@ It follows this criteria:
 
 * 4: *icaABCD* + *clf*/*cna* + *fnb*
 
-* 3: *icaABCD* + *fnb*
+* 3: *icaABCD* + *fnb* / *icaABCD*/*fnb* + *clf* + *cna*
 
-* 2: *icaABCD* + *clf*/*cna*
+* 2: *icaABCD*/*fnb* + *clf*/*cna*
 
-* 1: *icaABCD*
+* 1: *icaABCD*/*fnb*
 
-* 0: *icaABCD* incomplete/absent
+* 0: *icaABCD* incomplete/absent + *fnb* absent
 
 This scoring system reflects the multifactorial nature of *S. aureus* biofilm formation, wherein the cumulative presence of these specific genes signifies increased biofilm-forming capacity and enhanced virulence ([Nathan K et al. 2011](https://www.tandfonline.com/doi/full/10.4161/viru.2.5.17724#d1e149); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). 
 
-The presence of the *icaABCD* operon is crucial for biofilm development (Score 1), particularly in methicillin-sensitive *S. aureus isolates* ([Cramton et al. 2001](https://pmc.ncbi.nlm.nih.gov/articles/PMC98472/); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). A complete icaADBC operon, along with its repressor *icaR*, is essential for the synthesis of PIA polysaccharides, which are crucial for intercellular adhesion and biofilm formation ([Piechota et al. 2018](https://doi.org/10.1155/2018/4657396Digital)).
+The presence of the *icaABCD* operon is crucial for PIA-dependent biofilm development (Score 1), particularly in methicillin-sensitive *S. aureus isolates* ([Cramton et al. 2001](https://pmc.ncbi.nlm.nih.gov/articles/PMC98472/); [Zapotoczna et al. 2016](https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1005671)). A complete icaADBC operon, along with its repressor *icaR*, is essential for the synthesis of PIA polysaccharides, which are crucial for intercellular adhesion and biofilm formation ([Piechota et al. 2018](https://doi.org/10.1155/2018/4657396Digital)). However, *Staphylococcus aureus* can produce a PIA-independent biofilm via the *fnb* genes ([O'Neill et al, 2008](https://pmc.ncbi.nlm.nih.gov/articles/PMC2395027/)).
 
-Increasing the biofilm potential (Score 2), the co-occurrence of surface proteins like *cna*, *clfA* or *clfB*, facilitates adhesion to different surfaces ([Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). The genes *fnbA* and/or *fnbB* with the icaABCD operon (Score 3), facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/)). 
+Increasing the biofilm potential (Score 2), the co-occurrence of surface proteins like *cna*, *clfA* or *clfB*, facilitates adhesion to different surfaces ([Foster. 2019](https://pubmed.ncbi.nlm.nih.gov/31267926/); [Madani et al. 2017](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0179601)). The genes *fnbA* and/or *fnbB* with the icaABCD operon (Score 3), facilitates stronger adhesion to host tissues and medical devices, thereby enhancing the overall biofilm architecture and its resilience against antimicrobial agents ([O'Neill et al. 2008](https://pubmed.ncbi.nlm.nih.gov/18375547/)). In alternative, the presence of *icaABCD* or *fnb* together with both *cna* and *clf* genes, represents an equal versatile biofilm.
 
 Finally, the combinations of the previously genes (Score 4 and 5), characterize isolates with both versatility and high-production capacity.  ([Idrees M et al. 2021](https://pubmed.ncbi.nlm.nih.gov/34300053/)). 
 

@@ -2,6 +2,7 @@ import pandas as pd
 import subprocess
 import io
 import tempfile
+import json
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, List
@@ -35,29 +36,48 @@ class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "resistance"
         self.module_dir = Path(__file__).resolve().parent
+        self.data_dir = self.module_dir / "data"
+        def get_db(prefix):
+            try:
+                return next(self.data_dir.glob(f"{prefix}*.fasta"))
+            except StopIteration:
+                raise FileNotFoundError(f"Database missing: No file matching '{prefix}*.fasta' found.")
 
         self.db_files = {
-            "amino": self.module_dir / "data" / "amino_res.fasta",
-            "bla": self.module_dir / "data" / "bla_res.fasta",
-            "flq": self.module_dir / "data" / "flq_res.fasta",
-            "oxa": self.module_dir / "data" / "oxa_res.fasta", 
-            "mlsb": self.module_dir / "data" / "mlsb_res.fasta", 
-            "rif": self.module_dir / "data" / "rif_res.fasta", 
-            "tet": self.module_dir / "data" / "tet_res.fasta",
-            "gly": self.module_dir / "data" / "gly_res.fasta",
+            "amino": get_db("amino_res"),
+            "bla":   get_db("bla_res"),
+            "flq":   get_db("flq_res"),
+            "oxa":   get_db("oxa_res"), 
+            "mlsb":  get_db("mlsb_res"), 
+            "rif":   get_db("rif_res"), 
+            "tet":   get_db("tet_res"),
+            "gly":   get_db("gly_res"),
         }
 
         self.ref_prot_dict: Dict[str, str] = {}
 
-        self.mutation_targets = ["gyrA", "parC", "gyrB", "23S", "rpoB"]
+        try:
+            mutations_file = next(self.data_dir.glob("mutation*.json"))
+        except StopIteration:
+            raise FileNotFoundError(f"Database missing: No file matching 'mutation*.json' found.")
         
-        self.known_mutations = {
-            "gyrA": {84: ('S', ['L']), 88: ('E', ['K', 'G'])}, 
-            "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
-            "rpoB": {481: ('H', ['Y', 'N']), 466: ('L', ['S']), 473: ('A', ['T']), 477: ('A', ['T'])}, 
-            "gyrB": {451: ('T', ['S'])},
-            "23S": {2576: ('G', ['T']), 2447: ('G', ['T']), 2500: ('T', ['A'])}, 
-        }
+        with open(mutations_file, "r") as f:
+            raw_mutations = json.load(f)
+        self.known_mutations = {}
+        for gene, mutations in raw_mutations.items():
+            self.known_mutations[gene] = {
+                int(pos): tuple(data) for pos, data in mutations.items()
+            }
+        self.mutation_targets = list(self.known_mutations.keys())
+        #self.mutation_targets = ["gyrA", "parC", "gyrB", "23S", "rpoB"]
+        
+        #self.known_mutations = {
+        #    "gyrA": {84: ('S', ['L']), 88: ('E', ['K', 'G'])}, 
+        #    "parC": {80: ('S', ['F', 'Y']), 84: ('E', ['K', 'G', 'V'])},
+        #    "rpoB": {481: ('H', ['Y', 'N']), 466: ('L', ['S']), 473: ('A', ['T']), 477: ('A', ['T'])}, 
+        #    "gyrB": {451: ('T', ['S'])},
+        #    "23S": {2576: ('G', ['T']), 2447: ('G', ['T']), 2500: ('T', ['A'])}, 
+        #}
 
         self.min_id = min_id
         self.min_cov = min_cov
@@ -169,6 +189,15 @@ class Module:
 
         muts = []
         targets = self.known_mutations[fam]
+
+        # ecoli numeration is reported
+        ecoli_translation = {
+            2603: 2576,
+            2527: 2500,
+            2474: 2447,
+            2085: 2058,
+            2086: 2059
+        }
         
         # Iterate through alignment to track position
         ref_biological_pos = 0
@@ -193,7 +222,10 @@ class Module:
                 
                 # mutation check:
                 if f_char != expected_ref_base and f_char in allowed_muts:
-                    muts.append(f"{expected_ref_base}{ref_biological_pos}{f_char}")
+                    display_pos = ref_biological_pos
+                    if fam == "23S":
+                        display_pos = ecoli_translation.get(ref_biological_pos, ref_biological_pos)
+                    muts.append(f"{expected_ref_base}{display_pos}{f_char}")
 
         return muts
 
@@ -307,7 +339,7 @@ class Module:
                 if mm:
                     mut_str = f"{hit.family} [{','.join(mm)}]"
                     muts.append(mut_str)
-                    if hit.family in ["gyrA", "parC", "gyrB"]: cat_fq.append(mut_str)
+                    if hit.family in ["gyrA", "parE", "parC", "gyrB"]: cat_fq.append(mut_str)
                     elif hit.family == "23S": cat_oxa.append(mut_str)
                     else: cat_rif.append(mut_str)
                 continue

@@ -34,7 +34,11 @@ class Module:
         self.name = "virulence"
         self.module_dir = Path(__file__).resolve().parent
         self.data_dir = self.module_dir / "data"
-        self.db_fasta = self.data_dir / "targets.fasta"
+        db_files = list(self.data_dir.glob("targets*.fasta")) #global path for v0.4.0 update
+        if not db_files:
+            raise FileNotFoundError(f"Database missing: No files matching 'targets*.fasta' found in {self.data_dir}") #sfaety check
+        self.db_fasta = db_files[0]
+        #self.db_fasta = self.data_dir / "targets.fasta"
         
         self.min_id = min_id
         self.min_cov = min_cov
@@ -226,10 +230,13 @@ class Module:
                 clean_hits.add(clean_name)
 
             score = 0
-            if "lukf" in clean_hits and "luks" in clean_hits:
-                score = 4
-            elif "tsst1" in clean_hits:
+            if (
+                ("lukf" in clean_hits and "luks" in clean_hits)
+                or ("tsst1" in clean_hits) #v0.4.0 update, tsst-1 and pvl have the same score
+            ):
                 score = 3
+            #elif "tsst1" in clean_hits:
+            #    score = 3
             #elif "eta" in clean_hits or "etb" in clean_hits:
             elif any(gene in clean_hits for gene in et_targets):
                 score = 2

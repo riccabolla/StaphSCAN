@@ -23,8 +23,11 @@ class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "capsule"
         self.module_dir = Path(__file__).resolve().parent
-        self.db_fasta = self.module_dir / "data" / "capsule_targets.fasta"
-        
+        self.data_dir = self.module_dir / "data"
+        db_files = list(self.data_dir.glob("capsule_targets*.fasta")) #global path for v0.4.0 update
+        if not db_files:
+            raise FileNotFoundError(f"Database missing: No files matching the capsule targets fasta file found in {self.data_dir}") #safety check
+        self.db_fasta = db_files[0]   
         self.min_id = min_id
         self.min_cov = min_cov
 

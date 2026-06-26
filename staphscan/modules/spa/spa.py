@@ -8,8 +8,16 @@ class Module:
         self.name = "spa"
         self.module_dir = Path(__file__).parent
         self.data_dir = self.module_dir / "data"
-        self.repeats_file = self.data_dir / "repeats.fasta"
-        self.types_file = self.data_dir / "spatypes.csv"
+        db_repeats = list(self.data_dir.glob("repeats*.fasta"))
+        db_types = list(self.data_dir.glob("spatypes*.csv"))
+        if not db_repeats:
+            raise FileNotFoundError(f"Missing database: No repeats fasta file found in {self.data_dir}")
+        if not db_types:
+            raise FileNotFoundError(f"Missing database: No spatypes list found in {self.data_dir}")
+        #self.repeats_file = self.data_dir / "repeats.fasta"
+        #self.types_file = self.data_dir / "spatypes.csv"
+        self.repeats_file = db_repeats[0]
+        self.types_file = db_types[0]
 
     def check_db(self):
         return self.repeats_file.exists() and self.types_file.exists()

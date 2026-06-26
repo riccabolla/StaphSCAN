@@ -15,7 +15,13 @@ class Module:
         self.name = "agr"
         self.module_dir = Path(__file__).parent
         self.data_dir = self.module_dir / "data"
-        self.db_fasta = self.data_dir / "targets.fasta"
+        db_targets = list(self.data_dir.glob("targets*.fasta"))
+        if not db_targets:
+            raise FileNotFoundError(f"Missing database: No targets fasta file found in {self.data_dir}")
+        #self.repeats_file = self.data_dir / "repeats.fasta"
+        #self.types_file = self.data_dir / "spatypes.csv"
+        self.db_fasta = db_targets[0]
+        #self.db_fasta = self.data_dir / "targets.fasta"
         self.blast_db = self.data_dir / "agr_db"
         
         self.ref_data = {} 

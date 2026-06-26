@@ -32,7 +32,12 @@ class Module:
     def __init__(self, min_id=90.0, min_cov=80.0):
         self.name = "biofilm"
         self.module_dir = Path(__file__).resolve().parent
-        self.db_fasta = self.module_dir / "data" / "biofilm.fasta"
+        self.data_dir = self.module_dir / "data"
+        db_files = list(self.data_dir.glob("biofilm*.fasta")) #global path for v0.4.0 update
+        if not db_files:
+            raise FileNotFoundError(f"Database missing: No files matching the biofilm fasta file found in {self.data_dir}") #safety check
+        self.db_fasta = db_files[0] 
+        #self.db_fasta = self.module_dir / "data" / "biofilm.fasta"
 
         self.clf_targets = ["clfA", "clfB"]
         self.fnb_targets = ["fnbA", "fnbB"]
@@ -269,18 +274,40 @@ class Module:
         # fnb genes are associated with strong biofilm formation, and considered as more relevant
 
         score = 0
-
-        if has_ica:
-            score = 1
-            if has_cna and has_fnb and has_clf:
-                score = 5             
-            elif has_fnb and (has_clf or has_cna) :
-                score = 4 
-            elif has_fnb:
-                score = 3    
-            elif has_clf or has_cna: 
-                score = 2
+        #old logic
+        # if has_ica:
+        #     score = 1
+        #     if has_cna and has_fnb and has_clf:
+        #         score = 5             
+        #     elif has_fnb and (has_clf or has_cna) :
+        #         score = 4 
+        #     elif has_fnb:
+        #         score = 3    
+        #     elif has_clf or has_cna: 
+        #         score = 2
         
+        #new logic (v0.4.0)
+        primaries = sum([has_ica, has_fnb])
+        secondaries = sum([has_clf, has_cna])
+
+        score = 0
+
+        if primaries == 2:
+            if secondaries == 2:
+                score = 5
+            elif secondaries == 1:
+                score = 4
+            elif secondaries == 0:
+                score = 3
+        
+        elif primaries == 1:
+            if secondaries == 2:
+                score = 3
+            elif secondaries == 1:
+                score = 2
+            elif secondaries == 0:
+                score = 1
+
         out["biofilm_score"] = str(score)
 
         return out
