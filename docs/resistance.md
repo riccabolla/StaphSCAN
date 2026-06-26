@@ -33,7 +33,7 @@ The module screens specific chromosomal loci for point mutations known to confer
 | `gyrB` | `T451S` | `Fluoroquinolones-R` |
 | `parE` | `D432N` | `Fluoroquinolones-R` |
 | `parC` | `S80F`, `S80Y`, `E84K`, `E84G`, `E84V` | `Fluoroquinolones-R` |
-| `rpoB` | `H481Y`, `H481N`, `L466N`, `A473T`, `A477T` | `Rifampicin-R` |
+| `rpoB` | `H481Y`, `H481N`, `L466N`, `A473T`, `A477T`, `S486L` | `Rifampicin-R` |
 | `23S rRNA` | `G2576T`, `G2447T`, `T2500A`, `A2058G`, `A2059G` | `Linezolid-R` |
 
 ### Parameters
