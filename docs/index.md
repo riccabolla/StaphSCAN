@@ -14,6 +14,11 @@ It integrates the following steps:
 * Detection of virulence genes (including biofilm)
 * Detection of antimicrobial resistance genes (inclduing relevant mutations)
 
+<br>
+
+![StaphSCAN workflow](images/pipeline.svg)
+
+
 For more information, see the [Modules](modules.md) section.
 
 Acknowledgements

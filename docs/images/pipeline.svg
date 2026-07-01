@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="876" height="794" viewBox="0 0 876 794" style="color-scheme: light dark">
+<defs>
+</defs>
+<metadata id="diagram-manifest" data-schema-version="1.0"><![CDATA[{"groups":[{"color":"#FF9800","id":"typing","label":"Typing Module"},{"color":"#F44336","id":"res","label":"Resistance Module"},{"color":"#9C27B0","id":"vir","label":"Virulence Module"},{"color":"#2196F3","id":"bio","label":"Biofilm Module"}],"height":794,"match":{"flags":"i","target":"fqProcessName","type":"regex"},"nodes":[{"groups":["typing"],"h":10.0,"id":"T1","label":"spa","patterns":[],"r":5.0,"region":"Typing","rx":5.0,"w":10.0,"x":346.5,"y":120.0},{"groups":["typing"],"h":10.0,"id":"T2","label":"agr","patterns":[],"r":5.0,"region":"Typing","rx":5.0,"w":10.0,"x":406.5,"y":120.0},{"groups":["typing"],"h":10.0,"id":"T3","label":"capsule","patterns":[],"r":5.0,"region":"Typing","rx":5.0,"w":10.0,"x":466.5,"y":120.0},{"groups":["typing"],"h":10.0,"id":"T4","label":"sccmec","patterns":[],"r":5.0,"region":"Typing","rx":5.0,"w":10.0,"x":526.5,"y":120.0},{"groups":["typing"],"h":10.0,"id":"T5","label":"mlst","patterns":[],"r":5.0,"region":"Typing","rx":5.0,"w":10.0,"x":586.5,"y":120.0},{"groups":["res"],"h":10.0,"id":"R1","label":"AMR Gene","patterns":[],"r":5.0,"region":"Resistance","rx":5.0,"w":10.0,"x":346.5,"y":270.0},{"groups":["res"],"h":10.0,"id":"R2","label":"Mutations","patterns":[],"r":5.0,"region":"Resistance","rx":5.0,"w":10.0,"x":406.5,"y":270.0},{"groups":["res"],"h":10.0,"id":"R3","label":"Resistance Score","patterns":[],"r":5.0,"region":"Resistance","rx":5.0,"w":10.0,"x":466.5,"y":270.0},{"groups":["bio","res","typing","vir"],"h":22.0,"id":"IN","label":"Assembly files","patterns":[],"r":5.0,"region":"Prep","rx":5.0,"w":10.0,"x":97.0,"y":126.0},{"groups":["bio","res","typing","vir"],"h":22.0,"id":"QC","label":"Species ID & Qcheck","patterns":[],"r":5.0,"region":"Prep","rx":5.0,"w":10.0,"x":157.0,"y":126.0},{"groups":["bio","res","typing","vir"],"h":22.0,"id":"OUT","label":"Report","patterns":[],"r":5.0,"region":"Report","rx":5.0,"w":10.0,"x":766.5,"y":126.0},{"groups":["vir"],"h":10.0,"id":"V1","label":"Virulence Gene","patterns":[],"r":5.0,"region":"Virulence","rx":5.0,"w":10.0,"x":363.5,"y":420.0},{"groups":["vir"],"h":10.0,"id":"V2","label":"Virulence Score","patterns":[],"r":5.0,"region":"Virulence","rx":5.0,"w":10.0,"x":423.5,"y":420.0},{"groups":["bio"],"h":10.0,"id":"B1","label":"Biofilm Gene","patterns":[],"r":5.0,"region":"Biofilm","rx":5.0,"w":10.0,"x":354.5,"y":570.0},{"groups":["bio"],"h":10.0,"id":"B2","label":"Biofilm Score","patterns":[],"r":5.0,"region":"Biofilm","rx":5.0,"w":10.0,"x":414.5,"y":570.0}],"regions":[{"id":"Typing","label":"Typing Module"},{"id":"Resistance","label":"Resistance Module"},{"id":"Prep","label":"Pre-processing"},{"id":"Report","label":"Output"},{"id":"Virulence","label":"Virulence Module"},{"id":"Biofilm","label":"Biofilm Module"}],"title":"StaphSCAN Workflow","version":"1.0","width":876}]]></metadata>
+<style>.nf-metro-bg { fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); }
+.nf-metro-title { fill: var(--nfm-map-title-color, light-dark(#111111, #ffffff)); }
+.nf-metro-station-label { fill: var(--nfm-map-label-color, light-dark(#333333, #e0e0e0)); }
+.nf-metro-section-box { fill: var(--nfm-map-section-fill, light-dark(#ededed, #373737)); stroke: var(--nfm-map-section-stroke, light-dark(#e6e6e6, #595959)); }
+.nf-metro-section-label { fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }
+.nf-metro-group-label { fill: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }
+.nf-metro-group-underline { stroke: var(--nfm-map-section-label-color, light-dark(#666666, #c8c8c8)); }
+.nf-metro-legend-bg { fill: var(--nfm-map-legend-bg, light-dark(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3))); }
+.nf-metro-legend-text { fill: var(--nfm-map-legend-text-color, light-dark(#333333, #e0e0e0)); }
+.nf-metro-marker-stroke { stroke: var(--nfm-map-marker-stroke, light-dark(#333333, #f0f0f0)); }
+.nf-metro-label-halo { fill: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); stroke: var(--nfm-map-bg, light-dark(#f5f5f5, #2b2b2b)); }</style>
+<rect x="0" y="0" width="876" height="794" fill="#2b2b2b" class="nf-metro-bg" />
+<text x="60.0" y="30.0" font-size="24.0" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" class="nf-metro-title">StaphSCAN Workflow</text>
+<rect x="296.5" y="70.0" width="340.0" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Typing" data-section-lines="typing" />
+<circle cx="307.5" cy="55.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Typing" />
+<text x="307.5" y="55.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Typing">2</text>
+<text x="323.5" y="55.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Typing">Typing Module</text>
+<rect x="296.5" y="220.0" width="246.0" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Resistance" data-section-lines="res" />
+<circle cx="307.5" cy="205.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Resistance" />
+<text x="307.5" y="205.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Resistance">3</text>
+<text x="323.5" y="205.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Resistance">Resistance Module</text>
+<rect x="30.0" y="70.0" width="216.5" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Prep" data-section-lines="bio,res,typing,vir" />
+<circle cx="41.0" cy="55.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Prep" />
+<text x="41.0" y="55.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Prep">1</text>
+<text x="57.0" y="55.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Prep">Pre-processing</text>
+<rect x="716.5" y="70.0" width="100.0" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Report" data-section-lines="bio,res,typing,vir" />
+<circle cx="727.5" cy="55.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Report" />
+<text x="727.5" y="55.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Report">6</text>
+<text x="743.5" y="55.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Report">Output</text>
+<rect x="296.5" y="370.0" width="198.5" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Virulence" data-section-lines="vir" />
+<circle cx="307.5" cy="355.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Virulence" />
+<text x="307.5" y="355.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Virulence">4</text>
+<text x="323.5" y="355.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Virulence">Virulence Module</text>
+<rect x="296.5" y="520.0" width="180.5" height="100.0" rx="8" ry="8" fill="#373737" stroke="#595959" stroke-width="1.0" class="nf-metro-section-box" data-section-id="Biofilm" data-section-lines="bio" />
+<circle cx="307.5" cy="505.0" r="11" fill="#333333" class="nf-metro-section-num-circle" data-section-id="Biofilm" />
+<text x="307.5" y="505.0" font-size="12" fill="#ffffff" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dy="0.3em" data-section-id="Biofilm">5</text>
+<text x="323.5" y="505.0" font-size="16.0" fill="#c8c8c8" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" dy="0.3em" class="nf-metro-section-label" data-section-id="Biofilm">Biofilm Module</text>
+<path d="M97.0,132.0 L157.0,132.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M354.5,570.0 L414.5,570.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M157.0,132.0 L246.5,132.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M296.5,570.0 L354.5,570.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M414.5,570.0 L477.0,570.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M716.5,132.0 L766.5,132.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M246.5,132.0 L256.5,132.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M256.5,132.0 L257.5,132.0 Q267.5,132.0,267.5,142.0 L267.5,552.0 Q267.5,570.0,285.5,570.0 L296.5,570.0" stroke="#2196F3" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M477.0,570.0 L662.5,570.0 Q680.5,570.0,680.5,552.0 L680.5,142.0 Q680.5,132.0,690.5,132.0 L716.5,132.0" stroke="#2196F3" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-bio" data-line-id="bio" />
+<path d="M97.0,128.0 L157.0,128.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M363.5,420.0 L423.5,420.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M157.0,128.0 L246.5,128.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M296.5,420.0 L363.5,420.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M423.5,420.0 L495.0,420.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M716.5,128.0 L766.5,128.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M246.5,128.0 L256.5,128.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M256.5,128.0 L257.5,128.0 Q271.5,128.0,271.5,142.0 L271.5,406.0 Q271.5,420.0,285.5,420.0 L296.5,420.0" stroke="#9C27B0" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M495.0,420.0 L662.5,420.0 Q676.5,420.0,676.5,406.0 L676.5,142.0 Q676.5,128.0,690.5,128.0 L716.5,128.0" stroke="#9C27B0" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-vir" data-line-id="vir" />
+<path d="M346.5,270.0 L406.5,270.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M406.5,270.0 L466.5,270.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M97.0,124.0 L157.0,124.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M157.0,124.0 L246.5,124.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M296.5,270.0 L346.5,270.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M466.5,270.0 L542.5,270.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M716.5,124.0 L766.5,124.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M246.5,124.0 L256.5,124.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" class="metro-line-res" data-line-id="res" />
+<path d="M256.5,124.0 L257.5,124.0 Q275.5,124.0,275.5,142.0 L275.5,260.0 Q275.5,270.0,285.5,270.0 L296.5,270.0" stroke="#F44336" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-res" data-line-id="res" />
+<path d="M542.5,270.0 L662.5,270.0 Q672.5,270.0,672.5,260.0 L672.5,142.0 Q672.5,124.0,690.5,124.0 L716.5,124.0" stroke="#F44336" stroke-width="3.0" fill="none" stroke-linecap="round" stroke-linejoin="round" class="metro-line-res" data-line-id="res" />
+<path d="M346.5,120.0 L406.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M406.5,120.0 L466.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M466.5,120.0 L526.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M526.5,120.0 L586.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M97.0,120.0 L157.0,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M157.0,120.0 L246.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M296.5,120.0 L346.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M586.5,120.0 L636.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M716.5,120.0 L766.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M246.5,120.0 L256.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M256.5,120.0 L296.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<path d="M636.5,120.0 L716.5,120.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" class="metro-line-typing" data-line-id="typing" />
+<g class="nf-metro-station-group" data-node-id="T1" data-node-cx="346.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="typing" data-node-region="Typing" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="341.5" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="T1" data-station-lines="typing" data-station-label="spa" data-section-id="Typing" data-section-name="Typing Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="T2" data-node-cx="406.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="typing" data-node-region="Typing" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="401.5" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="T2" data-station-lines="typing" data-station-label="agr" data-section-id="Typing" data-section-name="Typing Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="T3" data-node-cx="466.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="typing" data-node-region="Typing" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="461.5" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="T3" data-station-lines="typing" data-station-label="capsule" data-section-id="Typing" data-section-name="Typing Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="T4" data-node-cx="526.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="typing" data-node-region="Typing" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="521.5" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="T4" data-station-lines="typing" data-station-label="sccmec" data-section-id="Typing" data-section-name="Typing Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="T5" data-node-cx="586.5" data-node-cy="120.0" data-node-r="5.0" data-node-groups="typing" data-node-region="Typing" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="581.5" y="115.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="T5" data-station-lines="typing" data-station-label="mlst" data-section-id="Typing" data-section-name="Typing Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="R1" data-node-cx="346.5" data-node-cy="270.0" data-node-r="5.0" data-node-groups="res" data-node-region="Resistance" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="341.5" y="265.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="R1" data-station-lines="res" data-station-label="AMR Gene" data-section-id="Resistance" data-section-name="Resistance Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="R2" data-node-cx="406.5" data-node-cy="270.0" data-node-r="5.0" data-node-groups="res" data-node-region="Resistance" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="401.5" y="265.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="R2" data-station-lines="res" data-station-label="Mutations" data-section-id="Resistance" data-section-name="Resistance Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="R3" data-node-cx="466.5" data-node-cy="270.0" data-node-r="5.0" data-node-groups="res" data-node-region="Resistance" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="461.5" y="265.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="R3" data-station-lines="res" data-station-label="Resistance Score" data-section-id="Resistance" data-section-name="Resistance Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="IN" data-node-cx="97.0" data-node-cy="126.0" data-node-r="5.0" data-node-groups="bio,res,typing,vir" data-node-region="Prep" data-node-w="10.0" data-node-h="22.0" data-node-rx="5.0">
+<rect x="92.0" y="115.0" width="10.0" height="22.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="IN" data-station-lines="bio,res,typing,vir" data-station-label="Assembly files" data-section-id="Prep" data-section-name="Pre-processing" />
+</g>
+<g class="nf-metro-station-group" data-node-id="QC" data-node-cx="157.0" data-node-cy="126.0" data-node-r="5.0" data-node-groups="bio,res,typing,vir" data-node-region="Prep" data-node-w="10.0" data-node-h="22.0" data-node-rx="5.0">
+<rect x="152.0" y="115.0" width="10.0" height="22.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="QC" data-station-lines="bio,res,typing,vir" data-station-label="Species ID &amp; Qcheck" data-section-id="Prep" data-section-name="Pre-processing" />
+</g>
+<g class="nf-metro-station-group" data-node-id="OUT" data-node-cx="766.5" data-node-cy="126.0" data-node-r="5.0" data-node-groups="bio,res,typing,vir" data-node-region="Report" data-node-w="10.0" data-node-h="22.0" data-node-rx="5.0">
+<rect x="761.5" y="115.0" width="10.0" height="22.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="OUT" data-station-lines="bio,res,typing,vir" data-station-label="Report" data-section-id="Report" data-section-name="Output" />
+</g>
+<g class="nf-metro-station-group" data-node-id="V1" data-node-cx="363.5" data-node-cy="420.0" data-node-r="5.0" data-node-groups="vir" data-node-region="Virulence" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="358.5" y="415.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="V1" data-station-lines="vir" data-station-label="Virulence Gene" data-section-id="Virulence" data-section-name="Virulence Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="V2" data-node-cx="423.5" data-node-cy="420.0" data-node-r="5.0" data-node-groups="vir" data-node-region="Virulence" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="418.5" y="415.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="V2" data-station-lines="vir" data-station-label="Virulence Score" data-section-id="Virulence" data-section-name="Virulence Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="B1" data-node-cx="354.5" data-node-cy="570.0" data-node-r="5.0" data-node-groups="bio" data-node-region="Biofilm" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="349.5" y="565.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="B1" data-station-lines="bio" data-station-label="Biofilm Gene" data-section-id="Biofilm" data-section-name="Biofilm Module" />
+</g>
+<g class="nf-metro-station-group" data-node-id="B2" data-node-cx="414.5" data-node-cy="570.0" data-node-r="5.0" data-node-groups="bio" data-node-region="Biofilm" data-node-w="10.0" data-node-h="10.0" data-node-rx="5.0">
+<rect x="409.5" y="565.0" width="10.0" height="10.0" rx="5.0" ry="5.0" fill="#ffffff" stroke="#333333" stroke-width="1.5" class="nf-metro-station" data-station-id="B2" data-station-lines="bio" data-station-label="Biofilm Score" data-section-id="Biofilm" data-section-name="Biofilm Module" />
+</g>
+<text x="346.5" y="131.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">spa</text>
+<text x="346.5" y="131.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="T1" class="nf-metro-station-label">spa</text>
+<text x="97.0" y="143.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Assembly files</text>
+<text x="97.0" y="143.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="IN" class="nf-metro-station-label">Assembly files</text>
+<text x="346.5" y="281.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">AMR Gene</text>
+<text x="346.5" y="281.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="R1" class="nf-metro-station-label">AMR Gene</text>
+<text x="363.5" y="431.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Virulence Gene</text>
+<text x="363.5" y="431.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="V1" class="nf-metro-station-label">Virulence Gene</text>
+<text x="354.5" y="581.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Biofilm Gene</text>
+<text x="354.5" y="581.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="B1" class="nf-metro-station-label">Biofilm Gene</text>
+<text x="766.5" y="143.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Report</text>
+<text x="766.5" y="143.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="OUT" class="nf-metro-station-label">Report</text>
+<text x="406.5" y="106.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">agr</text>
+<text x="406.5" y="106.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="T2" class="nf-metro-station-label">agr</text>
+<text x="157.0" y="106.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Species ID &amp; Qcheck</text>
+<text x="157.0" y="106.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="QC" class="nf-metro-station-label">Species ID &amp; Qcheck</text>
+<text x="406.5" y="256.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Mutations</text>
+<text x="406.5" y="256.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="R2" class="nf-metro-station-label">Mutations</text>
+<text x="423.5" y="406.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Virulence Score</text>
+<text x="423.5" y="406.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="V2" class="nf-metro-station-label">Virulence Score</text>
+<text x="414.5" y="556.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">Biofilm Score</text>
+<text x="414.5" y="556.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="B2" class="nf-metro-station-label">Biofilm Score</text>
+<text x="466.5" y="131.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">capsule</text>
+<text x="466.5" y="131.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="T3" class="nf-metro-station-label">capsule</text>
+<text x="466.5" y="281.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">Resistance Score</text>
+<text x="466.5" y="281.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="R3" class="nf-metro-station-label">Resistance Score</text>
+<text x="526.5" y="106.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="auto">sccmec</text>
+<text x="526.5" y="106.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="auto" data-station-id="T4" class="nf-metro-station-label">sccmec</text>
+<text x="586.5" y="131.0" font-size="13.0" fill="#2b2b2b" stroke="#2b2b2b" stroke-width="3.0" stroke-linejoin="round" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" aria-hidden="true" class="nf-metro-label-halo" text-anchor="middle" dominant-baseline="hanging">mlst</text>
+<text x="586.5" y="131.0" font-size="13.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="hanging" data-station-id="T5" class="nf-metro-station-label">mlst</text>
+<rect x="30.0" y="650.0" width="190.9" height="120.0" rx="6" ry="6" fill="rgba(0, 0, 0, 0.3)" class="nf-metro-legend-bg" />
+<path d="M42.0,674.0 L66.0,674.0" stroke="#FF9800" stroke-width="3.0" stroke-linecap="round" />
+<text x="78.0" y="674.0" font-size="14.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" dy="0.3em" class="nf-metro-legend-text">Typing Module</text>
+<path d="M42.0,698.0 L66.0,698.0" stroke="#F44336" stroke-width="3.0" stroke-linecap="round" />
+<text x="78.0" y="698.0" font-size="14.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" dy="0.3em" class="nf-metro-legend-text">Resistance Module</text>
+<path d="M42.0,722.0 L66.0,722.0" stroke="#9C27B0" stroke-width="3.0" stroke-linecap="round" />
+<text x="78.0" y="722.0" font-size="14.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" dy="0.3em" class="nf-metro-legend-text">Virulence Module</text>
+<path d="M42.0,746.0 L66.0,746.0" stroke="#2196F3" stroke-width="3.0" stroke-linecap="round" />
+<text x="78.0" y="746.0" font-size="14.0" fill="#e0e0e0" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" dy="0.3em" class="nf-metro-legend-text">Biofilm Module</text>
+<text x="846.0" y="786.0" font-size="8" fill="rgba(150, 150, 150, 0.6)" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" text-anchor="end">created with nf-metro v1.0.0</text>
+</svg>

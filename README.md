@@ -18,6 +18,10 @@ It integrates the following steps:
 * Detection of antimicrobial resistance genes (i.e. mecA)
 * Detection of clinically-relevant mutations (i.e. involved in AMR development)
 
+<br>
+
+![StaphSCAN workflow](docs/images/pipeline.svg)
+
 ## Documentation
 
 A draft documentation is available [here](https://staphscan.readthedocs.io/)
