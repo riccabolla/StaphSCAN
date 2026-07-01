@@ -16,12 +16,17 @@ And the following libraries:
 
 ### Install StaphSCAN
 
-Install with conda:
+Install with [bioconda](https://bioconda.github.io/recipes/staphscan/README.html):
 
 ```bash
 conda create -n staphscan -c bioconda staphscan -y
 
 conda activate staphscan
+```
+Install via [nf-core](https://nf-co.re/modules/staphscan/)
+
+```bash
+nf-core modules install staphscan
 ```
 
 CLone repo:
