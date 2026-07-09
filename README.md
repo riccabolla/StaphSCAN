@@ -24,7 +24,7 @@ It integrates the following steps:
 
 ## Documentation
 
-A draft documentation is available [here](https://staphscan.readthedocs.io/)
+A documentation is available [here](https://staphscan.readthedocs.io/)
 
 ## Citation
 
