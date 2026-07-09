@@ -21,6 +21,16 @@ It integrates the following steps:
 
 For more information, see the [Modules](modules.md) section.
 
+Citation
+----------------
+
+When you use StaphSCAN, remember to cite:
+
+> Bollini, R., Cento, V. StaphSCAN: a genomic surveillance framework for Staphylococcus aureus.
+> BMC Genomics (2026)
+> https://doi.org/10.1186/s12864-026-13165-0
+
+
 Acknowledgements
 ----------------
 StaphSCAN is inspired by [Kleborate](https://github.com/klebgenomics/Kleborate/tree/main). 
