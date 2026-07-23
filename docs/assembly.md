@@ -38,6 +38,7 @@ To report the species, the following criteria are used:
 For assembly quality the following parameters are considered:
 
 * Total assembly size (compared to expected size for *Staphylococcus aureus* of 2.6 - 3.1 Mbp)
+* Contamination: If more than one reference genome returns a Mash distance of **≤ 0.04**, the assembly is flagged (`Mixed`). This indicates an intra-genus mixed culture (e.g., *S. aureus* + *S. epidermidis*).
 * N50 (>=10 kbp)
 * Presence of ambiguous bases (Ns)
 
@@ -48,7 +49,10 @@ The assembly module generates the following output columns in the report:
 |Field|Description|
 |-----|-----------|
 |`Species`|Detected specie|
+|`Mash_distance`|Calculated Mash distance to the best-matching reference genome|
 |`Total_size`|Assembly size (bp)|
+|`N_contig`|Total number of contigs in the assembly|
+|`N50`|Assembly N50 value|
 |`QC`|Overall QC status (`PASS`  or `FAILED`)|
 
 
