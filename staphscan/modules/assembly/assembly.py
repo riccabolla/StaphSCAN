@@ -27,12 +27,10 @@ class Module:
                 "Mash_distance": "-",
                 "Total_size": "-",
                 "QC": "SKIPPED (Missing DB)",
-                "contig_count": "-",
-                "N50": "-",
-                "largest_contig": "-",
-                "ambiguous_bases": "-"
+                "N_contig": "-",
+                "N50": "-"
             }
-        contig_count, n50, longest, total_size, ambig = self.get_contig_stats(assembly_path)
+        contig_count, n50, total_size, ambig = self.get_contig_stats(assembly_path)
         
         species_call, mash_dist, is_mixed = self.run_mash(assembly_path)
         
@@ -55,17 +53,15 @@ class Module:
             "Mash_distance": mash_dist,
             "Total_size": total_size,
             "QC": qc_status,
-            "contig_count": contig_count,
-            "N50": n50,
-            "largest_contig": longest,
-            "ambiguous_bases": ambig
+            "N_contig": contig_count,
+            "N50": n50
         }
 
     def run_mash(self, assembly_path):
         try:
             cmd = ["mash", "dist", str(self.db_sketch), str(assembly_path)]
             res = subprocess.run(cmd, capture_output=True, text=True)
-            if not res.stdout: return "Unknown", "-", False, False
+            if not res.stdout: return "Unknown", "-", False
             
             rows = []
             for line in res.stdout.strip().split('\n'):
@@ -86,7 +82,6 @@ class Module:
             # weak hits between 0.02 and 0.04
             #is_weak = 0.02 < best_dist <= 0.04
 
-            # Cleaner dictionary approach for species mapping
             species_map = {
                 "S_aureus": "S. aureus",
                 "S_epidermidis": "S. epidermidis",
@@ -105,7 +100,7 @@ class Module:
                 return "No match found", str(best_dist), is_mixed
 
         except Exception as e:
-            return f"Error ({e})", "-", False, False
+            return f"Error ({e})", "-", False
 
     def get_contig_stats(self, fasta_path):
         lengths = []
@@ -127,10 +122,9 @@ class Module:
                 lengths.append(len(s))
                 ambiguous_count += sum(1 for b in s if b.upper() not in "ATCG")
 
-        if not lengths: return 0, 0, 0, 0, "no"
+        if not lengths: return 0, 0, 0, "no"
 
         lengths.sort()
-        longest = lengths[-1]
         total = sum(lengths)
         half = total / 2
         cum_sum = 0
@@ -142,4 +136,4 @@ class Module:
                 break
         
         ambig_str = f"yes ({ambiguous_count})" if ambiguous_count > 0 else "no"
-        return len(lengths), n50, longest, total, ambig_str
+        return len(lengths), n50, total, ambig_str
