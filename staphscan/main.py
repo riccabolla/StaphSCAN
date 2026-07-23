@@ -181,7 +181,9 @@ def main():
     df = pd.DataFrame(all_results).fillna("-")
 
     summary_cols = [
-        "Sample", "Species", "Mash_distance","Total_size", "QC", "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL", "spa_type", #assembly module
+        "Sample", "Species", "Mash_distance","Total_size", "N_contig", "N50", "QC", #assembly module
+        "ST", "arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL", # st module
+        "spa_type", # spa module
         "cap_type", "cap_completeness", "cap_genes", #capsule module
         "sccmec_type", "sccmec_subtype", "sccmec_genes", #sccmec module
         "agr_type", "agr_confidence", "agr_frameshifts", "agr_operon_status", #agr module
