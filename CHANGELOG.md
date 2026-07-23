@@ -2,11 +2,23 @@
 
 ## [Unreleased](https://github.com/riccabolla/staphscan/tree/HEAD)
 
-[Full Changelog](https://github.com/riccabolla/staphscan/compare/v0.4.0...HEAD)
+[Full Changelog](https://github.com/riccabolla/staphscan/compare/v0.4.1...HEAD)
+
+**Implemented enhancements:**
+
+- contamination check [\#15](https://github.com/riccabolla/StaphSCAN/issues/15)
+
+## [v0.4.1](https://github.com/riccabolla/staphscan/tree/v0.4.1) (2026-07-23)
+
+[Full Changelog](https://github.com/riccabolla/staphscan/compare/v0.4.0...v0.4.1)
 
 **Implemented enhancements:**
 
 - v0.4.0 release [\#13](https://github.com/riccabolla/StaphSCAN/issues/13)
+
+**Merged pull requests:**
+
+- V0.4.1 [\#16](https://github.com/riccabolla/StaphSCAN/pull/16) ([riccabolla](https://github.com/riccabolla))
 
 ## [v0.4.0](https://github.com/riccabolla/staphscan/tree/v0.4.0) (2026-06-26)
 
