@@ -44,7 +44,7 @@ class Module:
         
         # Add contamination QC checks
         if is_mixed: qc_failures.append("Mixed")
-        #if is_divergent: qc_failures.append("High_Mash_Distance")
+        #if is_weak: qc_failures.append("Weak hit")
         
         qc_status = "PASS"
         if qc_failures:
@@ -79,12 +79,12 @@ class Module:
             best_name = best_match[0]
             best_dist = best_match[1]
 
-            # Contamination Logic: Check if multiple species are under 0.05 distance
-            close_matches = [r for r in rows if r[1] <= 0.05]
+            # Contamination Logic: Check if multiple species are under 0.04 distance
+            close_matches = [r for r in rows if r[1] <= 0.04]
             is_mixed = len(close_matches) > 1
             
-            # Divergence Logic: Best match is acceptable, but unusually high for a pure genome
-            #is_divergent = 0.02 < best_dist <= 0.04
+            # weak hits between 0.02 and 0.04
+            #is_weak = 0.02 < best_dist <= 0.04
 
             # Cleaner dictionary approach for species mapping
             species_map = {
@@ -108,7 +108,6 @@ class Module:
             return f"Error ({e})", "-", False, False
 
     def get_contig_stats(self, fasta_path):
-        # [Keep your existing get_contig_stats code here - no changes needed]
         lengths = []
         ambiguous_count = 0
         with open(fasta_path, 'r') as f:
