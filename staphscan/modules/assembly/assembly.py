@@ -15,18 +15,34 @@ class Module:
 
     def check_db(self):
         if not self.db_sketch.exists():
-            print("Warning: Mash sketch 'staph_refs.msh' not found. Run setup_mash.py.")
+            print(f"Warning: Mash sketch '{self.db_sketch.name}' not found. Skipping assembly module.")
             return False
         return True
 
     def run(self, assembly_path):
-        contig_count, n50, longest, total_size, ambig = self.get_contig_stats(assembly_path)
-        species_call, mash_dist = self.run_mash(assembly_path)
+        # if db is missing skip and report na results
+        if not self.check_db():
+            return {
+                "Species": "Not Analyzed",
+                "Mash_distance": "-",
+                "Total_size": "-",
+                "QC": "SKIPPED (Missing DB)",
+                "N_contig": "-",
+                "N50": "-"
+            }
+        contig_count, n50, total_size, ambig = self.get_contig_stats(assembly_path)
+        
+        species_call, mash_dist, is_mixed = self.run_mash(assembly_path)
+        
         qc_failures = []
         if total_size < self.min_size: qc_failures.append("Too short")
         if total_size > self.max_size: qc_failures.append("Too long")
         if n50 < self.min_n50: qc_failures.append("Low_N50")
         if "yes" in ambig: qc_failures.append("Ambiguous_Bases")
+        
+        # Add contamination QC checks
+        if is_mixed: qc_failures.append("Mixed")
+        #if is_weak: qc_failures.append("Weak hit")
         
         qc_status = "PASS"
         if qc_failures:
@@ -37,55 +53,54 @@ class Module:
             "Mash_distance": mash_dist,
             "Total_size": total_size,
             "QC": qc_status,
-            "contig_count": contig_count,
-            "N50": n50,
-            "largest_contig": longest,
-            "ambiguous_bases": ambig
+            "N_contig": contig_count,
+            "N50": n50
         }
 
     def run_mash(self, assembly_path):
         try:
             cmd = ["mash", "dist", str(self.db_sketch), str(assembly_path)]
             res = subprocess.run(cmd, capture_output=True, text=True)
-            if not res.stdout: return "Unknown", "-"
+            if not res.stdout: return "Unknown", "-", False
+            
             rows = []
             for line in res.stdout.strip().split('\n'):
                 parts = line.split('\t')
                 ref_name = Path(parts[0]).name 
                 dist = float(parts[2])
                 rows.append((ref_name, dist))
+                
             rows.sort(key=lambda x: x[1])
             best_match = rows[0]
             best_name = best_match[0]
             best_dist = best_match[1]
-            display_name = "Unknown"
-            if "S_aureus" in best_name: display_name = "S. aureus"
-            elif "S_epidermidis" in best_name: display_name = "S. epidermidis"
-            elif "S_lugdunensis" in best_name: display_name = "S. lugdunensis"
-            elif "S_haemolyticus" in best_name: display_name = "S. haemolyticus"
-            elif "S_argenteus" in best_name: display_name = "S. argenteus"
-            elif "S_capitis" in best_name: display_name = "S. capitis"
-            elif "S_schweitzeri" in best_name: display_name = "S. schweitzeri"
-            else: display_name = best_name
-            # if best_dist <= 0.02:
-            #     if display_name == "S. aureus":
-            #         return "S. aureus (Strong match)", str(best_dist)
-            #     else:
-            #         return display_name, str(best_dist)
-            # elif best_dist <= 0.04:
-            #     if display_name == "S. aureus":
-            #         return "S. aureus (Weak match)", str(best_dist)
-            #     else:
-            #         return display_name, str(best_dist)
-            # else:
-            #     return "No match found", str(best_dist)
+
+            # Contamination Logic: Check if multiple species are under 0.04 distance
+            close_matches = [r for r in rows if r[1] <= 0.04]
+            is_mixed = len(close_matches) > 1
+            
+            # weak hits between 0.02 and 0.04
+            #is_weak = 0.02 < best_dist <= 0.04
+
+            species_map = {
+                "S_aureus": "S. aureus",
+                "S_epidermidis": "S. epidermidis",
+                "S_lugdunensis": "S. lugdunensis",
+                "S_haemolyticus": "S. haemolyticus",
+                "S_argenteus": "S. argenteus",
+                "S_capitis": "S. capitis",
+                "S_schweitzeri": "S. schweitzeri"
+            }
+            
+            display_name = next((v for k, v in species_map.items() if k in best_name), best_name)
+
             if best_dist <= 0.04:
-                return display_name, str(best_dist)
+                return display_name, str(best_dist), is_mixed
             else:
-                return "No match found", str(best_dist)
+                return "No match found", str(best_dist), is_mixed
 
         except Exception as e:
-            return f"Error ({e})", "-"
+            return f"Error ({e})", "-", False
 
     def get_contig_stats(self, fasta_path):
         lengths = []
@@ -107,10 +122,9 @@ class Module:
                 lengths.append(len(s))
                 ambiguous_count += sum(1 for b in s if b.upper() not in "ATCG")
 
-        if not lengths: return 0, 0, 0, 0, "no"
+        if not lengths: return 0, 0, 0, "no"
 
         lengths.sort()
-        longest = lengths[-1]
         total = sum(lengths)
         half = total / 2
         cum_sum = 0
@@ -122,4 +136,4 @@ class Module:
                 break
         
         ambig_str = f"yes ({ambiguous_count})" if ambiguous_count > 0 else "no"
-        return len(lengths), n50, longest, total, ambig_str
+        return len(lengths), n50, total, ambig_str
