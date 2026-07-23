@@ -1,4 +1,5 @@
 # StaphSCAN
+[![CI](https://github.com/riccabolla/staphscan/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/riccabolla/staphscan/actions/workflows/ci.yml)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/version.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/latest_release_date.svg)](https://anaconda.org/bioconda/staphscan)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/staphscan/badges/license.svg)](https://anaconda.org/bioconda/staphscan)
