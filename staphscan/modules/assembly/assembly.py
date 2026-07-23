@@ -15,14 +15,25 @@ class Module:
 
     def check_db(self):
         if not self.db_sketch.exists():
-            print("Warning: Mash sketch 'staph_refs.msh' not found. Run setup_mash.py.")
+            print(f"Warning: Mash sketch '{self.db_sketch.name}' not found. Skipping assembly module.")
             return False
         return True
 
     def run(self, assembly_path):
+        # if db is missing skip and report na results
+        if not self.check_db():
+            return {
+                "Species": "Not Analyzed",
+                "Mash_distance": "-",
+                "Total_size": "-",
+                "QC": "SKIPPED (Missing DB)",
+                "contig_count": "-",
+                "N50": "-",
+                "largest_contig": "-",
+                "ambiguous_bases": "-"
+            }
         contig_count, n50, longest, total_size, ambig = self.get_contig_stats(assembly_path)
         
-        # Unpack the new contamination variables
         species_call, mash_dist, is_mixed = self.run_mash(assembly_path)
         
         qc_failures = []
@@ -32,7 +43,7 @@ class Module:
         if "yes" in ambig: qc_failures.append("Ambiguous_Bases")
         
         # Add contamination QC checks
-        if is_mixed: qc_failures.append("Contamination_Mixed_Staph")
+        if is_mixed: qc_failures.append("Mixed")
         #if is_divergent: qc_failures.append("High_Mash_Distance")
         
         qc_status = "PASS"
