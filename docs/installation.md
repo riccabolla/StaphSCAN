@@ -14,36 +14,34 @@ And the following libraries:
 * [Rauth](https://rauth.readthedocs.io/en/latest/)
 * [Requests](https://pypi.org/project/requests/)
 
-### Install StaphSCAN
+## Install StaphSCAN
 
-Install with [bioconda](https://bioconda.github.io/recipes/staphscan/README.html):
+### Bioconda:
+
+We recommend installing it via [Conda](https://bioconda.github.io/recipes/staphscan/README.html) 
 
 ```bash
 conda create -n staphscan -c bioconda staphscan -y
 
 conda activate staphscan
 ```
-Install via [nf-core](https://nf-co.re/modules/staphscan/)
+### Nf-core
+
+You can install it as an [nf-core module](https://nf-co.re/modules/staphscan/)
 
 ```bash
 nf-core modules install staphscan
 ```
 
-CLone repo:
+### Docker:
+
+It is available as a Docker image via [StaPH-B](https://hub.docker.com/r/staphb/staphscan)
 
 ```bash
-conda create -n staphscan -c bioconda python=3.10 mash pandas blast biopython -y
-
-conda activate staphscan
-
-git clone https://github.com/riccabolla/StaphSCAN.git
-
-cd StaphSCAN/
-
-python main.py -h
+docker pull staphb/staphscan:latest
 ```
 
-### MLST database update
+## MLST database update
 
 Once installed, you have to update the MLST database if you want to run it with the most recent alleles and profiles. <br>
 
