@@ -178,6 +178,50 @@ class Module:
             print(f"Error in MLST module: {e}", file=sys.stderr)
             result["ST"] = "Error"
             return result
+        
+    def run_fastq(self, consensus_dict: dict) -> dict:
+        """
+        Processes the MLST profile directly from the BAM consensus sequences.
+        """
+        result = {"ST": "Unknown"}
+        for l in self.loci: result[l] = "-"
+        
+        if self.prof_df is None:
+            result["ST"] = "DB_Error"
+            return result
+            
+        detected_profile = {}
+        
+        for locus in self.loci:
+            # Find the target in the consensus dict that starts with this locus (e.g., arcC_1)
+            matched_key = next((k for k in consensus_dict.keys() if k.startswith(f"{locus}_")), None)
+            
+            if not matched_key:
+                detected_profile[locus] = "-"
+                continue
+                
+            stats = consensus_dict[matched_key]
+            
+            # Apply thresholds
+            if stats["coverage"] < self.min_coverage:
+                result[locus] = "Partial"
+                detected_profile[locus] = "-"
+                continue
+                
+            genome_seq = stats["dna"].upper().replace("N", "") # Remove Ns for exact matching
+            
+            # Exact match check
+            if genome_seq in self.allele_map[locus]:
+                allele_id = self.allele_map[locus][genome_seq]
+                detected_profile[locus] = allele_id
+                result[locus] = allele_id
+            else:
+                closest_str = self._get_closest_allele(locus, genome_seq)                  
+                detected_profile[locus] = "-" 
+                result[locus] = closest_str
+                
+        result["ST"] = self.resolve_st(detected_profile)
+        return result    
 
     def resolve_st(self, observed_profile):
         """

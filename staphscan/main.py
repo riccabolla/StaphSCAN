@@ -1,9 +1,17 @@
 import argparse
-import sys
-import pandas as pd
-from pathlib import Path
 import importlib
-from importlib.metadata import version, PackageNotFoundError
+import sys
+import tempfile
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
+
+import pandas as pd
+
+from staphscan.utils.fastq_mapper import (
+    align_reads,
+    build_master_db,
+    extract_consensus_from_bam,
+)
 
 if sys.version_info < (3, 10):
     sys.exit("StaphScan requires Python 3.10+")
@@ -62,6 +70,8 @@ def parse_arguments(available_modules):
 
     io_group = parser.add_argument_group("Input/Output")
     io_group.add_argument("-i", "--input", nargs="+")
+    io_group.add_argument("--r1", type=str, help="Input reads 1")
+    io_group.add_argument("--r2", type=str, help="Input reads 2 (not required if single-end or long reads)")
     io_group.add_argument("-o", "--outdir")
 
     mod_group = parser.add_argument_group("Modules")
@@ -88,9 +98,10 @@ def parse_arguments(available_modules):
     args = parser.parse_args()
 
     if not (args.list_modules or args.mlst_update):
-        if not args.input or not args.outdir:
-            parser.error("The following arguments are required: -i/--input, -o/--outdir")
-
+        if not args.outdir:
+            parser.error("The following arguments is required: -o/--outdir")
+        if not args.input and not args.r1:
+                parser.error("One of the following argument is required: -i/--input, --r1")
     return args
 
 def main():
@@ -124,7 +135,10 @@ def main():
 
     print(f"--- StaphScan Initialized ---")
     print(f"Modules: {', '.join(modules_to_run)}")
-    print(f"Inputs : {len(args.input)} file(s)")
+    if args.input:
+        print(f"Inputs : {len(args.input)} file(s) (FASTA)")
+    elif args.r1:
+        print(f"Inputs : Raw reads for {Path(args.r1).name} (FASTQ)")
 
     loaded_modules = {}
     for m in modules_to_run:
@@ -138,11 +152,12 @@ def main():
 
     all_results = []
 
-    for fasta_file in args.input:
-        fpath = Path(fasta_file)
-        if not fpath.exists():
-            print(f"Warning: File not found {fpath}")
-            continue
+    if args.input:
+        for fasta_file in args.input:
+            fpath = Path(fasta_file)
+            if not fpath.exists():
+                print(f"Warning: File not found {fpath}")
+                continue
 
         print(f"Processing: {fpath.stem}...")
         record = {'Sample': fpath.stem}
@@ -173,6 +188,54 @@ def main():
                 print(f"Error running {name}: {e}")
                 record[f"{name}_error"] = "Fail"
 
+        all_results.append(record)
+
+    elif args.r1:
+        r1_path = Path(args.r1)
+        r2_path = Path(args.r2) if args.r2 else None
+
+        print(f"Processing Raw Reads: {r1_path.stem}...")
+        sample_name = r1_path.stem.replace('.fastq', '').replace('.fq', '').replace('_R1', '')
+        record = {'Sample': sample_name}
+        
+        # Placeholder until Mash is integrated
+        record["Species"] = "S. aureus" 
+
+        import tempfile
+
+        from staphscan.utils.fastq_mapper import (
+            align_reads,
+            build_master_db,
+            extract_consensus_from_bam,
+        )
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            master_db = Path(tmpdir) / "master_refs.fasta"
+            modules_dir = Path(__file__).parent / "modules"
+            
+            print(" -> Building master reference database...")
+            build_master_db(modules_dir, master_db)
+            
+            bam_out = out_path / f"{sample_name}.bam"
+            print(" -> Aligning reads with minimap2...")
+            align_reads(r1_path, r2_path, master_db, bam_out)
+            
+            print(" -> Parsing BAM and extracting consensus...")
+            consensus_dict = extract_consensus_from_bam(bam_out)
+            print(f" -> Found {len(consensus_dict)} targets with coverage.")
+            
+            for name, mod in loaded_modules.items():
+                if name == "assembly":
+                    continue
+                try:
+                    if hasattr(mod, 'run_fastq'):
+                        record.update(mod.run_fastq(consensus_dict))
+                    else:
+                        print(f" -> Warning: Module '{name}' does not yet support FASTQ reads.")
+                except Exception as e:
+                    print(f"Error running {name} on FASTQ: {e}")
+                    record[f"{name}_error"] = "Fail"
+                    
         all_results.append(record)
 
     if not all_results:
