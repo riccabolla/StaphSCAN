@@ -1,106 +1,62 @@
-import collections
-import pathlib
 import shutil
 import subprocess
+from collections import Counter, defaultdict
+from pathlib import Path
+from typing import Any, Dict  # noqa: UP035
 
 import pysam
-from Bio import SeqIO
 
-
-def build_master_db(modules_dir: Path, out_fasta: Path) -> None:
-    """
-    Finds all reference FASTA files and concatenates them.
-    Ensures all FASTA headers are strictly unique to prevent samtools crashes.
-    """
-    seq_count = 0
-    seen_ids = set() # Track unique sequence IDs
-    
-    with open(out_fasta, "w") as out:
-        for fasta_file in modules_dir.rglob("*.fasta"):
-            if fasta_file.name == "alleles.fasta":
-                continue 
-            
-            from Bio import SeqIO
-            for record in SeqIO.parse(fasta_file, "fasta"):
-                if record.id not in seen_ids:
-                    out.write(f">{record.id}\n{str(record.seq)}\n")
-                    seen_ids.add(record.id)
-                    seq_count += 1
-                
-    if seq_count == 0:
-        raise RuntimeError(f"Master database is empty! Could not find reference FASTAs in {modules_dir}")
-
-def align_reads(r1: Path, r2: Path | None, ref_db: Path, out_bam: Path, threads: int = 4) -> None:
-    """
-    Aligns reads to the master reference and generates a sorted BAM.
-    Captures and reports standard error if the pipeline fails.
-    """
-    check_dependencies()
-    
-    # base minimap command
-    cmd_minimap = ["minimap2", "-ax", "sr", "-t", str(threads), str(ref_db), str(r1)]
-    if r2:
-        cmd_minimap.append(str(r2))
-        
-    # Run the pipeline through bash
-    pipe_cmd = f"{' '.join(cmd_minimap)} | samtools view -b -F 4 - | samtools sort -@ {threads} -o {out_bam} -"
-    
-    res = subprocess.run(pipe_cmd, shell=True, capture_output=True, text=True)
-    
-    # prints specific error when failing
-    if res.returncode != 0 or not out_bam.exists():
-        raise RuntimeError(f"Alignment pipeline failed!\nTerminal Error Log:\n{res.stderr}")
-
-    pysam.index(str(out_bam))
 
 def check_dependencies():
     for tool in ["minimap2", "samtools"]:
         if not shutil.which(tool):
             raise EnvironmentError(f"Required binary '{tool}' not found in PATH.")
 
-from collections import Counter
-from typing import Any, Dict  # noqa: UP035
+def build_module_db(data_dir: Path, out_fasta: Path) -> bool:
+    from Bio import SeqIO
+    seq_count = 0
+    with open(out_fasta, "w") as out:
+        for fasta_file in data_dir.rglob("*.fasta"):
+            if fasta_file.name == "alleles.fasta":
+                continue 
+            for record in SeqIO.parse(fasta_file, "fasta"):
+                out.write(f">{record.id}\n{str(record.seq)}\n")
+                seq_count += 1
+    return seq_count > 0
 
-import pysam
-
-
-def extract_consensus_from_bam(bam_file: Path, min_depth: int = 5, min_breadth: float = 80.0) -> Dict[str, Any]:
-    """
-    Parses the BAM file, calculates coverage, and builds a 
-    consensus DNA sequence for genes passing the threshold.
-    """
-    results = {}
+def align_reads(r1: Path, r2: Path | None, ref_db: Path, out_bam: Path, threads: int = 4) -> None:
+    check_dependencies()
     
+    # keep up to 100 alignments down to 50% score
+    cmd_minimap = ["minimap2", "-ax", "sr", "-t", str(threads), "-N", "100", "-p", "0.5", str(ref_db), str(r1)]
+    if r2: 
+        cmd_minimap.append(str(r2))
+        
+    pipe_cmd = f"{' '.join(cmd_minimap)} | samtools view -b - | samtools sort -@ {threads} -o {out_bam} -"
+    res = subprocess.run(pipe_cmd, shell=True, capture_output=True, text=True)
+    if res.returncode != 0 or not out_bam.exists():
+        raise RuntimeError(f"Alignment pipeline failed!\n{res.stderr}")
+    pysam.index(str(out_bam))
+
+def extract_consensus_from_bam(bam_file: Path, min_depth: int = 1, min_breadth: float = 40.0) -> Dict[str, Any]:
+    results = {}
     with pysam.AlignmentFile(str(bam_file), "rb") as bam:
         for ref_name, ref_len in zip(bam.references, bam.lengths):
-            
-            # Pre-fill the consensus array with Ns to match the exact reference length
             consensus_list = ["N"] * ref_len
             covered_bases = 0
             total_depth = 0
             
-            # Iterate through the pileup and process each column immediately to save mem
-            for pileupcolumn in bam.pileup(ref_name, truncate=True):
+            for pileupcolumn in bam.pileup(ref_name, truncate=True, stepper="all", min_base_quality=0):
                 pos = pileupcolumn.reference_pos
                 depth = pileupcolumn.nsegments
                 
                 if depth >= min_depth:
                     covered_bases += 1
                     total_depth += depth
-                    
-                    bases = []
-                    # Read the exact nucleotides aligned at this position
-                    for pileupread in pileupcolumn.pileups:
-                        # Skip deletions or reference skips
-                        if not pileupread.is_del and not pileupread.is_refskip:
-                            query_pos = pileupread.query_position
-                            if query_pos is not None:
-                                bases.append(pileupread.alignment.query_sequence[query_pos])
-                    
+                    # extract bases
+                    bases = [r.alignment.query_sequence[r.query_position] for r in pileupcolumn.pileups if r.query_position is not None]
                     if bases:
-                        # Call the majority consensus base
-                        most_common = Counter(bases).most_common(1)[0][0]
-                        consensus_list[pos] = most_common
+                        consensus_list[pos] = Counter(bases).most_common(1)[0][0]
             
             breadth = (covered_bases / ref_len) * 100.0 if ref_len > 0 else 0.0
             mean_depth = (total_depth / ref_len) if ref_len > 0 else 0.0
@@ -111,5 +67,60 @@ def extract_consensus_from_bam(bam_file: Path, min_depth: int = 5, min_breadth: 
                     "coverage": round(breadth, 2),
                     "mean_depth": round(mean_depth, 2)
                 }
-                
     return results
+
+def select_best_targets(bam_file: Path, min_reads: int = 3) -> Dict[str, str]:
+    """
+    From a BAM aligned against a multi-allele reference DB, pick the best-supported
+    reference (allele) per gene family based on total primary-alignment mapping
+    score (minimap2's AS tag). This lets the aligner's own scoring decide which allele a
+    sample's reads actually match
+    Only primary alignments are counted, since with
+    -N 100 -p 0.5 a single read can align to many near-identical alleles
+
+    """
+    family_scores: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    family_read_counts: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+    with pysam.AlignmentFile(str(bam_file), "rb") as bam:
+        for read in bam.fetch(until_eof=True):
+            if read.is_unmapped or read.is_secondary or read.is_supplementary:
+                continue
+            ref_name = read.reference_name
+            if ref_name is None:
+                continue
+            family = ref_name.split("_")[0]
+            try:
+                score = read.get_tag("AS")  # minimap2 alignment score
+            except KeyError:
+                score = read.query_alignment_length or 0  # fallback if AS missing
+            family_scores[family][ref_name] += score
+            family_read_counts[family][ref_name] += 1
+
+    best_targets: Dict[str, str] = {}
+    for family, ref_scores in family_scores.items():
+        # Require a minimum read count
+        candidates = {r: s for r, s in ref_scores.items()
+                      if family_read_counts[family][r] >= min_reads}
+        if not candidates:
+            candidates = ref_scores
+        best_targets[family] = max(candidates, key=candidates.get)
+
+    return best_targets
+
+def build_focused_db(data_dir: Path, best_targets: Dict[str, str], out_fasta: Path) -> bool:
+    """
+    Writes a reference fasta containing only the best targets
+    """
+    from Bio import SeqIO
+    wanted_ids = set(best_targets.values())
+    seq_count = 0
+    with open(out_fasta, "w") as out:
+        for fasta_file in data_dir.rglob("*.fasta"):
+            if fasta_file.name == "alleles.fasta":
+                continue
+            for record in SeqIO.parse(fasta_file, "fasta"):
+                if record.id in wanted_ids:
+                    out.write(f">{record.id}\n{str(record.seq)}\n")
+                    seq_count += 1
+    return seq_count > 0

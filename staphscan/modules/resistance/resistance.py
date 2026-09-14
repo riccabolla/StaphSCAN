@@ -396,3 +396,121 @@ class Module:
         out["res_score"] = str(score)
 
         return out
+
+    def run_fastq(self, consensus_dict: dict) -> dict:
+        """
+        Processes AMR profiles and mutations directly from BAM consensus sequences.
+        """
+        out = self.make_output()
+        if not self.check_db():
+            return out
+
+        from Bio.Seq import Seq
+        strong, muts, trunc, spur = [], [], [], []
+        cat_amino, cat_mec, cat_bla, cat_fq, cat_oxa, cat_mlsb, cat_tet, cat_gly, cat_rif = [], [], [], [], [], [], [], [], []
+
+        # 1. Deduplicate: Find the best hit per gene family by coverage
+        best_hits = {}
+        for target, stats in consensus_dict.items():
+            if target not in self.ref_prot_dict:
+                continue # Ignore MLST or Virulence targets that share the master DB
+                
+            family = target.split("_")[0]
+            if family not in best_hits or stats["coverage"] > best_hits[family][1]["coverage"]:
+                best_hits[family] = (target, stats)
+
+        if not best_hits:
+            out["res_gene_count"] = "0"
+            out["res_class_count"] = "0"
+            return out
+
+        # 2. Process each best hit using existing mutation and translation logic
+        for family, (target, stats) in best_hits.items():
+            dna_seq = Seq(stats["dna"])
+            ref_aa = self.ref_prot_dict.get(target, "")
+
+            if family == "23S":
+                found = str(dna_seq)
+            elif family in self.mutation_targets:
+                found = self.best_translation(dna_seq, ref_aa)
+            else:
+                found = self.trim_to_ref(self.best_translation(dna_seq, ref_aa), ref_aa)
+
+            display_str = family
+
+            # Check for Truncations
+            if "*" in found:
+                if family in self.mutation_targets:
+                    continue
+                pct = int((found.find("*") / len(ref_aa)) * 100) if ref_aa else 0
+                trunc.append(f"{family}-{pct}%(Stop)")
+                continue
+
+            is_strong = stats["coverage"] >= self.min_cov
+
+            # Check for Spurious / Partial coverage
+            if not is_strong:
+                if family in self.mutation_targets:
+                    continue 
+                display_str += "?"
+                spur.append(display_str)
+                continue
+
+            # Check Point Mutations
+            if family in self.mutation_targets and ref_aa:
+                mm = self.check_mutations(family, found, ref_aa)
+                if mm:
+                    mut_str = f"{family} [{','.join(mm)}]"
+                    muts.append(mut_str)
+                    if family in ["gyrA", "parE", "parC", "gyrB"]: cat_fq.append(mut_str)
+                    elif family == "23S": cat_oxa.append(mut_str)
+                    else: cat_rif.append(mut_str)
+                continue
+
+            # Standard Acquired Gene
+            strong.append(display_str)
+            
+            is_mec = family in ["mecA", "mecC"]
+            source = self.gene_source.get(family, "other")
+
+            if source == "mec_res" or is_mec: cat_mec.append(display_str)
+            elif source == "bla": cat_bla.append(display_str)
+            elif source == "amino": cat_amino.append(display_str)
+            elif source == "oxa": cat_oxa.append(display_str)
+            elif source == "tet": cat_tet.append(display_str)
+            elif source == "gly": cat_gly.append(display_str)
+            elif source == "mlsb": cat_mlsb.append(display_str)
+            elif source == "rif": cat_rif.append(display_str)
+            elif source == "flq": cat_fq.append(display_str)
+
+        # 3. Compile output dictionaries and scores
+        classes_map = {
+            "Amino_res": cat_amino, "Bla_res": cat_bla, "Flq_res": cat_fq,
+            "Gly_res": cat_gly, "Mec_res": cat_mec, "MLSB_res": cat_mlsb,
+            "Oxa_res": cat_oxa, "Rif_res": cat_rif, "Tet_res": cat_tet,
+        }
+        
+        active_classes = sum(1 for lst in classes_map.values() if len(lst) > 0)
+
+        out["res_gene_count"] = str(len(strong))
+        out["res_class_count"] = str(active_classes)
+        out["truncated_resistance_hits"] = "; ".join(trunc) if trunc else "-"
+        out["spurious_resistance_hits"] = "; ".join(spur) if spur else "-"
+        out["Amino_res"] = "; ".join(cat_amino) if cat_amino else "-"
+        out["Mec_res"] = "; ".join(cat_mec) if cat_mec else "-"
+        out["Bla_res"] = "; ".join(cat_bla) if cat_bla else "-"
+        out["Flq_res"] = "; ".join(cat_fq) if cat_fq else "-"
+        out["Oxa_res"] = "; ".join(cat_oxa) if cat_oxa else "-"
+        out["MLSB_res"] = "; ".join(cat_mlsb) if cat_mlsb else "-"
+        out["Tet_res"] = "; ".join(cat_tet) if cat_tet else "-"
+        out["Gly_res"] = "; ".join(cat_gly) if cat_gly else "-"
+        out["Rif_res"] = "; ".join(cat_rif) if cat_rif else "-"        
+
+        score = 0
+        if any("vanA" in x or "vanB" in x for x in cat_gly): score = 3
+        elif cat_mec: score = 2
+        elif cat_bla: score = 1
+            
+        out["res_score"] = str(score)
+
+        return out
