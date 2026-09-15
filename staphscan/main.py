@@ -54,17 +54,17 @@ def parse_arguments(available_modules):
     action="version",
     version=f"staphscan {get_version()}"
     )
-    parser.add_argument("--list-modules", action="store_true")
+    parser.add_argument("--list-modules", action="store_true", help="List available modules and exit")
 
     parser.add_argument("--mlst_update", action="store_true", help="Authenticate and update the local PubMLST database") #mlst update option
 
     parser.add_argument("--db_mlst", type=str, default=None, help="Path to custom db folder for MLST")
 
     io_group = parser.add_argument_group("Input/Output")
-    io_group.add_argument("-i", "--input", nargs="+")
+    io_group.add_argument("-i", "--input", nargs="+", help="Input FASTA files")
     io_group.add_argument("--r1", type=str, help="Input reads 1")
     io_group.add_argument("--r2", type=str, help="Input reads 2 (not required if single-end or long reads)")
-    io_group.add_argument("-o", "--outdir")
+    io_group.add_argument("-o", "--outdir", help="Output directory for results", default=None)
 
     mod_group = parser.add_argument_group("Modules")
     mod_group.add_argument("-m", "--modules",
@@ -72,8 +72,8 @@ def parse_arguments(available_modules):
                            default="all")
 
     thresh_group = parser.add_argument_group("Thresholds")
-    thresh_group.add_argument("--min_id_mlst", type=float, default=95.0, help="Min identity for MLST")
-    thresh_group.add_argument("--min_cov_mlst", type=float, default=95.0, help="Min coverage for MLST")
+    thresh_group.add_argument("--min_id_mlst", type=float, default=100, help="Min identity for MLST")
+    thresh_group.add_argument("--min_cov_mlst", type=float, default=100, help="Min coverage for MLST")
     thresh_group.add_argument("--min_id_capsule", type=float, default=90.0, help="Min identity for Capsule")
     thresh_group.add_argument("--min_cov_capsule", type=float, default=80.0, help="Min coverage for Capsule")
     thresh_group.add_argument("--min_id_vir", type=float, default=90.0, help="Min identity for Virulence")
