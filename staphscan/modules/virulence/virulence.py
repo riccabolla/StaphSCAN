@@ -148,10 +148,13 @@ class Module:
 
                 is_truncated = False
                 trunc_pct = 0
-                
+                # changed threshold to 90% for v0.5.0 update
                 if "*" in prot:
-                    is_truncated = True
                     trunc_pct = int((prot.find("*") / len(ref)) * 100) if ref else 0
+                    if trunc_pct < 90:
+                        is_truncated = True
+                    else:
+                        prot = prot.replace("*", "")    
                 else:
                      expected_len = hit.qlen / 3
                      if len(prot) < (expected_len * 0.9):
@@ -256,3 +259,131 @@ class Module:
             print(f"Error in virulence module: {e}", file=sys.stderr)
             results["vir_pvl"] = "Error"
             return results
+
+    def run_fastq(self, consensus_dict: dict) -> dict:
+        """
+        Processes virulence profile directly from BAM consensus sequences.
+        """
+        results = {
+            "vir_score": "-", "vir_pvl": "-", "vir_tsst": "-", "vir_et": "-", "vir_lukED": "-", "vir_se": "-",
+            "spurious_virulence_hits": "-", "truncated_virulence_hits": "-"
+        }
+        
+        if not self.check_db():
+            return results
+
+        from Bio.Seq import Seq
+        strong_hits = []
+        spurious_hits = []
+        truncated_hits = []
+
+        # Deduplicate: Find the best hit per gene family by coverage
+        best_hits = {}
+        for target, stats in consensus_dict.items():
+            if target not in self.ref_prot_dict:
+                continue 
+                
+            family = target.split("_")[0]
+            if family not in best_hits or stats["coverage"] > best_hits[family][1]["coverage"]:
+                best_hits[family] = (target, stats)
+
+        # Process each hit
+        for family, (target, stats) in best_hits.items():
+            dna_seq = Seq(stats["dna"])
+            ref_aa = self.ref_prot_dict.get(target, "")
+            
+            # Translate and trim
+            prot = self.trim_to_ref(self.best_translation(dna_seq, ref_aa), ref_aa)
+            
+            # Check for truncations
+            # changed threshold to 90% for v0.5.0 update
+            if "*" in prot:
+                trunc_pct = int((prot.find("*") / len(ref_aa)) * 100) if ref_aa else 0
+                if trunc_pct < 90:
+                    truncated_hits.append(f"{family}-{trunc_pct}%(Stop)")
+                    continue
+                else:
+                    prot = prot.replace("*", "")          
+
+            display_str = family
+            
+            # If the translated consensus doesn't perfectly match the reference, add an asterisk
+            if ref_aa and prot != ref_aa:
+                display_str += "*"
+                
+            # Add a question mark if coverage is less than 100%
+            if stats["coverage"] < 100.0:
+                display_str += "?"
+
+            is_strong = stats["coverage"] >= self.min_cov
+            
+            if is_strong:
+                strong_hits.append(display_str)
+            else:
+                spurious_hits.append(display_str)
+
+        # compile the output
+        def find_genes(search_terms):
+            found = []
+            for term in search_terms:
+                found.extend([x for x in strong_hits if term.lower() in x.lower()])
+            return sorted(list(set(found)))
+
+        # PVL
+        lukS = find_genes(["luks"])
+        lukF = find_genes(["lukf"])
+        if lukS and lukF:
+            results["vir_pvl"] = "Positive"
+        elif lukS or lukF:
+            present = lukS + lukF
+            results["vir_pvl"] = "; ".join(present) if present else "-"
+        
+        # TSST
+        tsst = find_genes(["tsst1"])
+        results["vir_tsst"] = "; ".join(tsst) if tsst else "-"
+        
+        # Exfoliative Toxins
+        et_targets = ["eta", "etb", "etd", "ete"]
+        et = find_genes(et_targets)
+        results["vir_et"] = "; ".join(et) if et else "-"
+
+        # LukED
+        lukE = find_genes(["luke"])
+        lukD = find_genes(["lukd"])
+        if lukE and lukD:
+            results["vir_lukED"] = "Positive"
+        elif lukE or lukD:
+            present = lukE + lukD
+            results["vir_lukED"] = "; ".join(present) if present else "-"
+
+        # Enterotoxins
+        se_genes = ["sea", "sec", "seh", "selk", "sell", "selq"]
+        se_found = []
+        for gene in se_genes:
+            se_found.extend(find_genes([gene]))
+        se_found = sorted(list(set(se_found)))
+        results["vir_se"] = "; ".join(se_found) if se_found else "-"    
+
+        results["spurious_virulence_hits"] = "; ".join(spurious_hits) if spurious_hits else "-"
+        results["truncated_virulence_hits"] = "; ".join(truncated_hits) if truncated_hits else "-"
+        
+        # Score
+        clean_hits = set()
+        for h in strong_hits:
+            clean_name = h.replace("*", "").replace("^", "").replace("?", "").lower()
+            clean_hits.add(clean_name)
+
+        score = 0
+        if ("lukf" in clean_hits and "luks" in clean_hits) or ("tsst1" in clean_hits):
+            score = 3
+        elif any(gene in clean_hits for gene in et_targets):
+            score = 2
+        else:
+            has_se = not clean_hits.isdisjoint(se_genes)
+            has_luk = "lukd" in clean_hits and "luke" in clean_hits
+            if has_se or has_luk:
+                score = 1
+
+        results["vir_score"] = score
+
+        return results
