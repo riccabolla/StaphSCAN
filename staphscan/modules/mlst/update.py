@@ -149,7 +149,7 @@ def run_update(db_dir=None):
     if db_dir:
         target_dir = Path(db_dir) / "mlst"
     else:
-        target_dir = Path(__file__).parent / "modules" / "mlst" / "data"
+        target_dir = Path(__file__).parent / "data" #fixed path bug
     target_dir.mkdir(parents=True, exist_ok=True)
     print(f"Data will be downloaded to: {target_dir}")
 
