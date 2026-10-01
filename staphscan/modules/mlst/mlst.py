@@ -1,252 +1,503 @@
-import pandas as pd
-import subprocess
 import io
+import subprocess
 import sys
-import re
-import os
 from pathlib import Path
+
+import pandas as pd
 from Bio import SeqIO
+
 
 class Module:
     def __init__(self, min_id=100.0, min_cov=100.0, db_dir=None):
         self.name = "mlst"
+
         self.module_dir = Path(__file__).parent
-        # to allow custom db dir input
+
         if db_dir:
             self.data_dir = Path(db_dir) / "mlst"
             self.data_dir.mkdir(parents=True, exist_ok=True)
         else:
             self.data_dir = self.module_dir / "data"
 
-        #self.data_dir = self.module_dir / "data"
         self.db_profiles = self.data_dir / "profiles.tsv"
         self.alleles_fasta = self.data_dir / "alleles.fasta"
-        self.refs_fasta = self.data_dir / "refs.fasta" 
-        self.loci = ["arcC", "aroE", "glpF", "gmk", "pta", "tpi", "yqiL"]     
-        self.min_identity = min_id 
-        self.min_coverage = min_cov     
-        self.prof_df = None
-        if self.db_profiles.exists():
-            dtype_map = {locus: 'str' for locus in self.loci}
-            dtype_map["ST"] = 'str'
-            try:
-                self.prof_df = pd.read_csv(self.db_profiles, sep="\t", dtype=dtype_map).fillna("-")
-            except Exception as e:
-                print(f"Warning: Could not load profiles.tsv: {e}", file=sys.stderr)
 
-        self.allele_map = {l: {} for l in self.loci}
-        if self.alleles_fasta.exists():
-            self._load_allele_map()
+        # Kept for backward compatibility with existing installations.
+        # It is no longer used for allele detection.
+        self.refs_fasta = self.data_dir / "refs.fasta"
+
+        self.loci = [
+            "arcC",
+            "aroE",
+            "glpF",
+            "gmk",
+            "pta",
+            "tpi",
+            "yqiL",
+        ]
+
+        self.min_identity = float(min_id)
+        self.min_coverage = float(min_cov)
+
+        self.prof_df = None
+        self.allele_map = {locus: {} for locus in self.loci}
+
+        self._load_profiles()
+        self._load_allele_map()
+
+    def _load_profiles(self):
+        """Load PubMLST ST profiles."""
+
+        if not self.db_profiles.exists():
+            return
+
+        dtype_map = {locus: "str" for locus in self.loci}
+        dtype_map["ST"] = "str"
+
+        try:
+            self.prof_df = pd.read_csv(
+                self.db_profiles,
+                sep="\t",
+                dtype=dtype_map,
+            ).fillna("-")
+
+        except Exception as e:
+            print(
+                f"Warning: Could not load profiles.tsv: {e}",
+                file=sys.stderr,
+            )
 
     def _load_allele_map(self):
-        """Loads all alleles into memory for exact string matching."""
+        """
+        Load all allele sequences into memory.
+        """
+
+        if not self.alleles_fasta.exists():
+            return
+
         try:
             for record in SeqIO.parse(self.alleles_fasta, "fasta"):
+                record_id = record.id
+
                 for locus in self.loci:
-                    if record.id.startswith(f"{locus}_"):
-                        seq_str = str(record.seq).upper()
-                        clean_num = record.id.split('_')[-1]
-                        self.allele_map[locus][seq_str] = clean_num
+                    prefix = f"{locus}_"
+
+                    if record_id.startswith(prefix):
+                        allele_id = record_id[len(prefix):]
+                        sequence = str(record.seq).upper()
+
+                        self.allele_map[locus][allele_id] = sequence
                         break
+
         except Exception as e:
-            print(f"Error loading allele map: {e}", file=sys.stderr)
+            print(
+                f"Error loading allele map: {e}",
+                file=sys.stderr,
+            )
 
-    def _get_closest_allele(self, locus, query_seq):
+
+    def _source_fastas(self):
+        """Return the downloaded PubMLST locus FASTA files."""
+
+        return [
+            self.data_dir / f"{locus}.fas"
+            for locus in self.loci
+        ]
+
+    def _alleles_fasta_is_current(self):
         """
-        Fallback: If exact match fails, find the closest allele by SNP count.
+        Check whether the combined allele FASTA is newer than all
+        downloaded PubMLST locus FASTAs.
         """
-        best_id = "Novel"
-        min_diffs = float('inf')
 
-        for ref_seq, allele_id in self.allele_map[locus].items():
-            if len(ref_seq) != len(query_seq):
-                continue
-                
-            diffs = sum(1 for a, b in zip(ref_seq, query_seq) if a != b)
-            
-            if diffs < min_diffs:
-                min_diffs = diffs
-                best_id = allele_id
-                
-            if min_diffs == 1: 
-                break
-                
-        if min_diffs == float('inf'):
-            return "Novel*" 
-            
-        return f"{best_id}*"
+        if not self.alleles_fasta.exists():
+            return False
 
-    def check_db(self):
-        if not self.db_profiles.exists(): return False
+        combined_mtime = self.alleles_fasta.stat().st_mtime
 
-        if not self.alleles_fasta.exists() or not self.refs_fasta.exists():
-            print("Building MLST Databases...")
-            combined_fasta = []
-            refs_fasta = []
-            
-            for locus in self.loci:
-                fpath = self.data_dir / f"{locus}.fas"
-                if not fpath.exists():
-                    print(f"Error: Missing {locus}.fas")
-                    return False
-                
-                first_record = True
-                for record in SeqIO.parse(fpath, "fasta"):
-                    clean_num = record.id.replace(f"{locus}_", "").replace(locus, "").strip("-_")
-                    if not clean_num: continue
-                    
-                    header = f"{locus}_{clean_num}"
-                    seq = str(record.seq).upper()
-                    
-                    combined_fasta.append(f">{header}\n{seq}\n")
-                    
-                    if first_record:
-                        refs_fasta.append(f">{header}\n{seq}\n")
-                        first_record = False
-            
-            try:
-                with open(self.alleles_fasta, "w") as f:
-                    f.write("".join(combined_fasta))
-                with open(self.refs_fasta, "w") as f:
-                    f.write("".join(refs_fasta))
-                self._load_allele_map()
-            except Exception as e:
-                print(f"Error creating FASTA DBs: {e}")
+        for fasta in self._source_fastas():
+            if not fasta.exists():
                 return False
-                
+
+            if fasta.stat().st_mtime > combined_mtime:
+                return False
+
         return True
 
-    def run(self, assembly_path):
-        cmd = [
-            "blastn", "-task", "megablast", 
-            "-query", str(self.refs_fasta), 
-            "-subject", str(assembly_path), 
-            "-outfmt", "6 qseqid sseq length qlen bitscore", 
-            "-perc_identity", str(self.min_identity),
-            "-qcov_hsp_perc", str(self.min_coverage),         
-            "-dust", "no",
-            "-max_target_seqs", "1" 
-        ]
-        
-        result = {"ST": "Unknown"}
-        for l in self.loci: result[l] = "-"
+    def _build_alleles_fasta(self):
+        """
+        Build a single FASTA containing every PubMLST allele.
+        """
+
+        combined_records = []
+
+        for locus in self.loci:
+            fasta_path = self.data_dir / f"{locus}.fas"
+
+            if not fasta_path.exists():
+                print(
+                    f"Error: Missing {fasta_path}",
+                    file=sys.stderr,
+                )
+                return False
+
+            try:
+                for record in SeqIO.parse(fasta_path, "fasta"):
+                    # Extract the numeric/string allele identifier.
+                    raw_id = record.id
+
+                    if raw_id.startswith(f"{locus}_"):
+                        allele_id = raw_id[len(locus) + 1:]
+                    elif raw_id.startswith(locus):
+                        allele_id = raw_id[len(locus):].lstrip("_-")
+                    else:
+                        allele_id = raw_id
+
+                    if not allele_id:
+                        continue
+
+                    sequence = str(record.seq).upper()
+
+                    header = f"{locus}_{allele_id}"
+
+                    combined_records.append(
+                        f">{header}\n{sequence}\n"
+                    )
+
+            except Exception as e:
+                print(
+                    f"Error reading {fasta_path}: {e}",
+                    file=sys.stderr,
+                )
+                return False
 
         try:
-            if self.prof_df is None:
+            with open(self.alleles_fasta, "w") as handle:
+                handle.write("".join(combined_records))
+
+        except Exception as e:
+            print(
+                f"Error writing {self.alleles_fasta}: {e}",
+                file=sys.stderr,
+            )
+            return False
+
+        return True
+
+    def check_db(self):
+        """
+        Check that the MLST database is available and rebuild the
+        combined allele FASTA if necessary.
+        """
+
+        if not self.db_profiles.exists():
+            print(
+                f"Error: Missing MLST profile database: "
+                f"{self.db_profiles}",
+                file=sys.stderr,
+            )
+            return False
+
+        for fasta in self._source_fastas():
+            if not fasta.exists():
+                print(
+                    f"Error: Missing MLST allele file: {fasta}",
+                    file=sys.stderr,
+                )
+                return False
+
+        if not self._alleles_fasta_is_current():
+            print("Building MLST allele database...")
+
+            if not self._build_alleles_fasta():
+                return False
+
+            self.allele_map = {locus: {} for locus in self.loci}
+            self._load_allele_map()
+
+        return True
+
+    def _run_blast(self, assembly_path):
+        """
+        BLAST every PubMLST allele against the assembly.
+        """
+
+        cmd = [
+            "blastn",
+            "-task",
+            "megablast",
+
+            "-query",
+            str(self.alleles_fasta),
+
+            "-subject",
+            str(assembly_path),
+
+            "-outfmt",
+            (
+                "6 "
+                "qseqid "
+                "sseqid "
+                "pident "
+                "length "
+                "qlen "
+                "qcovhsp "
+                "bitscore "
+                "qstart "
+                "qend "
+                "sstart "
+                "send"
+            ),
+
+            "-perc_identity",
+            str(self.min_identity),
+
+            "-qcov_hsp_perc",
+            str(self.min_coverage),
+
+            "-dust",
+            "no",
+            "-max_target_seqs",
+            "1",
+        ]
+
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        except FileNotFoundError:
+            raise RuntimeError(
+                "blastn was not found. "
+                "Please make sure BLAST+ is installed and available "
+                "in PATH."
+            )
+
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"BLAST failed with exit code {result.returncode}: "
+                f"{result.stderr.strip()}"
+            )
+
+        if not result.stdout.strip():
+            return pd.DataFrame(
+                columns=[
+                    "qseqid",
+                    "sseqid",
+                    "pident",
+                    "length",
+                    "qlen",
+                    "qcovhsp",
+                    "bitscore",
+                    "qstart",
+                    "qend",
+                    "sstart",
+                    "send",
+                ]
+            )
+
+        columns = [
+            "qseqid",
+            "sseqid",
+            "pident",
+            "length",
+            "qlen",
+            "qcovhsp",
+            "bitscore",
+            "qstart",
+            "qend",
+            "sstart",
+            "send",
+        ]
+
+        return pd.read_csv(
+            io.StringIO(result.stdout),
+            sep="\t",
+            names=columns,
+        )
+
+    def _extract_locus_and_allele(self, qseqid):
+        """
+        Convert a BLAST query ID 
+        """
+
+        qseqid = str(qseqid)
+
+        for locus in self.loci:
+            prefix = f"{locus}_"
+
+            if qseqid.startswith(prefix):
+                return locus, qseqid[len(prefix):]
+
+        return None, None
+
+    def _select_allele(self, locus, hits):
+        """
+        Select the best allele hit for a locus.
+        """
+
+        if hits.empty:
+            return "-", "-"
+
+        hits = hits.copy()
+
+        # Convert numeric BLAST columns explicitly.
+        for column in [
+            "pident",
+            "length",
+            "qlen",
+            "qcovhsp",
+            "bitscore",
+        ]:
+            hits[column] = pd.to_numeric(
+                hits[column],
+                errors="coerce",
+            )
+
+        # Full-length means that the complete PubMLST allele was aligned.
+        hits["full_length"] = (
+            (hits["length"] >= hits["qlen"]) &
+            (hits["qcovhsp"] >= 99.999)
+        )
+
+        hits = hits.sort_values(
+            by=[
+                "full_length",
+                "pident",
+                "qcovhsp",
+                "length",
+                "bitscore",
+            ],
+            ascending=[
+                False,
+                False,
+                False,
+                False,
+                False,
+            ],
+        )
+
+        best = hits.iloc[0]
+
+        qseqid = str(best["qseqid"])
+        _, allele_id = self._extract_locus_and_allele(qseqid)
+
+        if allele_id is None:
+            return "-", "-"
+
+        # Full-length hit satisfying the requested identity threshold.
+        if (
+            bool(best["full_length"])
+            and best["pident"] >= self.min_identity
+        ):
+            return allele_id, allele_id
+
+        # Partial hit.
+        if not bool(best["full_length"]):
+            return "Partial", "-"
+
+        # Full-length but below the requested identity threshold.
+        # This branch is mainly relevant when min_id < 100.
+        return f"{allele_id}*", "-"
+
+
+    def run(self, assembly_path):
+
+        result = {"ST": "Unknown"}
+
+        for locus in self.loci:
+            result[locus] = "-"
+
+        try:
+            if not self.check_db():
                 result["ST"] = "DB_Error"
                 return result
 
-            res = subprocess.run(cmd, capture_output=True, text=True)
-            if not res.stdout: 
+            blast_df = self._run_blast(assembly_path)
+
+            if blast_df.empty:
                 return result
-            
-            df = pd.read_csv(io.StringIO(res.stdout), sep="\t", names=["qseqid", "sseq", "length", "qlen", "bitscore"])
-            
-            detected_profile = {} 
-            
+
+            detected_profile = {}
+
             for locus in self.loci:
-                mask = df['qseqid'].astype(str).str.startswith(f"{locus}_")
-                locus_hits = df[mask]
-                
-                if locus_hits.empty:
-                    detected_profile[locus] = "-"
-                    result[locus] = "-"
-                    continue
 
-                best = locus_hits.sort_values('bitscore', ascending=False).iloc[0]
-                
-                genome_seq = best['sseq'].replace("-", "").upper()
-                
-                if best['length'] < best['qlen']:
-                    result[locus] = "Partial"
-                    detected_profile[locus] = "-"
-                    continue
+                # Allele query IDs are locus-specific.
+                locus_mask = (
+                    blast_df["qseqid"]
+                    .astype(str)
+                    .str.startswith(f"{locus}_")
+                )
 
-                if genome_seq in self.allele_map[locus]:
-                    allele_id = self.allele_map[locus][genome_seq]
-                    detected_profile[locus] = allele_id
-                    result[locus] = allele_id
-                else:
-                    closest_str = self._get_closest_allele(locus, genome_seq)                  
-                    detected_profile[locus] = "-" 
-                    result[locus] = closest_str
+                locus_hits = blast_df[locus_mask]
+
+                allele_call, profile_allele = self._select_allele(
+                    locus,
+                    locus_hits,
+                )
+
+                result[locus] = allele_call
+                detected_profile[locus] = profile_allele
 
             result["ST"] = self.resolve_st(detected_profile)
+
             return result
 
         except Exception as e:
-            print(f"Error in MLST module: {e}", file=sys.stderr)
+            print(
+                f"Error in MLST module: {e}",
+                file=sys.stderr,
+            )
             result["ST"] = "Error"
             return result
-        
-    def run_fastq(self, consensus_dict: dict) -> dict:
-        """
-        Processes the MLST profile directly from the BAM consensus sequences.
-        """
-        result = {"ST": "Unknown"}
-        for l in self.loci: result[l] = "-"
-        
-        if self.prof_df is None:
-            result["ST"] = "DB_Error"
-            return result
-            
-        detected_profile = {}
-        
-        for locus in self.loci:
-            # Find the target in the consensus dict that starts with this locus (e.g., arcC_1)
-            matched_key = next((k for k in consensus_dict.keys() if k.startswith(f"{locus}_")), None)
-            
-            if not matched_key:
-                detected_profile[locus] = "-"
-                continue
-                
-            stats = consensus_dict[matched_key]
-            
-            # Apply thresholds
-            if stats["coverage"] < self.min_coverage:
-                result[locus] = "Partial"
-                detected_profile[locus] = "-"
-                continue
-                
-            genome_seq = stats["dna"].upper().replace("N", "") # Remove Ns for exact matching
-            
-            # Exact match check
-            if genome_seq in self.allele_map[locus]:
-                allele_id = self.allele_map[locus][genome_seq]
-                detected_profile[locus] = allele_id
-                result[locus] = allele_id
-            else:
-                closest_str = self._get_closest_allele(locus, genome_seq)                  
-                detected_profile[locus] = "-" 
-                result[locus] = closest_str
-                
-        result["ST"] = self.resolve_st(detected_profile)
-        return result    
 
     def resolve_st(self, observed_profile):
         """
-        Vectorized ST resolution
+        Resolve the detected 7-locus allele profile against profiles.tsv.
         """
-        if self.prof_df is None: return "DB_Error"
-        
+
+        if self.prof_df is None:
+            return "DB_Error"
+
         try:
-            obs_values = [str(observed_profile.get(locus, "-")) for locus in self.loci]
-            
-            matches_mask = (self.prof_df[self.loci] == obs_values)
-            
-            mismatch_counts = len(self.loci) - matches_mask.sum(axis=1)
-            
-            min_mismatches = mismatch_counts.min()
-            
+            obs_values = [
+                str(observed_profile.get(locus, "-"))
+                for locus in self.loci
+            ]
+
+            # Compare each observed allele against every PubMLST profile.
+            matches_mask = (
+                self.prof_df[self.loci] == obs_values
+            )
+
+            mismatch_counts = (
+                len(self.loci)
+                - matches_mask.sum(axis=1)
+            )
+
+            min_mismatches = int(mismatch_counts.min())
+
             if min_mismatches > 2:
                 return "Undefined"
-            
+
             best_match_idx = mismatch_counts.idxmin()
-            best_st = str(self.prof_df.at[best_match_idx, 'ST'])
-            
-            if min_mismatches == 0: return f"ST{best_st}"
-            elif min_mismatches == 1: return f"ST{best_st}-1LV"
-            elif min_mismatches == 2: return f"ST{best_st}-2LV"
+
+            best_st = str(
+                self.prof_df.at[best_match_idx, "ST"]
+            )
+
+            if min_mismatches == 0:
+                return f"ST{best_st}"
+
+            elif min_mismatches == 1:
+                return f"ST{best_st}-1LV"
+
+            elif min_mismatches == 2:
+                return f"ST{best_st}-2LV"
+
             return "Undefined"
 
         except Exception as e:
