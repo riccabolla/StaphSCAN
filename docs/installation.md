@@ -6,6 +6,8 @@ StaphSCAN requires the following software to be installed and available in your 
 * [Python](https://www.python.org/) v3.10 or later
 * [Mash](https://github.com/marbl/Mash) v2.0 or later
 * [Blast](https://blast.ncbi.nlm.nih.gov/) v2.17.0
+* [minimap2](https://github.com/lh3/minimap2) (required for FASTQ input)
+* [SAMtools](https://www.htslib.org/) v1.16 or later (required for FASTQ input)
 
 And the following libraries:
 

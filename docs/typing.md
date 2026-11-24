@@ -52,6 +52,9 @@ A local copy of [Ridom database](https://spa.ridom.de/spatypes.shtml) is distrib
 
 * Assemblies in which an X-region was amplified but no known repeat units were detected were reported as “Unknown".
 
+!!! note
+    In FASTQ mode, StaphSCAN extracts reads directly spanning both primers when available (such as long reads) or baits repeat and primer k-mers to reconstruct the `spa` X-region amplicon via a local de Bruijn graph across the four standard primer sets.
+
 ### Limitation
 
 Spa typing is dependent on genome assembly quality, and fragmentation or sequencing errors within the spa X-region may result in spa-negative or Unknown calls. Novel or divergent repeat patterns not present in the reference database are reported as Novel. As with all in silico typing approaches, results may differ from laboratory-based spa typing in cases of mixed populations or incomplete assemblies.
