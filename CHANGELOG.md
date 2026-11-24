@@ -8,6 +8,10 @@
 
 - contamination check [\#15](https://github.com/riccabolla/StaphSCAN/issues/15)
 
+**Merged pull requests:**
+
+- V0.5.0 [\#20](https://github.com/riccabolla/StaphSCAN/pull/20) ([riccabolla](https://github.com/riccabolla))
+
 ## [v0.4.1](https://github.com/riccabolla/staphscan/tree/v0.4.1) (2026-07-23)
 
 [Full Changelog](https://github.com/riccabolla/staphscan/compare/v0.4.0...v0.4.1)
