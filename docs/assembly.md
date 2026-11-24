@@ -4,7 +4,7 @@
 ``-m assembly``
 
 
-This module will attempt to identify the species of each input assembly, and generate some basic assembly statistics. 
+This module will attempt to identify the species of each input genome assembly (FASTA) or raw sequencing read dataset (FASTQ), and generate basic quality control statistics. 
 
 ## Species identification
 
@@ -30,17 +30,28 @@ To report the species, the following criteria are used:
 * The species with the lowest distance is reported, if lower than the threshold. 
 * If the lowest Mash distance is > 0.04, the result is reported as “No match found”.
 
+For FASTQ inputs, reads are sketched directly using `mash sketch -r` with adaptive minimum k-mer copy filtering (starting at `-m 4` and scaling up to `-m 6` for higher-coverage datasets) before computing Mash distances against the same reference database using the same `0.04` distance threshold.
+
 !!! note
     All genomes identified as not *Staphylococcus aureus* are skipped for downstream analysis. 
 
 ## Assembly stats
 
-For assembly quality the following parameters are considered:
+Quality control checks depend on whether the input is a genome assembly (FASTA) or raw sequencing reads (FASTQ):
 
-* Total assembly size (compared to expected size for *Staphylococcus aureus* of 2.6 - 3.1 Mbp)
+### FASTA inputs
+
+* Total assembly size (compared to expected size for *Staphylococcus aureus* of 2.6 - 3.1 Mbp; flagged `Too short` or `Too long`)
 * Contamination: If more than one reference genome returns a Mash distance of **≤ 0.04**, the assembly is flagged (`Mixed`). This indicates an intra-genus mixed culture (e.g., *S. aureus* + *S. epidermidis*).
-* N50 (>=10 kbp)
-* Presence of ambiguous bases (Ns)
+* N50 (`>= 10 kbp`; otherwise flagged `Low_N50`)
+* Presence of ambiguous bases (`Ns`; flagged `Ambiguous_Bases`)
+
+### FASTQ inputs
+
+* Estimated genome size (from Mash): flagged `Too short` if `< 2.5 Mbp`; flagged `Too long` if `> 3.3 Mbp` (for short-read `sr` inputs only).
+* Estimated sequencing coverage (from Mash): flagged `Low_Coverage` if `< 10x`.
+* Contamination: If more than one reference genome returns a Mash distance of **≤ 0.04**, the sample is flagged (`Mixed`).
+* Contig metrics (`N_contig` and `N50`) are not applicable to raw reads and are reported as `-`.
 
 ## Outputs
 
@@ -50,9 +61,9 @@ The assembly module generates the following output columns in the report:
 |-----|-----------|
 |`Species`|Detected specie|
 |`Mash_distance`|Calculated Mash distance to the best-matching reference genome|
-|`Total_size`|Assembly size (bp)|
-|`N_contig`|Total number of contigs in the assembly|
-|`N50`|Assembly N50 value|
+|`Total_size`|Assembly size (bp), or Mash-estimated genome size for FASTQ input|
+|`N_contig`|Total number of contigs in the assembly (`-` for FASTQ input)|
+|`N50`|Assembly N50 value (`-` for FASTQ input)|
 |`QC`|Overall QC status (`PASS`  or `FAILED`)|
 
 

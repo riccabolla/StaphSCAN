@@ -32,6 +32,9 @@ Hits are filtered by minimum alignment identity and coverage:
 
 All hits with 80–90% identity or 40–80% coverage are reported as spurious hits.
 
+!!! note
+    For short-read FASTQ inputs (`--read_type sr`), hypervariable MSCRAMM genes (*clfA*, *clfB*, *fnbA*, *fnbB*) are assembled locally using a two-round baited multi-k de Bruijn assembler with paired-end repeat resolution to avoid reference-template bias and resolve shared internal paralog domains (e.g., *fnbA*/*fnbB*), and *cna* B-repeat copy number is estimated from normalized B-domain-to-A-domain aligned read depth (`3 × mean_B_depth / mean_A_depth`, masking B2–B3 when `< 2.5` copies).
+
 ### Biofilm score
 
 A biofilm score is calculated, based on the genes detected. 

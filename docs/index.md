@@ -1,12 +1,12 @@
 
 # StaphSCAN: a genome-based tool for **S**urveillance through **C**omprehensive **A**nalysis and sta**N**dardized reporting of ***Staph**ylococcus aureus*.
 
-StaphSCAN is a genome-based framework for the surveillance of Staphylococcus aureus.
+StaphSCAN is a genome-based framework for the surveillance of Staphylococcus aureus from genome assemblies (FASTA) or raw sequencing reads (FASTQ).
 
 It integrates the following steps:
 
 * Species identification
-* Qcheck of genome assembly
+* Qcheck of genome assemblies or raw sequencing reads (FASTQ)
 * MLST typing
 * spa typing
 * Capsular polysaccharide typing
