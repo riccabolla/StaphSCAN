@@ -41,6 +41,8 @@ It requires:
 * python (v3.10 or greater)
 * mash
 * blast
+* minimap2
+* samtools
 
 And the following packages:
 * pandas
@@ -61,13 +63,23 @@ staphscan -h
 
 ```bash
 staphscan -i /path/to/genomes/*.fasta -o results_directory
+
+staphscan -i /path/to/reads/*.fastq.gz -t 5 -o results_directory
 ```
 ### Options
 
 ```bash
   -h, --help            show this help message and exit
   -i INPUT [INPUT ...], --input INPUT [INPUT ...]
-                        Input FASTA files (supports *.fasta)
+                        Input FASTA or FASTQ files (supports *)
+  -1; --read1,          Forward FASTQ read (R1) or single-end short reads
+  -2; --read2,          Reverse FASTQ read (R2) for paired-end reads
+  -lr LONG_READS [LONG_READS ...], --long_reads LONG_READS [LONG_READS ...]
+                        Single-end long-read FASTQ file
+  --read_type           Read type for FASTQ mapping: sr (Illumina), ont (Nanopore), or pb (PacBio) (default: sr)
+  --min_depth MIN_DEPTH Minimum read depth to call a base in FASTQ consensus (default: 5)
+  -t THREADS, --threads THREADS
+                        Number of threads for FASTQ mapping (default: 4)
   -o OUTDIR, --outdir OUTDIR
                         Output directory
   -m MODULES, --modules MODULES
